@@ -16,7 +16,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       <TopBar />
       <div className="app-content">
         <FileBar position="left" />
-        <ResizablePanelGroup direction="horizontal" className="flex-1">
+        <ResizablePanelGroup direction="horizontal" className="main-content">
           <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
             <Sidebar />
           </ResizablePanel>

@@ -12,43 +12,44 @@ export const FileBar = ({ position }: FileBarProps) => {
   const toggleAIAssistant = useAIStore((state) => state.toggleAIAssistant);
 
   return (
-    <div className="w-12 glass-card border-white/10 flex flex-col items-center py-4 gap-4 z-20">
-      <Link to="/files" className="group">
+    <div className={cn(
+      "side-bar glass-card border-white/10 flex flex-col items-center py-4 gap-4",
+      position === 'left' ? 'side-bar-left' : 'side-bar-right'
+    )}>
+      <Link to="/files">
         <Button 
           variant="ghost" 
           size="icon"
-          className="sidebar-button"
+          className="nav-button"
         >
           <File className="h-4 w-4" />
         </Button>
       </Link>
       
-      <div className="group">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={toggleAIAssistant}
-          className="sidebar-button"
-        >
-          <Bot className="h-4 w-4" />
-        </Button>
-      </div>
+      <Button 
+        variant="ghost" 
+        size="icon"
+        onClick={toggleAIAssistant}
+        className="nav-button"
+      >
+        <Bot className="h-4 w-4" />
+      </Button>
       
-      <Link to="/media" className="group">
+      <Link to="/media">
         <Button 
           variant="ghost" 
           size="icon"
-          className="sidebar-button"
+          className="nav-button"
         >
           <Image className="h-4 w-4" />
         </Button>
       </Link>
       
-      <Link to="/settings" className="group">
+      <Link to="/settings">
         <Button 
           variant="ghost" 
           size="icon"
-          className="sidebar-button"
+          className="nav-button"
         >
           <Settings className="h-4 w-4" />
         </Button>

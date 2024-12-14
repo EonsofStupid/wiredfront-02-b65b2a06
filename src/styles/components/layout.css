@@ -7,29 +7,55 @@
     @apply flex-1 flex overflow-hidden relative;
   }
 
-  .sidebar-button {
+  /* Frame elements */
+  .frame-element {
+    @apply fixed z-20;
+  }
+
+  .top-bar {
+    @apply frame-element top-0 left-0 right-0 h-16;
+  }
+
+  .side-bar {
+    @apply frame-element top-16 bottom-8 w-12;
+  }
+
+  .side-bar-left {
+    @apply left-0;
+  }
+
+  .side-bar-right {
+    @apply right-0;
+  }
+
+  .status-bar {
+    @apply frame-element bottom-0 left-0 right-0 h-8;
+  }
+
+  /* Main content area */
+  .main-content {
+    @apply ml-12 mr-12 mt-16 mb-8 flex-1 overflow-auto;
+  }
+
+  /* Button effects - consistent across all bars */
+  .nav-button {
     @apply relative transition-all duration-300 
-           hover:scale-110 hover:translate-y-[-2px]
-           cursor-pointer;
+           hover:scale-110 hover:-translate-y-0.5
+           focus:outline-none focus:ring-2 focus:ring-neon-blue/50;
   }
 
-  .cyber-button {
-    @apply relative transition-all duration-300 hover:scale-110;
-  }
-
-  .cyber-button::before {
+  .nav-button::before {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-t from-neon-blue via-neon-pink to-neon-violet opacity-0 transition-all duration-300;
-    transform: translateY(100%);
+    @apply absolute inset-0 bg-gradient-to-t from-neon-blue via-neon-pink to-neon-violet 
+           opacity-0 transition-opacity duration-300 rounded-md;
   }
 
-  .cyber-button:hover::before {
+  .nav-button:hover::before {
     @apply opacity-20;
-    transform: translateY(0);
   }
 
-  .cyber-button:hover {
-    @apply animate-float shadow-lg;
+  .nav-button:hover {
+    @apply shadow-lg;
     box-shadow: 0 0 20px theme('colors.neon.blue'),
                 0 0 40px theme('colors.neon.pink');
   }
