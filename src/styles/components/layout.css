@@ -10,28 +10,32 @@
   .sidebar-button {
     @apply relative transition-all duration-300 
            hover:scale-110 hover:translate-y-[-2px]
-           group cursor-pointer;
+           cursor-pointer;
   }
 
-  .sidebar-button::before {
-    @apply content-[''] absolute inset-0 
-           bg-gradient-to-t from-neon-blue via-neon-pink to-neon-violet 
-           opacity-0 transition-all duration-300 
-           origin-bottom scale-y-0;
+  /* Add group class separately */
+  .sidebar-button-container {
+    @apply group;
+  }
+
+  .cyber-button {
+    @apply relative transition-all duration-300 hover:scale-110;
+  }
+
+  .cyber-button::before {
     content: '';
+    @apply absolute inset-0 bg-gradient-to-t from-neon-blue via-neon-pink to-neon-violet opacity-0 transition-all duration-300;
+    transform: translateY(100%);
   }
 
-  .sidebar-button:hover::before {
-    @apply opacity-20 scale-y-100;
+  .cyber-button:hover::before {
+    @apply opacity-20;
+    transform: translateY(0);
   }
 
-  .sidebar-button svg {
-    @apply transition-all duration-300 relative z-10;
+  .cyber-button:hover {
+    @apply animate-float shadow-lg;
+    box-shadow: 0 0 20px theme('colors.neon.blue'),
+                0 0 40px theme('colors.neon.pink');
   }
-
-  .sidebar-button:hover svg {
-    @apply text-neon-blue transform scale-110;
-  }
-
-  /* ... keep existing code */
 }

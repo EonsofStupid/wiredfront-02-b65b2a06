@@ -13,7 +13,7 @@ export const FileBar = ({ position }: FileBarProps) => {
 
   return (
     <div className="w-12 glass-card border-white/10 flex flex-col items-center py-4 gap-4 z-20">
-      <Link to="/files">
+      <Link to="/files" className="sidebar-button-container">
         <Button 
           variant="ghost" 
           size="icon"
@@ -23,16 +23,18 @@ export const FileBar = ({ position }: FileBarProps) => {
         </Button>
       </Link>
       
-      <Button 
-        variant="ghost" 
-        size="icon"
-        onClick={toggleAIAssistant}
-        className="sidebar-button"
-      >
-        <Bot className="h-4 w-4" />
-      </Button>
+      <div className="sidebar-button-container">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={toggleAIAssistant}
+          className="sidebar-button"
+        >
+          <Bot className="h-4 w-4" />
+        </Button>
+      </div>
       
-      <Link to="/media">
+      <Link to="/media" className="sidebar-button-container">
         <Button 
           variant="ghost" 
           size="icon"
@@ -42,7 +44,7 @@ export const FileBar = ({ position }: FileBarProps) => {
         </Button>
       </Link>
       
-      <Link to="/settings">
+      <Link to="/settings" className="sidebar-button-container">
         <Button 
           variant="ghost" 
           size="icon"
