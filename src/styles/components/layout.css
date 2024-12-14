@@ -13,11 +13,6 @@
            cursor-pointer;
   }
 
-  /* Add group class separately */
-  .sidebar-button-container {
-    @apply group;
-  }
-
   .cyber-button {
     @apply relative transition-all duration-300 hover:scale-110;
   }

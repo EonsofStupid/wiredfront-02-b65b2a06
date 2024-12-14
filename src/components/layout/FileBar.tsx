@@ -13,7 +13,7 @@ export const FileBar = ({ position }: FileBarProps) => {
 
   return (
     <div className="w-12 glass-card border-white/10 flex flex-col items-center py-4 gap-4 z-20">
-      <Link to="/files" className="sidebar-button-container">
+      <Link to="/files" className="group">
         <Button 
           variant="ghost" 
           size="icon"
@@ -23,7 +23,7 @@ export const FileBar = ({ position }: FileBarProps) => {
         </Button>
       </Link>
       
-      <div className="sidebar-button-container">
+      <div className="group">
         <Button 
           variant="ghost" 
           size="icon"
@@ -34,7 +34,7 @@ export const FileBar = ({ position }: FileBarProps) => {
         </Button>
       </div>
       
-      <Link to="/media" className="sidebar-button-container">
+      <Link to="/media" className="group">
         <Button 
           variant="ghost" 
           size="icon"
@@ -44,7 +44,7 @@ export const FileBar = ({ position }: FileBarProps) => {
         </Button>
       </Link>
       
-      <Link to="/settings" className="sidebar-button-container">
+      <Link to="/settings" className="group">
         <Button 
           variant="ghost" 
           size="icon"
