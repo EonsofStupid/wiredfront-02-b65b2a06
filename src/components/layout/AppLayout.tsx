@@ -3,6 +3,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { FileBar } from "@/components/layout/FileBar";
 import { StatusBar } from "@/components/layout/StatusBar";
 import { TopBar } from "@/components/layout/TopBar";
+import { AIAssistant } from "@/components/ai-elements/AIAssistant";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ interface AppLayoutProps {
 export const AppLayout = ({ children }: AppLayoutProps) => {
   return (
     <div className="app-layout">
+      <AIAssistant />
       <TopBar />
       <div className="app-content">
         <FileBar position="left" />
