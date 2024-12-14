@@ -7,26 +7,31 @@
     @apply flex-1 flex overflow-hidden relative;
   }
 
-  .top-bar {
-    @apply sticky top-0 z-50 w-full;
+  .sidebar-button {
+    @apply relative transition-all duration-300 
+           hover:scale-110 hover:translate-y-[-2px]
+           group cursor-pointer;
   }
 
-  .status-bar {
-    @apply sticky bottom-0 z-50 w-full;
+  .sidebar-button::before {
+    @apply content-[''] absolute inset-0 
+           bg-gradient-to-t from-neon-blue via-neon-pink to-neon-violet 
+           opacity-0 transition-all duration-300 
+           origin-bottom scale-y-0;
+    content: '';
   }
 
-  .sidebar {
-    @apply h-full overflow-y-auto;
+  .sidebar-button:hover::before {
+    @apply opacity-20 scale-y-100;
   }
 
-  .main-content {
-    @apply flex-1 overflow-y-auto;
+  .sidebar-button svg {
+    @apply transition-all duration-300 relative z-10;
   }
 
-  .grid-bg {
-    background-size: 50px 50px;
-    background-image: 
-      linear-gradient(to right, theme('colors.neon.blue/0.1') 1px, transparent 1px),
-      linear-gradient(to bottom, theme('colors.neon.pink/0.1') 1px, transparent 1px);
+  .sidebar-button:hover svg {
+    @apply text-neon-blue transform scale-110;
   }
+
+  /* ... keep existing code */
 }

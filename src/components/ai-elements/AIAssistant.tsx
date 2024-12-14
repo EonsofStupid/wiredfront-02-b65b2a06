@@ -57,7 +57,7 @@ export const AIAssistant = () => {
   };
 
   return (
-    <div ref={constraintsRef} className="fixed inset-0 pointer-events-none">
+    <div ref={constraintsRef} className="fixed inset-0 pointer-events-none z-[100]">
       <AnimatePresence>
         <motion.div
           drag
@@ -70,46 +70,40 @@ export const AIAssistant = () => {
             x: position.x,
             y: position.y,
             scale: isDragging ? 1.02 : 1,
-            backgroundColor: isDragging ? '#b0f542' : 'transparent',
           }}
           transition={{
             type: "spring",
             stiffness: 300,
             damping: 30
           }}
-          className={`fixed bottom-8 right-8 w-[450px] pointer-events-auto z-50
-            ${isMinimized ? 'h-auto' : 'h-[600px]'}`}
+          className={`fixed bottom-8 right-8 w-[450px] pointer-events-auto
+            glass-card neon-border shadow-xl overflow-hidden rounded-lg
+            transition-all duration-300 ${isMinimized ? 'h-auto' : 'h-[600px]'}`}
         >
-          <div 
-            className={`ai-assistant glass-card neon-border w-full h-full overflow-hidden rounded-lg shadow-xl transition-all duration-300
-              ${isDragging ? 'shadow-[0_0_30px_rgba(176,245,66,0.3)]' : ''}`}
-          >
-            <div className="cursor-move bg-dark-lighter/30 hover:bg-dark-lighter/50 h-6" />
-            
-            <AIHeader
-              isMinimized={isMinimized}
-              onMinimize={() => setIsMinimized(!isMinimized)}
-              onClose={() => setIsOpen(false)}
-            />
+          <div className="ai-assistant__handle" />
+          <AIHeader
+            isMinimized={isMinimized}
+            onMinimize={() => setIsMinimized(!isMinimized)}
+            onClose={() => setIsOpen(false)}
+          />
 
-            {!isMinimized && (
-              <div className="custom-scrollbar p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto">
-                <AIModeSelector mode={mode} onModeChange={setMode} />
-                <AIProviderSelector
-                  provider={provider}
-                  onProviderChange={setProvider}
-                />
-                <AIInputForm
-                  input={input}
-                  mode={mode}
-                  isProcessing={isProcessing}
-                  onInputChange={setInput}
-                  onSubmit={handleSubmit}
-                />
-                <AIResponse response={response} />
-              </div>
-            )}
-          </div>
+          {!isMinimized && (
+            <div className="custom-scrollbar p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto">
+              <AIModeSelector mode={mode} onModeChange={setMode} />
+              <AIProviderSelector
+                provider={provider}
+                onProviderChange={setProvider}
+              />
+              <AIInputForm
+                input={input}
+                mode={mode}
+                isProcessing={isProcessing}
+                onInputChange={setInput}
+                onSubmit={handleSubmit}
+              />
+              <AIResponse response={response} />
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
     </div>

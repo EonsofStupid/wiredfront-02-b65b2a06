@@ -9,36 +9,36 @@ interface FileBarProps {
 }
 
 export const FileBar = ({ position }: FileBarProps) => {
-  const toggleAI = useAIStore((state) => state.toggleAIAssistant);
+  const toggleAIAssistant = useAIStore((state) => state.toggleAIAssistant);
 
   return (
-    <div className="w-12 glass-card border-white/10 flex flex-col items-center py-4 gap-4 z-10">
+    <div className="w-12 glass-card border-white/10 flex flex-col items-center py-4 gap-4 z-20">
       <Link to="/files">
         <Button 
           variant="ghost" 
           size="icon"
-          className="cyber-button group relative overflow-hidden"
+          className="sidebar-button"
         >
-          <File className="h-4 w-4 transition-all duration-300 group-hover:text-neon-blue" />
+          <File className="h-4 w-4" />
         </Button>
       </Link>
       
       <Button 
         variant="ghost" 
         size="icon"
-        onClick={toggleAI}
-        className="cyber-button group relative overflow-hidden"
+        onClick={toggleAIAssistant}
+        className="sidebar-button"
       >
-        <Bot className="h-4 w-4 transition-all duration-300 group-hover:text-neon-pink" />
+        <Bot className="h-4 w-4" />
       </Button>
       
       <Link to="/media">
         <Button 
           variant="ghost" 
           size="icon"
-          className="cyber-button group relative overflow-hidden"
+          className="sidebar-button"
         >
-          <Image className="h-4 w-4 transition-all duration-300 group-hover:text-neon-violet" />
+          <Image className="h-4 w-4" />
         </Button>
       </Link>
       
@@ -46,9 +46,9 @@ export const FileBar = ({ position }: FileBarProps) => {
         <Button 
           variant="ghost" 
           size="icon"
-          className="cyber-button group relative overflow-hidden"
+          className="sidebar-button"
         >
-          <Settings className="h-4 w-4 transition-all duration-300 group-hover:text-neon-teal" />
+          <Settings className="h-4 w-4" />
         </Button>
       </Link>
     </div>

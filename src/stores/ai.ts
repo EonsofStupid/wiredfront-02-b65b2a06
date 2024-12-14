@@ -10,6 +10,7 @@ interface AIState {
   setProvider: (provider: AIProvider) => void;
   setProcessing: (processing: boolean) => void;
   setLastResponse: (response: string | null) => void;
+  toggleAIAssistant: () => void;
 }
 
 export const useAIStore = create<AIState>((set) => ({
@@ -21,4 +22,5 @@ export const useAIStore = create<AIState>((set) => ({
   setProvider: (provider) => set({ currentProvider: provider }),
   setProcessing: (processing) => set({ isProcessing: processing }),
   setLastResponse: (response) => set({ lastResponse: response }),
+  toggleAIAssistant: () => set((state) => ({ isEnabled: !state.isEnabled })),
 }));
