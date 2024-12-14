@@ -16,6 +16,13 @@
   @apply p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto;
 }
 
+/* Dragging state */
+.ai-assistant--dragging {
+  @apply opacity-90 scale-[0.98];
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.2));
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
 /* Custom Scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
@@ -70,8 +77,4 @@
 /* Modifiers */
 .ai-assistant--minimized {
   @apply h-auto;
-}
-
-.ai-assistant--dragging {
-  @apply opacity-90 scale-[0.98];
 }

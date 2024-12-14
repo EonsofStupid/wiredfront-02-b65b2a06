@@ -78,7 +78,8 @@ export const AIAssistant = () => {
           }}
           className={`fixed bottom-8 right-8 w-[450px] pointer-events-auto
             glass-card neon-border shadow-xl overflow-hidden rounded-lg
-            transition-all duration-300 ${isMinimized ? 'h-auto' : 'h-[600px]'}`}
+            transition-all duration-300 ${isMinimized ? 'h-auto' : 'h-[600px]'}
+            ${isDragging ? 'ai-assistant--dragging' : ''}`}
         >
           <div className="ai-assistant__handle" />
           <AIHeader
