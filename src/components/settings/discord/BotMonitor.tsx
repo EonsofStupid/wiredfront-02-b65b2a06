@@ -3,10 +3,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Activity, CheckCircle, Clock, Download } from "lucide-react";
+import { Activity, CheckCircle, Clock } from "lucide-react";
 import { BotLogViewer } from "./BotLogViewer";
 import type { LogEntry, BotStatus } from "@/types/discord";
-import { Button } from "@/components/ui/button";
 
 export const BotMonitor = () => {
   const { toast } = useToast();
@@ -59,9 +58,9 @@ export const BotMonitor = () => {
           .from('discord_bot_config')
           .select('is_active, updated_at, total_messages')
           .eq('user_id', session.user.id)
-          .maybeSingle();
+          .single();
 
-        if (error) throw error;
+        if (error && error.code !== 'PGRST116') throw error;
 
         if (data) {
           setStatus({
@@ -134,7 +133,7 @@ export const BotMonitor = () => {
         </div>
         <Badge 
           variant={status.isActive ? "default" : "destructive"}
-          className={status.isActive ? "bg-green-500/20 text-green-500 backdrop-blur-sm border border-green-500/50" : ""}
+          className={status.isActive ? "bg-[#34e8eb]/20 text-[#34e8eb] backdrop-blur-sm border border-[#34e8eb]/50" : ""}
         >
           {status.isActive ? (
             <CheckCircle className="h-4 w-4 mr-1" />

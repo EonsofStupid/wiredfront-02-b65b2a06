@@ -16,7 +16,7 @@ export const BotLogViewer = ({ logs }: BotLogViewerProps) => {
       case 'warning':
         return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
       default:
-        return <Activity className="h-4 w-4 text-blue-500" />;
+        return <Activity className="h-4 w-4 text-[#34e8eb]" />;
     }
   };
 
