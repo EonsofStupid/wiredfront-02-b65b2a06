@@ -49,7 +49,7 @@ export const BotAIConfig = () => {
       }
 
       if (data) {
-        const metadata = (data.metadata || {}) as AIConfigMetadata;
+        const metadata = (data.metadata || {}) as unknown as AIConfigMetadata;
         setConfig(prev => ({
           ...prev,
           primaryProvider: data.provider as AIProvider,
