@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Bot, MessageSquare, Trophy, Settings } from "lucide-react";
+import { Bot, MessageSquare, Trophy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -19,6 +19,7 @@ const Dashboard = () => {
     totalAchievements: 0,
     serverCount: 0
   });
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -43,11 +44,21 @@ const Dashboard = () => {
           description: "Failed to load bot statistics",
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchBotStats();
   }, [toast]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn(
@@ -112,18 +123,6 @@ const Dashboard = () => {
           </div>
         </Card>
       </div>
-
-      {!isMobile && (
-        <div className="mt-6">
-          <Link 
-            to="/settings"
-            className="inline-flex items-center px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors"
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            Configure Bot
-          </Link>
-        </div>
-      )}
     </div>
   );
 };

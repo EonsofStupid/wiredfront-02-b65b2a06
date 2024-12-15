@@ -11,12 +11,19 @@ import { APIKeySettings } from "@/components/settings/APIKeySettings";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export default function Settings() {
+  const isMobile = useIsMobile();
+
   return (
     <QueryClientProvider client={queryClient}>
       <SettingsProvider>
-        <div className="container mx-auto py-6 space-y-8 min-h-full bg-gradient-to-b from-[#1A1F2C] to-[#2D3344]">
+        <div className={cn(
+          "space-y-8 min-h-full bg-gradient-to-b from-[#1A1F2C] to-[#2D3344]",
+          isMobile ? "p-0" : "container mx-auto py-6"
+        )}>
           <div className="glass-card p-6 border border-white/10 shadow-xl">
             <h1 className="text-3xl font-bold mb-2 gradient-text animate-gradient-x">Settings</h1>
             <p className="text-muted-foreground">
@@ -25,7 +32,10 @@ export default function Settings() {
           </div>
 
           <Tabs defaultValue="setup" className="space-y-6">
-            <TabsList className="glass-card p-1 space-x-2">
+            <TabsList className={cn(
+              "glass-card p-1",
+              isMobile ? "flex flex-wrap gap-2" : "space-x-2"
+            )}>
               <TabsTrigger value="setup">Setup Wizard</TabsTrigger>
               <TabsTrigger value="project">Project Setup</TabsTrigger>
               <TabsTrigger value="general">General</TabsTrigger>
