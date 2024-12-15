@@ -65,7 +65,7 @@ export const BotMonitor = () => {
       if (recentLogs) {
         setLogs(recentLogs.map(log => ({
           timestamp: log.created_at,
-          type: log.level as 'info' | 'error' | 'warning',
+          type: log.level,
           message: log.message
         })));
       }
@@ -107,7 +107,7 @@ export const BotMonitor = () => {
       }, (payload) => {
         setLogs(prev => [{
           timestamp: payload.new.created_at,
-          type: payload.new.level as 'info' | 'error' | 'warning',
+          type: payload.new.level,
           message: payload.new.message
         }, ...prev.slice(0, 49)]); // Keep last 50 logs
       })

@@ -174,6 +174,33 @@ export type Database = {
         }
         Relationships: []
       }
+      discord_bot_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          level: Database["public"]["Enums"]["log_level"]
+          message: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          level?: Database["public"]["Enums"]["log_level"]
+          message: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          level?: Database["public"]["Enums"]["log_level"]
+          message?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       discord_quotes: {
         Row: {
           author: string | null
@@ -324,6 +351,7 @@ export type Database = {
         | "anthropic"
         | "mistral"
         | "cohere"
+      log_level: "info" | "warning" | "error"
       quote_type: "idiot" | "dope"
       task_type: "code" | "analysis" | "automation" | "data"
     }
