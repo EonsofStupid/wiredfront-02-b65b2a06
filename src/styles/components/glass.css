@@ -1,6 +1,6 @@
 @layer components {
   .glass-card {
-    @apply bg-[#1A1F2C]/30 backdrop-blur-md border border-white/10 rounded-xl shadow-xl;
+    @apply bg-dark-lighter/30 backdrop-blur-md border border-white/10 rounded-xl shadow-xl;
     position: relative;
     overflow: hidden;
   }
@@ -32,7 +32,9 @@
   }
 
   .neon-border {
-    @apply relative rounded-xl overflow-hidden;
+    @apply relative rounded-xl overflow-hidden border border-white/10;
+    box-shadow: 0 0 10px theme('colors.neon.blue'),
+                0 0 20px theme('colors.neon.pink');
   }
 
   .neon-border::before {
@@ -48,24 +50,98 @@
     animation: rotate 4s linear infinite;
   }
 
-  .neon-border::after {
-    content: '';
-    position: absolute;
-    inset: 2px;
-    background: theme('colors.dark.DEFAULT');
-    border-radius: inherit;
-    z-index: 0;
+  .animated-gradient-bg {
+    @apply fixed inset-0 -z-10;
+    background: linear-gradient(
+      45deg,
+      #34eba8,
+      #eb34c9,
+      #ebeb34,
+      #b0ff42,
+      #38ffca,
+      #38d7ff,
+      #eb38ff,
+      #e800aa,
+      #9900ff
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
   }
 
-  .neon-border > * {
-    position: relative;
-    z-index: 1;
+  .twinkling-stars {
+    @apply fixed inset-0 -z-20;
+    background-image: radial-gradient(
+      1px 1px at 20px 30px,
+      theme('colors.white') 50%,
+      transparent
+    ),
+    radial-gradient(
+      1px 1px at 40px 70px,
+      theme('colors.white') 50%,
+      transparent
+    ),
+    radial-gradient(
+      1px 1px at 50px 160px,
+      theme('colors.white') 50%,
+      transparent
+    ),
+    radial-gradient(
+      1px 1px at 90px 40px,
+      theme('colors.white') 50%,
+      transparent
+    );
+    background-size: 200px 200px;
+    animation: twinkle 2s ease-in-out infinite alternate;
   }
 
-  .glass-input {
-    @apply bg-[#1A1F2C]/30 backdrop-blur-md border border-white/10 rounded-xl 
-           text-white placeholder-white/50 focus:ring-2 focus:ring-neon-blue/50
-           focus:border-transparent transition-all duration-300;
+  .floating-squares {
+    @apply fixed inset-0 -z-30 overflow-hidden pointer-events-none;
+  }
+
+  .floating-square {
+    @apply absolute bg-white/5 backdrop-blur-sm rounded-lg;
+    animation: float 20s linear infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes twinkle {
+    0%, 100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate(100px, 100px) rotate(180deg);
+    }
+    100% {
+      transform: translate(0, 0) rotate(360deg);
+    }
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /* Custom Scrollbar Styles */
