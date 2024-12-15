@@ -1,25 +1,12 @@
-import { useState } from "react";
-import { RefreshCw, Settings } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { RefreshCw } from "lucide-react";
 
 interface Server {
   id: string;
   name: string;
   memberCount: number;
+  isActive: boolean;
 }
 
 interface BotServerManagerProps {
@@ -28,68 +15,38 @@ interface BotServerManagerProps {
 }
 
 export const BotServerManager = ({
-  servers = [],
+  servers,
   onRefreshServers,
 }: BotServerManagerProps) => {
-  const [selectedServer, setSelectedServer] = useState<Server | null>(null);
-
   return (
-    <Card className="p-4">
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="font-medium">Connected Servers</h3>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onRefreshServers}
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Update the list of connected servers</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+    <Card className="p-4 space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium">Connected Servers</h3>
+        <Button variant="outline" size="sm" onClick={onRefreshServers}>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
+      </div>
 
-        <div className="divide-y">
-          {servers.map((server) => (
-            <div
-              key={server.id}
-              className="py-3 flex justify-between items-center"
-            >
-              <div>
-                <p className="font-medium">{server.name}</p>
-                <p className="text-sm text-gray-500">
-                  {server.memberCount} members
-                </p>
-              </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedServer(server)}
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    Configure
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Configure {server.name}</DialogTitle>
-                  </DialogHeader>
-                  {/* Server-specific settings will go here */}
-                </DialogContent>
-              </Dialog>
+      <div className="space-y-2">
+        {servers.map((server) => (
+          <div
+            key={server.id}
+            className="flex items-center justify-between p-3 border rounded"
+          >
+            <div>
+              <h4 className="font-medium">{server.name}</h4>
+              <p className="text-sm text-gray-500">
+                {server.memberCount} members
+              </p>
             </div>
-          ))}
-        </div>
+            <div
+              className={`h-2 w-2 rounded-full ${
+                server.isActive ? "bg-green-500" : "bg-gray-400"
+              }`}
+            />
+          </div>
+        ))}
       </div>
     </Card>
   );
