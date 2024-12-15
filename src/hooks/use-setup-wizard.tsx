@@ -64,14 +64,19 @@ export const useSetupWizard = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      // Transform the config to match Supabase's expected types
+      const supabaseData = {
+        user_id: session.user.id,
+        current_step: newConfig.current_step,
+        setup_status: newConfig.setup_status,
+        environment_config: newConfig.environment_config ? JSON.parse(JSON.stringify(newConfig.environment_config)) : {},
+        ai_config: newConfig.ai_config ? JSON.parse(JSON.stringify(newConfig.ai_config)) : {},
+        bot_config: newConfig.bot_config ? JSON.parse(JSON.stringify(newConfig.bot_config)) : {}
+      };
+
       const { error } = await supabase
         .from('setup_wizard_config')
-        .upsert({
-          user_id: session.user.id,
-          ...config,
-          ...newConfig,
-          updated_at: new Date().toISOString()
-        });
+        .upsert(supabaseData);
 
       if (error) throw error;
 
