@@ -6,12 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import type { AIProvider, AISettingsData } from "@/types/ai";
+import type { AIProvider } from "@/types/ai";
 
 interface AIConfigMetadata {
   fallbackEnabled: boolean;
   offlineMode: boolean;
   routingStrategy: string;
+  customFunctions?: {
+    name: string;
+    description: string;
+    isEnabled: boolean;
+  }[];
 }
 
 export const BotAIConfig = () => {
@@ -21,42 +26,83 @@ export const BotAIConfig = () => {
     fallbackEnabled: boolean;
     offlineMode: boolean;
     routingStrategy: string;
+    customFunctions: Array<{
+      name: string;
+      description: string;
+      isEnabled: boolean;
+    }>;
   }>({
     primaryProvider: "gemini",
     fallbackEnabled: false,
     offlineMode: false,
-    routingStrategy: "cost-effective"
+    routingStrategy: "cost-effective",
+    customFunctions: [
+      {
+        name: "welcomeMessage",
+        description: "Send a welcome message to new members",
+        isEnabled: true
+      },
+      {
+        name: "moderationFilter",
+        description: "Filter inappropriate content",
+        isEnabled: true
+      },
+      {
+        name: "customCommands",
+        description: "Enable user-defined commands",
+        isEnabled: false
+      }
+    ]
   });
 
   useEffect(() => {
     const fetchAIConfig = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          toast({
+            variant: "destructive",
+            title: "Authentication required",
+            description: "Please sign in to manage bot settings"
+          });
+          return;
+        }
 
-      const { data, error } = await supabase
-        .from('ai_settings')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
+        const { data, error } = await supabase
+          .from('ai_settings')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
 
-      if (error && error.code !== 'PGRST116') {
+        if (error) {
+          if (error.code !== 'PGRST116') {
+            toast({
+              variant: "destructive",
+              title: "Error fetching AI configuration",
+              description: error.message
+            });
+          }
+          return;
+        }
+
+        if (data) {
+          const metadata = (data.metadata || {}) as unknown as AIConfigMetadata;
+          setConfig(prev => ({
+            ...prev,
+            primaryProvider: data.provider as AIProvider,
+            fallbackEnabled: metadata.fallbackEnabled || false,
+            offlineMode: metadata.offlineMode || false,
+            routingStrategy: metadata.routingStrategy || "cost-effective",
+            customFunctions: metadata.customFunctions || prev.customFunctions
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching AI config:', error);
         toast({
           variant: "destructive",
-          title: "Error fetching AI configuration",
-          description: error.message
+          title: "Error",
+          description: "Failed to load AI configuration"
         });
-        return;
-      }
-
-      if (data) {
-        const metadata = (data.metadata || {}) as unknown as AIConfigMetadata;
-        setConfig(prev => ({
-          ...prev,
-          primaryProvider: data.provider as AIProvider,
-          fallbackEnabled: metadata.fallbackEnabled || false,
-          offlineMode: metadata.offlineMode || false,
-          routingStrategy: metadata.routingStrategy || "cost-effective"
-        }));
       }
     };
 
@@ -64,34 +110,45 @@ export const BotAIConfig = () => {
   }, [toast]);
 
   const handleSaveConfig = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
 
-    const { error } = await supabase
-      .from('ai_settings')
-      .upsert({
-        user_id: session.user.id,
-        provider: config.primaryProvider,
-        metadata: {
-          fallbackEnabled: config.fallbackEnabled,
-          offlineMode: config.offlineMode,
-          routingStrategy: config.routingStrategy
-        }
-      } as AISettingsData);
+      const { error } = await supabase
+        .from('ai_settings')
+        .upsert({
+          user_id: session.user.id,
+          provider: config.primaryProvider,
+          metadata: {
+            fallbackEnabled: config.fallbackEnabled,
+            offlineMode: config.offlineMode,
+            routingStrategy: config.routingStrategy,
+            customFunctions: config.customFunctions
+          }
+        });
 
-    if (error) {
+      if (error) throw error;
+
+      toast({
+        title: "Configuration saved",
+        description: "AI settings have been updated successfully."
+      });
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error saving configuration",
         description: error.message
       });
-      return;
     }
+  };
 
-    toast({
-      title: "Configuration saved",
-      description: "AI settings have been updated successfully."
-    });
+  const toggleFunction = (functionName: string) => {
+    setConfig(prev => ({
+      ...prev,
+      customFunctions: prev.customFunctions.map(fn => 
+        fn.name === functionName ? { ...fn, isEnabled: !fn.isEnabled } : fn
+      )
+    }));
   };
 
   return (
@@ -103,7 +160,7 @@ export const BotAIConfig = () => {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="space-y-2">
           <Label>Primary AI Provider</Label>
           <Select
@@ -121,30 +178,32 @@ export const BotAIConfig = () => {
           </Select>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label>Enable Fallback Providers</Label>
-            <p className="text-sm text-muted-foreground">
-              Automatically switch to alternative providers if primary fails
-            </p>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Enable Fallback Providers</Label>
+              <p className="text-sm text-muted-foreground">
+                Automatically switch to alternative providers if primary fails
+              </p>
+            </div>
+            <Switch
+              checked={config.fallbackEnabled}
+              onCheckedChange={(checked) => setConfig(prev => ({ ...prev, fallbackEnabled: checked }))}
+            />
           </div>
-          <Switch
-            checked={config.fallbackEnabled}
-            onCheckedChange={(checked) => setConfig(prev => ({ ...prev, fallbackEnabled: checked }))}
-          />
-        </div>
 
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label>Offline Mode</Label>
-            <p className="text-sm text-muted-foreground">
-              Use local models when internet is unavailable
-            </p>
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Offline Mode</Label>
+              <p className="text-sm text-muted-foreground">
+                Use local models when internet is unavailable
+              </p>
+            </div>
+            <Switch
+              checked={config.offlineMode}
+              onCheckedChange={(checked) => setConfig(prev => ({ ...prev, offlineMode: checked }))}
+            />
           </div>
-          <Switch
-            checked={config.offlineMode}
-            onCheckedChange={(checked) => setConfig(prev => ({ ...prev, offlineMode: checked }))}
-          />
         </div>
 
         <div className="space-y-2">
@@ -162,6 +221,22 @@ export const BotAIConfig = () => {
               <SelectItem value="balanced">Balanced</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="font-medium">Bot Functions</h4>
+          {config.customFunctions.map((fn) => (
+            <div key={fn.name} className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>{fn.name}</Label>
+                <p className="text-sm text-muted-foreground">{fn.description}</p>
+              </div>
+              <Switch
+                checked={fn.isEnabled}
+                onCheckedChange={() => toggleFunction(fn.name)}
+              />
+            </div>
+          ))}
         </div>
 
         <Button onClick={handleSaveConfig} className="w-full">
