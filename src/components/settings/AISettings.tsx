@@ -1,10 +1,40 @@
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AIPersonalitySettings } from "./ai/AIPersonalitySettings";
 import { AITrainingSettings } from "./ai/AITrainingSettings";
 import { AIFeatureSettings } from "./ai/AIFeatureSettings";
 import { AIProviderSelector } from "../ai-elements/AIProviderSelector";
+import { supabase } from "@/integrations/supabase/client";
+import type { AIProvider } from "@/types/ai";
 
 export function AISettings() {
+  const [availableProviders, setAvailableProviders] = useState<AIProvider[]>([]);
+
+  useEffect(() => {
+    fetchAvailableProviders();
+  }, []);
+
+  const fetchAvailableProviders = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data, error } = await supabase
+        .from('ai_settings')
+        .select('provider')
+        .eq('user_id', session.user.id)
+        .eq('is_active', true)
+        .not('api_key', 'is', null);
+
+      if (error) throw error;
+
+      const providers = data.map(item => item.provider as AIProvider);
+      setAvailableProviders(providers);
+    } catch (error) {
+      console.error('Error fetching available providers:', error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -38,6 +68,7 @@ export function AISettings() {
           <AIProviderSelector
             provider="gemini"
             onProviderChange={() => {}}
+            availableProviders={availableProviders}
           />
         </TabsContent>
       </Tabs>
