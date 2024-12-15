@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import { AppLayout } from "@/components/layout/AppLayout";
+import { MobileAwareLayout } from "@/components/layout/MobileAppLayout";
 import Dashboard from "@/pages/Dashboard";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
@@ -60,7 +60,7 @@ function App() {
           element={
             isAuthenticated ? (
               <SidebarProvider>
-                <AppLayout />
+                <MobileAwareLayout />
               </SidebarProvider>
             ) : (
               <Navigate to="/login" />
