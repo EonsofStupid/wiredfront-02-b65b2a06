@@ -100,8 +100,13 @@ export const TopBar = () => {
             onClick={initiateFileUpload}
             className="nav-button"
           >
-            <File className="h-4 w-4" />
+            <Upload className="h-4 w-4" />
           </Button>
+          <Link to="/files">
+            <Button variant="ghost" size="icon" className="nav-button">
+              <File className="h-4 w-4" />
+            </Button>
+          </Link>
           <Button 
             variant="ghost" 
             size="icon" 
