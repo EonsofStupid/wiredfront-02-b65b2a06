@@ -1,26 +1,11 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-
-interface ProjectConfig {
-  frontend: {
-    typescript: boolean;
-    tailwind: boolean;
-    shadcn: boolean;
-  };
-  backend: {
-    supabase: boolean;
-    redis: boolean;
-  };
-  deployment: {
-    docker: boolean;
-    localSupabase: boolean;
-  };
-}
+import { FrontendConfig } from "./config/FrontendConfig";
+import { BackendConfig } from "./config/BackendConfig";
+import { DeploymentConfig } from "./config/DeploymentConfig";
+import type { ProjectConfig, FrontendConfig as IFrontendConfig, BackendConfig as IBackendConfig, DeploymentConfig as IDeploymentConfig } from "@/types/wizard";
 
 export const ProjectSetup = () => {
   const { toast } = useToast();
@@ -40,12 +25,32 @@ export const ProjectSetup = () => {
     },
   });
 
-  const handleToggle = (section: keyof ProjectConfig, key: string) => {
+  const handleFrontendConfigChange = (key: keyof IFrontendConfig, value: boolean) => {
     setConfig((prev) => ({
       ...prev,
-      [section]: {
-        ...prev[section],
-        [key]: !prev[section][key as keyof typeof prev[typeof section]],
+      frontend: {
+        ...prev.frontend,
+        [key]: value,
+      },
+    }));
+  };
+
+  const handleBackendConfigChange = (key: keyof IBackendConfig, value: boolean) => {
+    setConfig((prev) => ({
+      ...prev,
+      backend: {
+        ...prev.backend,
+        [key]: value,
+      },
+    }));
+  };
+
+  const handleDeploymentConfigChange = (key: keyof IDeploymentConfig, value: boolean) => {
+    setConfig((prev) => ({
+      ...prev,
+      deployment: {
+        ...prev.deployment,
+        [key]: value,
       },
     }));
   };
@@ -94,109 +99,22 @@ export const ProjectSetup = () => {
         </p>
       </div>
 
-      <Card className="p-6 space-y-8">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Frontend Configuration</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>TypeScript</Label>
-                <p className="text-sm text-muted-foreground">
-                  Use TypeScript for type safety
-                </p>
-              </div>
-              <Switch
-                checked={config.frontend.typescript}
-                onCheckedChange={() => handleToggle("frontend", "typescript")}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Tailwind CSS</Label>
-                <p className="text-sm text-muted-foreground">
-                  Include Tailwind for styling
-                </p>
-              </div>
-              <Switch
-                checked={config.frontend.tailwind}
-                onCheckedChange={() => handleToggle("frontend", "tailwind")}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>shadcn/ui</Label>
-                <p className="text-sm text-muted-foreground">
-                  Add shadcn/ui components
-                </p>
-              </div>
-              <Switch
-                checked={config.frontend.shadcn}
-                onCheckedChange={() => handleToggle("frontend", "shadcn")}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Backend Configuration</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Supabase</Label>
-                <p className="text-sm text-muted-foreground">
-                  Use Supabase for backend services
-                </p>
-              </div>
-              <Switch
-                checked={config.backend.supabase}
-                onCheckedChange={() => handleToggle("backend", "supabase")}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Redis Cache</Label>
-                <p className="text-sm text-muted-foreground">
-                  Add Redis for caching
-                </p>
-              </div>
-              <Switch
-                checked={config.backend.redis}
-                onCheckedChange={() => handleToggle("backend", "redis")}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Deployment Options</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Docker Support</Label>
-                <p className="text-sm text-muted-foreground">
-                  Generate Docker configuration
-                </p>
-              </div>
-              <Switch
-                checked={config.deployment.docker}
-                onCheckedChange={() => handleToggle("deployment", "docker")}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Local Supabase</Label>
-                <p className="text-sm text-muted-foreground">
-                  Configure local Supabase instance
-                </p>
-              </div>
-              <Switch
-                checked={config.deployment.localSupabase}
-                onCheckedChange={() => handleToggle("deployment", "localSupabase")}
-              />
-            </div>
-          </div>
-        </div>
-      </Card>
+      <div className="space-y-6">
+        <FrontendConfig 
+          config={config.frontend}
+          onConfigChange={handleFrontendConfigChange}
+        />
+        
+        <BackendConfig
+          config={config.backend}
+          onConfigChange={handleBackendConfigChange}
+        />
+        
+        <DeploymentConfig
+          config={config.deployment}
+          onConfigChange={handleDeploymentConfigChange}
+        />
+      </div>
 
       <div className="flex justify-end">
         <Button onClick={handleSaveConfig}>Save Configuration</Button>

@@ -24,6 +24,28 @@ export interface BotConfig {
   personality?: string;
 }
 
+export interface FrontendConfig {
+  typescript: boolean;
+  tailwind: boolean;
+  shadcn: boolean;
+}
+
+export interface BackendConfig {
+  supabase: boolean;
+  redis: boolean;
+}
+
+export interface DeploymentConfig {
+  docker: boolean;
+  localSupabase: boolean;
+}
+
+export interface ProjectConfig {
+  frontend: FrontendConfig;
+  backend: BackendConfig;
+  deployment: DeploymentConfig;
+}
+
 export interface WizardConfig {
   current_step: number;
   setup_status: SetupStatus;
