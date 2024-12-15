@@ -105,6 +105,36 @@ export type Database = {
         }
         Relationships: []
       }
+      discord_achievements: {
+        Row: {
+          achievement_type: string
+          description: string | null
+          earned_at: string | null
+          id: string
+          server_id: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          achievement_type: string
+          description?: string | null
+          earned_at?: string | null
+          id?: string
+          server_id: string
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          achievement_type?: string
+          description?: string | null
+          earned_at?: string | null
+          id?: string
+          server_id?: string
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       discord_bot_config: {
         Row: {
           bot_token: string | null
@@ -139,6 +169,75 @@ export type Database = {
           name?: string | null
           server_count?: number | null
           total_messages?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      discord_quotes: {
+        Row: {
+          author: string | null
+          content: string
+          created_at: string | null
+          id: string
+          quote_type: Database["public"]["Enums"]["quote_type"]
+          server_id: string
+          tags: string[] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          author?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          quote_type: Database["public"]["Enums"]["quote_type"]
+          server_id: string
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          author?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          quote_type?: Database["public"]["Enums"]["quote_type"]
+          server_id?: string
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      discord_server_config: {
+        Row: {
+          created_at: string | null
+          enabled_features: string[] | null
+          id: string
+          moderation_rules: Json | null
+          prefix: string | null
+          server_id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enabled_features?: string[] | null
+          id?: string
+          moderation_rules?: Json | null
+          prefix?: string | null
+          server_id: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enabled_features?: string[] | null
+          id?: string
+          moderation_rules?: Json | null
+          prefix?: string | null
+          server_id?: string
           updated_at?: string | null
           user_id?: string | null
         }
@@ -225,6 +324,7 @@ export type Database = {
         | "anthropic"
         | "mistral"
         | "cohere"
+      quote_type: "idiot" | "dope"
       task_type: "code" | "analysis" | "automation" | "data"
     }
     CompositeTypes: {
