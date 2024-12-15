@@ -20,7 +20,13 @@ export const DiscordBotSettings = () => {
         .select('*')
         .single();
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+
+      if (!botConfig?.client_id) {
+        throw new Error('Discord client ID not configured');
+      }
 
       // Redirect to Discord OAuth flow
       window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${botConfig.client_id}&permissions=2147483648&scope=bot`;
