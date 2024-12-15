@@ -339,6 +339,45 @@ export type Database = {
         }
         Relationships: []
       }
+      layout_preferences: {
+        Row: {
+          bottom_bar_visible: boolean | null
+          created_at: string | null
+          id: string
+          right_sidebar_open: boolean | null
+          right_sidebar_width: number | null
+          sidebar_open: boolean | null
+          sidebar_width: number | null
+          top_bar_visible: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bottom_bar_visible?: boolean | null
+          created_at?: string | null
+          id?: string
+          right_sidebar_open?: boolean | null
+          right_sidebar_width?: number | null
+          sidebar_open?: boolean | null
+          sidebar_width?: number | null
+          top_bar_visible?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bottom_bar_visible?: boolean | null
+          created_at?: string | null
+          id?: string
+          right_sidebar_open?: boolean | null
+          right_sidebar_width?: number | null
+          sidebar_open?: boolean | null
+          sidebar_width?: number | null
+          top_bar_visible?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

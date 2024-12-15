@@ -10,25 +10,33 @@ import Index from "@/pages/Index";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLayoutStore } from "@/stores";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const initializeLayoutPreferences = useLayoutStore(state => state.initializeLayoutPreferences);
 
   useEffect(() => {
     // Check initial auth state
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAuthenticated(!!session);
+      if (session) {
+        initializeLayoutPreferences();
+      }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
+      if (session) {
+        initializeLayoutPreferences();
+      }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [initializeLayoutPreferences]);
 
   // Show loading state while checking auth
   if (isAuthenticated === null) {
