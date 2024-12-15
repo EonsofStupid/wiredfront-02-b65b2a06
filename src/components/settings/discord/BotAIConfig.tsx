@@ -108,7 +108,7 @@ export const BotAIConfig = () => {
           <Label>Primary AI Provider</Label>
           <Select
             value={config.primaryProvider}
-            onValueChange={(value) => setConfig(prev => ({ ...prev, primaryProvider: value }))}
+            onValueChange={(value: AIProvider) => setConfig(prev => ({ ...prev, primaryProvider: value }))}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select provider" />
