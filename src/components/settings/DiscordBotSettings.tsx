@@ -24,8 +24,8 @@ export const DiscordBotSettings = () => {
 
   const loadBotConfig = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
         toast({
           title: "Authentication Required",
           description: "Please sign in to manage bot settings",
@@ -37,7 +37,7 @@ export const DiscordBotSettings = () => {
       const { data, error } = await supabase
         .from("discord_bot_config")
         .select("*")
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
@@ -50,10 +50,11 @@ export const DiscordBotSettings = () => {
           .from("discord_bot_config")
           .insert({
             client_id: '',
-            user_id: user.id,
+            user_id: session.user.id,
             is_active: false,
             server_count: 0,
-            total_messages: 0
+            total_messages: 0,
+            name: 'My Discord Bot'
           })
           .select()
           .single();
@@ -76,8 +77,8 @@ export const DiscordBotSettings = () => {
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Authentication required");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Authentication required");
 
       if (!botConfig?.bot_token) {
         throw new Error("Bot token is required");
@@ -109,13 +110,13 @@ export const DiscordBotSettings = () => {
 
   const handleUpdateConfig = async (updates: any) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Authentication required");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Authentication required");
 
       const { error } = await supabase
         .from("discord_bot_config")
-        .update({ ...updates, user_id: user.id })
-        .eq('user_id', user.id);
+        .update({ ...updates, user_id: session.user.id })
+        .eq('user_id', session.user.id);
 
       if (error) throw error;
 

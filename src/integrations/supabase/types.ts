@@ -112,6 +112,7 @@ export type Database = {
           created_at: string | null
           id: string
           is_active: boolean | null
+          name: string | null
           server_count: number | null
           total_messages: number | null
           updated_at: string | null
@@ -123,6 +124,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          name?: string | null
           server_count?: number | null
           total_messages?: number | null
           updated_at?: string | null
@@ -134,6 +136,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          name?: string | null
           server_count?: number | null
           total_messages?: number | null
           updated_at?: string | null
