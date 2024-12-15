@@ -68,9 +68,9 @@ export const BotLogViewer = ({ logs }: BotLogViewerProps) => {
                     <p className="text-xs text-muted-foreground">
                       {new Date(log.created_at).toLocaleString()}
                     </p>
-                    {log.metadata && (
+                    {log.metadata && typeof log.metadata === 'object' && 'source' in log.metadata && (
                       <Badge variant="outline" className="text-xs">
-                        {log.metadata.source || 'system'}
+                        {String(log.metadata.source || 'system')}
                       </Badge>
                     )}
                   </div>

@@ -19,6 +19,12 @@
     pointer-events: none;
   }
 
+  .neon-border {
+    @apply border border-white/10;
+    box-shadow: 0 0 10px theme('colors.neon.blue'),
+                0 0 20px theme('colors.neon.pink');
+  }
+
   .animated-gradient-bg {
     @apply fixed inset-0 -z-10;
     background: linear-gradient(
