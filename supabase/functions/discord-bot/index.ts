@@ -8,8 +8,44 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const handleQuoteCommand = async (message: any, type: 'idiot' | 'dope', content: string, tags: string[]) => {
+  const { data: quote, error } = await supabase.from('discord_quotes').insert({
+    server_id: message.guildId,
+    user_id: message.authorId,
+    quote_type: type,
+    content: content,
+    author: message.author.username,
+    tags: tags
+  }).single();
+
+  if (error) {
+    console.error('Error saving quote:', error);
+    return `Failed to save quote: ${error.message}`;
+  }
+
+  return `Quote saved successfully! ID: ${quote.id}`;
+};
+
+const handleRandomQuote = async (serverId: string, type?: 'idiot' | 'dope') => {
+  let query = supabase.from('discord_quotes').select('*').eq('server_id', serverId);
+  
+  if (type) {
+    query = query.eq('quote_type', type);
+  }
+  
+  const { data: quotes, error } = await query;
+  
+  if (error || !quotes?.length) {
+    return "No quotes found!";
+  }
+  
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  return `"${randomQuote.content}" - ${randomQuote.author} ${
+    randomQuote.tags?.length ? `[${randomQuote.tags.join(', ')}]` : ''
+  }`;
+};
+
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -35,32 +71,42 @@ serve(async (req) => {
             if (message.isFromBot) return;
 
             try {
-              // Handle custom commands
-              if (config.commands) {
-                const command = config.commands.find((cmd: any) => 
-                  message.content.startsWith(cmd.name)
-                );
-
-                if (command) {
-                  if (command.type === 'ai') {
-                    const response = await generateAIResponse(message.content);
-                    await bot.helpers.sendMessage(message.channelId, { 
-                      content: response 
-                    });
-                  } else {
-                    await bot.helpers.sendMessage(message.channelId, { 
-                      content: command.response 
-                    });
-                  }
-                  return;
-                }
+              const content = message.content.toLowerCase();
+              
+              // Handle quote commands
+              if (content.startsWith('!idiot ') || content.startsWith('!dope ')) {
+                const type = content.startsWith('!idiot') ? 'idiot' : 'dope';
+                const quoteContent = message.content.slice(type.length + 2);
+                const tags = quoteContent.match(/#\w+/g) || [];
+                const cleanContent = quoteContent.replace(/#\w+/g, '').trim();
+                
+                const response = await handleQuoteCommand(message, type, cleanContent, tags);
+                await bot.helpers.sendMessage(message.channelId, { content: response });
+                return;
+              }
+              
+              // Handle random quote retrieval
+              if (content === '!randomquote' || content === '!randomidiot' || content === '!randomdope') {
+                const type = content === '!randomidiot' ? 'idiot' : 
+                           content === '!randomdope' ? 'dope' : undefined;
+                           
+                const quote = await handleRandomQuote(message.guildId.toString(), type);
+                await bot.helpers.sendMessage(message.channelId, { content: quote });
+                return;
               }
 
               // Default AI response for non-command messages
               const response = await generateAIResponse(message.content);
-              await bot.helpers.sendMessage(message.channelId, { 
-                content: response 
-              });
+              await bot.helpers.sendMessage(message.channelId, { content: response });
+              
+              // Update message count
+              await supabase
+                .from('discord_bot_config')
+                .update({ 
+                  total_messages: bot.totalMessages + 1 
+                })
+                .eq('bot_token', config.bot_token);
+                
             } catch (error) {
               console.error('Error handling message:', error);
               await bot.helpers.sendMessage(message.channelId, { 
