@@ -5,6 +5,7 @@ import { NotificationSettings } from "@/components/settings/NotificationSettings
 import { AccessibilitySettings } from "@/components/settings/AccessibilitySettings";
 import { DiscordBotSettings } from "@/components/settings/DiscordBotSettings";
 import { SetupWizard } from "@/components/settings/setup-wizard/SetupWizard";
+import { ProjectSetup } from "@/components/settings/setup-wizard/ProjectSetup";
 import { AIModelManagement } from "@/components/settings/ai/AIModelManagement";
 import { APIKeySettings } from "@/components/settings/APIKeySettings";
 import { SettingsProvider } from "@/contexts/SettingsContext";
@@ -26,6 +27,7 @@ export default function Settings() {
           <Tabs defaultValue="setup" className="space-y-6">
             <TabsList className="glass-card p-1 space-x-2">
               <TabsTrigger value="setup">Setup Wizard</TabsTrigger>
+              <TabsTrigger value="project">Project Setup</TabsTrigger>
               <TabsTrigger value="general">General</TabsTrigger>
               <TabsTrigger value="api-keys">API Keys</TabsTrigger>
               <TabsTrigger value="ai">AI</TabsTrigger>
@@ -38,6 +40,10 @@ export default function Settings() {
             <div className="glass-card p-6 border border-white/10 shadow-xl backdrop-blur-lg">
               <TabsContent value="setup" className="mt-0">
                 <SetupWizard />
+              </TabsContent>
+
+              <TabsContent value="project" className="mt-0">
+                <ProjectSetup />
               </TabsContent>
 
               <TabsContent value="general" className="mt-0">
