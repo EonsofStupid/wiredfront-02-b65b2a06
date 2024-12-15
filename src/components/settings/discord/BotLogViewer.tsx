@@ -39,6 +39,13 @@ export const BotLogViewer = ({ logs }: BotLogViewerProps) => {
     URL.revokeObjectURL(url);
   };
 
+  const getSourceFromMetadata = (metadata: LogEntry['metadata']) => {
+    if (metadata && typeof metadata === 'object' && !Array.isArray(metadata) && 'source' in metadata) {
+      return metadata.source as string;
+    }
+    return 'system';
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
@@ -70,7 +77,7 @@ export const BotLogViewer = ({ logs }: BotLogViewerProps) => {
                     </p>
                     {log.metadata && (
                       <Badge variant="outline" className="text-xs">
-                        {log.metadata.source || 'system'}
+                        {getSourceFromMetadata(log.metadata)}
                       </Badge>
                     )}
                   </div>
