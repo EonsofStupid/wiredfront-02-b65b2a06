@@ -1,22 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Home, Settings, User, Bot, FileText } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 export interface Route {
   id: string;
   path: string;
   label: string;
-  icon: any;
+  icon: LucideIcon;
   isEnabled: boolean;
   requiresAuth: boolean;
-  component?: React.ComponentType;
 }
 
 interface RoutesState {
   routes: Route[];
-  addRoute: (route: Omit<Route, 'id'>) => void;
+  addRoute: (route: Partial<Route>) => void;
+  removeRoute: (path: string) => void;
   updateRoute: (id: string, updates: Partial<Route>) => void;
-  deleteRoute: (id: string) => void;
   toggleRoute: (id: string) => void;
 }
 
@@ -67,17 +67,23 @@ export const useRoutesStore = create<RoutesState>()(
       ],
       addRoute: (route) =>
         set((state) => ({
-          routes: [...state.routes, { ...route, id: crypto.randomUUID() }],
+          routes: [...state.routes, { 
+            ...route, 
+            id: crypto.randomUUID(),
+            isEnabled: true,
+            requiresAuth: true,
+            icon: FileText // Default icon
+          }],
+        })),
+      removeRoute: (path) =>
+        set((state) => ({
+          routes: state.routes.filter((route) => route.path !== path),
         })),
       updateRoute: (id, updates) =>
         set((state) => ({
           routes: state.routes.map((route) =>
             route.id === id ? { ...route, ...updates } : route
           ),
-        })),
-      deleteRoute: (id) =>
-        set((state) => ({
-          routes: state.routes.filter((route) => route.id !== id),
         })),
       toggleRoute: (id) =>
         set((state) => ({

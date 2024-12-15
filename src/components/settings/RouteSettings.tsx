@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link2 } from "lucide-react"; // Changed from Toggle to Link2
+import { Link2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,11 @@ export const RouteSettings = () => {
       return;
     }
 
-    addRoute(newRoute);
+    addRoute({
+      path: newRoute,
+      label: newRoute.split('/').filter(Boolean).pop() || newRoute,
+    });
+    
     setNewRoute("");
     toast({
       title: "Success",
@@ -32,10 +36,10 @@ export const RouteSettings = () => {
     });
   };
 
-  const handleRemoveRoute = (route: string) => {
-    removeRoute(route);
+  const handleRemoveRoute = (path: string) => {
+    removeRoute(path);
     toast({
-      title: "Success", 
+      title: "Success",
       description: "Route removed successfully",
     });
   };
@@ -64,12 +68,12 @@ export const RouteSettings = () => {
           <Label>Active Routes</Label>
           <div className="space-y-2">
             {routes.map((route) => (
-              <div key={route} className="flex items-center justify-between p-2 bg-muted rounded">
-                <span>{route}</span>
+              <div key={route.id} className="flex items-center justify-between p-2 bg-muted rounded">
+                <span>{route.path}</span>
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => handleRemoveRoute(route)}
+                  onClick={() => handleRemoveRoute(route.path)}
                 >
                   Remove
                 </Button>
