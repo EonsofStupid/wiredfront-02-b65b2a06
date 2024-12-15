@@ -5,6 +5,7 @@ import { NotificationSettings } from "@/components/settings/NotificationSettings
 import { AccessibilitySettings } from "@/components/settings/AccessibilitySettings";
 import { DiscordBotSettings } from "@/components/settings/DiscordBotSettings";
 import { SetupWizard } from "@/components/settings/setup-wizard/SetupWizard";
+import { AIModelManagement } from "@/components/settings/ai/AIModelManagement";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 
 export default function Settings() {
@@ -39,6 +40,12 @@ export default function Settings() {
               AI
             </TabsTrigger>
             <TabsTrigger 
+              value="ai-models" 
+              className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
+            >
+              AI Models
+            </TabsTrigger>
+            <TabsTrigger 
               value="discord" 
               className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
             >
@@ -69,6 +76,10 @@ export default function Settings() {
 
             <TabsContent value="ai" className="mt-0">
               <AISettings />
+            </TabsContent>
+
+            <TabsContent value="ai-models" className="mt-0">
+              <AIModelManagement />
             </TabsContent>
 
             <TabsContent value="discord" className="mt-0">

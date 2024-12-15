@@ -45,6 +45,48 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_model_configs: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_trained_at: string | null
+          local_model_path: string | null
+          model_config: Json | null
+          model_name: string
+          model_type: string
+          training_status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_trained_at?: string | null
+          local_model_path?: string | null
+          model_config?: Json | null
+          model_name: string
+          model_type: string
+          training_status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_trained_at?: string | null
+          local_model_path?: string | null
+          model_config?: Json | null
+          model_name?: string
+          model_type?: string
+          training_status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_settings: {
         Row: {
           api_key: string | null
@@ -173,6 +215,50 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      ai_training_datasets: {
+        Row: {
+          content: string
+          created_at: string | null
+          dataset_type: string
+          id: string
+          metadata: Json | null
+          model_config_id: string | null
+          processed: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          dataset_type: string
+          id?: string
+          metadata?: Json | null
+          model_config_id?: string | null
+          processed?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          dataset_type?: string
+          id?: string
+          metadata?: Json | null
+          model_config_id?: string | null
+          processed?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_training_datasets_model_config_id_fkey"
+            columns: ["model_config_id"]
+            isOneToOne: false
+            referencedRelation: "ai_model_configs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       discord_achievements: {
         Row: {
