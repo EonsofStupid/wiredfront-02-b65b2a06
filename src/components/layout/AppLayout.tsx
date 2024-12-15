@@ -5,10 +5,12 @@ import { FileBar } from "@/components/layout/FileBar";
 import { StatusBar } from "@/components/layout/StatusBar";
 import { TopBar } from "@/components/layout/TopBar";
 import { AIAssistant } from "@/components/ai-elements/AIAssistant";
+import { AnimatedBackground } from "@/components/background/AnimatedBackground";
 
 export const AppLayout = () => {
   return (
     <div className="app-layout">
+      <AnimatedBackground />
       <AIAssistant />
       <div className="flex flex-col h-screen">
         <TopBar />
