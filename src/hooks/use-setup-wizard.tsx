@@ -25,14 +25,21 @@ export const useSetupWizard = () => {
   const fetchConfig = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        setIsLoading(false);
+        return;
+      }
 
+      // First try to get existing config
       const { data, error } = await supabase
         .from('setup_wizard_config')
         .select('*')
-        .single();
+        .eq('user_id', session.user.id)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
 
       if (data) {
         setConfig(transformResponse(data as WizardConfigResponse));
@@ -45,6 +52,8 @@ export const useSetupWizard = () => {
           ai_config: {},
           bot_config: {}
         };
+        
+        // Save default config to database
         await saveConfig(defaultConfig);
         setConfig(defaultConfig);
       }
