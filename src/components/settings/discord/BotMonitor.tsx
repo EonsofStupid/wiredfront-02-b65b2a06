@@ -5,21 +5,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Activity, AlertTriangle, CheckCircle, Clock } from "lucide-react";
-
-interface LogEntry {
-  id: string;
-  level: 'info' | 'warning' | 'error';
-  message: string;
-  created_at: string;
-  metadata: Record<string, any> | null;
-}
+import type { LogEntry, BotStatus } from "@/types/discord";
 
 export const BotMonitor = () => {
   const { toast } = useToast();
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [status, setStatus] = useState({
+  const [status, setStatus] = useState<BotStatus>({
     isActive: false,
-    lastPing: null as string | null,
+    lastPing: null,
     messageCount: 0
   });
 
@@ -53,7 +46,7 @@ export const BotMonitor = () => {
           return;
         }
 
-        setLogs(data || []);
+        setLogs(data as LogEntry[] || []);
       } catch (error) {
         console.error('Error in fetchInitialLogs:', error);
       }
@@ -68,7 +61,7 @@ export const BotMonitor = () => {
           .from('discord_bot_config')
           .select('is_active, updated_at, total_messages')
           .eq('user_id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (error && error.code !== 'PGRST116') {
           console.error('Error fetching bot status:', error);
@@ -77,7 +70,7 @@ export const BotMonitor = () => {
 
         if (data) {
           setStatus({
-            isActive: data.is_active,
+            isActive: data.is_active || false,
             lastPing: data.updated_at,
             messageCount: data.total_messages || 0
           });
@@ -117,7 +110,7 @@ export const BotMonitor = () => {
         (payload) => {
           console.log('Bot status updated:', payload);
           setStatus({
-            isActive: payload.new.is_active,
+            isActive: payload.new.is_active || false,
             lastPing: payload.new.updated_at,
             messageCount: payload.new.total_messages || 0
           });

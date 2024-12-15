@@ -7,17 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { AIProvider } from "@/types/ai";
-
-interface AIConfigMetadata {
-  fallbackEnabled: boolean;
-  offlineMode: boolean;
-  routingStrategy: string;
-  customFunctions?: {
-    name: string;
-    description: string;
-    isEnabled: boolean;
-  }[];
-}
+import type { AIConfigMetadata } from "@/types/discord";
 
 export const BotAIConfig = () => {
   const { toast } = useToast();
@@ -72,7 +62,7 @@ export const BotAIConfig = () => {
           .from('ai_settings')
           .select('*')
           .eq('user_id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (error) {
           if (error.code !== 'PGRST116') {
@@ -82,6 +72,8 @@ export const BotAIConfig = () => {
               description: error.message
             });
           }
+          // Create default settings if none exist
+          await handleSaveConfig();
           return;
         }
 
