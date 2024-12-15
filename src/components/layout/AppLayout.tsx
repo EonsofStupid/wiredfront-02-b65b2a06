@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import { Sidebar } from "@/components/ui/sidebar";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { FileBar } from "@/components/layout/FileBar";
@@ -5,11 +6,7 @@ import { StatusBar } from "@/components/layout/StatusBar";
 import { TopBar } from "@/components/layout/TopBar";
 import { AIAssistant } from "@/components/ai-elements/AIAssistant";
 
-interface AppLayoutProps {
-  children: React.ReactNode;
-}
-
-export const AppLayout = ({ children }: AppLayoutProps) => {
+export const AppLayout = () => {
   return (
     <div className="app-layout">
       <AIAssistant />
@@ -23,7 +20,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
           <ResizableHandle />
           <ResizablePanel defaultSize={80}>
             <main className="h-full overflow-auto">
-              {children}
+              <Outlet />
             </main>
           </ResizablePanel>
         </ResizablePanelGroup>
