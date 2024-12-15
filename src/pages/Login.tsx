@@ -3,22 +3,43 @@ import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuthStore } from "@/stores";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Login() {
   const navigate = useNavigate();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-  }, [isAuthenticated, navigate]);
+    // Check current auth status
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in",
+        });
+        navigate("/dashboard");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-dark p-4">
-      <Card className="w-full max-w-md p-6 glass-card">
+    <div className="min-h-screen flex items-center justify-center bg-[#1A1F2C] p-4">
+      <Card className="w-full max-w-md p-6 glass-card border-purple-500/20">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold gradient-text mb-2">wiredFRONT</h1>
           <p className="text-gray-400">Sign in to continue</p>
