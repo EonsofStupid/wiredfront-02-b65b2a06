@@ -72,6 +72,13 @@ export const BotMonitor = () => {
           activeServers: payload.new.server_count,
           messagesProcessed: payload.new.total_messages
         }));
+
+        // Add connection status to logs
+        setLogs(prev => [{
+          timestamp: new Date().toISOString(),
+          type: payload.new.is_active ? 'info' : 'warning',
+          message: payload.new.is_active ? 'Bot connected successfully' : 'Bot disconnected'
+        }, ...prev]);
       })
       .subscribe();
 
@@ -151,7 +158,7 @@ export const BotMonitor = () => {
                 'text-gray-400'
               }`}
             >
-              <span className="opacity-50">[{log.timestamp}]</span> {log.message}
+              <span className="opacity-50">[{new Date(log.timestamp).toLocaleTimeString()}]</span> {log.message}
             </div>
           ))}
           {logs.length === 0 && (

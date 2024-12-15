@@ -67,19 +67,30 @@ export const DiscordBotSettings = () => {
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
-      // Simulate connection delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Call the Discord bot edge function to start the bot
+      const { error: functionError } = await supabase.functions.invoke('discord-bot', {
+        body: { 
+          action: 'start',
+          config: botConfig
+        }
+      });
+
+      if (functionError) throw functionError;
+
       await handleUpdateConfig({ is_active: true });
       toast({
         title: "Bot Connected",
         description: "Discord bot has been successfully connected."
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Bot connection error:', error);
       toast({
         variant: "destructive",
         title: "Connection Failed",
-        description: "Failed to connect the Discord bot."
+        description: error.message || "Failed to connect the Discord bot."
       });
+      // Reset active status if connection fails
+      await handleUpdateConfig({ is_active: false });
     } finally {
       setIsConnecting(false);
     }
