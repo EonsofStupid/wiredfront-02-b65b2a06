@@ -9,20 +9,25 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 
 function App() {
   return (
-    <SidebarProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<AppLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
-        </Routes>
-        <Toaster />
-      </Router>
-    </SidebarProvider>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <SidebarProvider>
+              <AppLayout />
+            </SidebarProvider>
+          }
+        >
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+      </Routes>
+      <Toaster />
+    </Router>
   );
 }
 
