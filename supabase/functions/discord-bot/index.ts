@@ -14,11 +14,11 @@ serve(async (req) => {
   }
 
   try {
-    const { action, botToken, clientId } = await req.json();
+    const { action, config } = await req.json();
 
     if (action === 'start') {
       const bot = createBot({
-        token: botToken,
+        token: config.bot_token,
         intents: Intents.Guilds | Intents.GuildMessages | Intents.MessageContent,
         events: {
           ready: () => {
@@ -27,9 +27,40 @@ serve(async (req) => {
           messageCreate: async (bot, message) => {
             if (message.isFromBot) return;
 
+            // Handle custom commands
+            if (config.commands) {
+              const command = config.commands.find((cmd: any) => 
+                message.content.startsWith(cmd.name)
+              );
+
+              if (command) {
+                if (command.type === 'ai') {
+                  try {
+                    const response = await generateAIResponse(message.content);
+                    await bot.helpers.sendMessage(message.channelId, { 
+                      content: response 
+                    });
+                  } catch (error) {
+                    console.error('Error generating AI response:', error);
+                    await bot.helpers.sendMessage(message.channelId, { 
+                      content: "I encountered an error processing your request." 
+                    });
+                  }
+                } else {
+                  await bot.helpers.sendMessage(message.channelId, { 
+                    content: command.response 
+                  });
+                }
+                return;
+              }
+            }
+
+            // Default AI response for non-command messages
             try {
               const response = await generateAIResponse(message.content);
-              await bot.helpers.sendMessage(message.channelId, { content: response });
+              await bot.helpers.sendMessage(message.channelId, { 
+                content: response 
+              });
             } catch (error) {
               console.error('Error generating AI response:', error);
               await bot.helpers.sendMessage(message.channelId, { 
@@ -41,7 +72,7 @@ serve(async (req) => {
       });
 
       await startBot(bot);
-      return new Response(JSON.stringify({ status: 'started' }), {
+      return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
