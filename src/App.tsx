@@ -7,6 +7,7 @@ import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Profile from "@/pages/Profile";
 import Index from "@/pages/Index";
+import { FileManager } from "@/components/file/FileManager";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,6 +71,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="settings" element={<Settings />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="files" element={<FileManager />} />
         </Route>
       </Routes>
       <Toaster />
