@@ -71,6 +71,24 @@ export const BotGeneralSettings = ({
 
       <div className="grid gap-4">
         <div className="space-y-2">
+          <Label className="text-sm font-medium mb-1 block">Client ID</Label>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Input
+                  placeholder="Enter your bot's client ID"
+                  value={botConfig?.client_id || ''}
+                  onChange={(e) => onUpdateConfig({ client_id: e.target.value })}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Your Discord application's client ID from the Developer Portal</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        <div className="space-y-2">
           <Label className="text-sm font-medium mb-1 block">Bot Token</Label>
           <TooltipProvider>
             <Tooltip>
@@ -92,6 +110,7 @@ export const BotGeneralSettings = ({
                       placeholder="Click to add bot token"
                       className="cursor-pointer font-mono"
                       onClick={() => setIsEditingToken(true)}
+                      readOnly
                     />
                   )}
                   <Button
@@ -105,24 +124,6 @@ export const BotGeneralSettings = ({
               </TooltipTrigger>
               <TooltipContent>
                 <p>Your Discord bot token from the Developer Portal</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-
-        <div className="space-y-2">
-          <Label className="text-sm font-medium mb-1 block">Bot Name</Label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Input
-                  placeholder="Enter bot name"
-                  value={botConfig?.name || ""}
-                  onChange={(e) => onUpdateConfig({ name: e.target.value })}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>The display name of your bot in Discord servers</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

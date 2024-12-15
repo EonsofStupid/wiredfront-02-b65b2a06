@@ -24,13 +24,45 @@ export const DiscordBotSettings = () => {
 
   const loadBotConfig = async () => {
     try {
-      const { data: config, error } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to manage bot settings",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase
         .from("discord_bot_config")
         .select("*")
-        .single();
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (error) throw error;
-      setBotConfig(config);
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      // If no config exists, create a default one
+      if (!data) {
+        const { data: newConfig, error: insertError } = await supabase
+          .from("discord_bot_config")
+          .insert({
+            client_id: '',
+            user_id: user.id,
+            is_active: false,
+            server_count: 0,
+            total_messages: 0
+          })
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+        setBotConfig(newConfig);
+      } else {
+        setBotConfig(data);
+      }
     } catch (error) {
       console.error("Error loading bot config:", error);
       toast({
@@ -44,6 +76,13 @@ export const DiscordBotSettings = () => {
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Authentication required");
+
+      if (!botConfig?.bot_token) {
+        throw new Error("Bot token is required");
+      }
+
       const response = await supabase.functions.invoke("discord-bot", {
         body: { action: "start", config: botConfig },
       });
@@ -60,7 +99,7 @@ export const DiscordBotSettings = () => {
       console.error("Error connecting bot:", error);
       toast({
         title: "Connection Error",
-        description: "Failed to connect Discord bot. Please check your configuration.",
+        description: error instanceof Error ? error.message : "Failed to connect Discord bot",
         variant: "destructive",
       });
     } finally {
@@ -70,11 +109,13 @@ export const DiscordBotSettings = () => {
 
   const handleUpdateConfig = async (updates: any) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Authentication required");
+
       const { error } = await supabase
         .from("discord_bot_config")
-        .upsert({ ...botConfig, ...updates })
-        .select()
-        .single();
+        .update({ ...updates, user_id: user.id })
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
