@@ -1,10 +1,6 @@
 @layer components {
   .app-layout {
-    @apply min-h-screen flex flex-col;
-  }
-
-  .app-content {
-    @apply flex-1 flex overflow-hidden relative;
+    @apply min-h-screen flex flex-col bg-dark;
   }
 
   /* Frame elements */
@@ -13,11 +9,11 @@
   }
 
   .top-bar {
-    @apply frame-element top-0 left-0 right-0 h-16;
+    @apply sticky top-0 left-0 right-0 h-16 z-30;
   }
 
   .side-bar {
-    @apply frame-element top-16 bottom-8 w-12;
+    @apply sticky top-16 bottom-8 w-12 z-20;
   }
 
   .side-bar-left {
@@ -29,12 +25,12 @@
   }
 
   .status-bar {
-    @apply frame-element bottom-0 left-0 right-0 h-8;
+    @apply sticky bottom-0 left-0 right-0 h-8 z-30;
   }
 
   /* Main content area */
   .main-content {
-    @apply ml-12 mr-12 mt-16 mb-8 flex-1 overflow-auto;
+    @apply flex-1 overflow-auto relative;
   }
 
   /* Button effects - consistent across all bars */

@@ -10,23 +10,25 @@ export const AppLayout = () => {
   return (
     <div className="app-layout">
       <AIAssistant />
-      <TopBar />
-      <div className="app-content">
-        <FileBar position="left" />
-        <ResizablePanelGroup direction="horizontal" className="main-content">
-          <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
-            <Sidebar />
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={80}>
-            <main className="h-full overflow-auto">
-              <Outlet />
-            </main>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-        <FileBar position="right" />
+      <div className="flex flex-col h-screen">
+        <TopBar />
+        <div className="flex-1 flex relative overflow-hidden">
+          <FileBar position="left" />
+          <ResizablePanelGroup direction="horizontal" className="min-h-0 flex-1">
+            <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+              <Sidebar />
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel defaultSize={80}>
+              <main className="h-full overflow-auto">
+                <Outlet />
+              </main>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+          <FileBar position="right" />
+        </div>
+        <StatusBar />
       </div>
-      <StatusBar />
     </div>
   );
 };
