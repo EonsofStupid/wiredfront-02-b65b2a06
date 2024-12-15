@@ -11,6 +11,7 @@ interface LogEntry {
   level: 'info' | 'warning' | 'error';
   message: string;
   created_at: string;
+  metadata: Record<string, any> | null;
 }
 
 export const BotMonitor = () => {
@@ -24,50 +25,70 @@ export const BotMonitor = () => {
 
   useEffect(() => {
     const fetchInitialLogs = async () => {
-      const { data, error } = await supabase
-        .from('discord_bot_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          toast({
+            variant: "destructive",
+            title: "Authentication required",
+            description: "Please sign in to view bot logs"
+          });
+          return;
+        }
 
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error fetching logs",
-          description: error.message
-        });
-        return;
+        const { data, error } = await supabase
+          .from('discord_bot_logs')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false })
+          .limit(50);
+
+        if (error) {
+          console.error('Error fetching logs:', error);
+          toast({
+            variant: "destructive",
+            title: "Error fetching logs",
+            description: error.message
+          });
+          return;
+        }
+
+        setLogs(data || []);
+      } catch (error) {
+        console.error('Error in fetchInitialLogs:', error);
       }
-
-      setLogs(data);
     };
 
     const fetchBotStatus = async () => {
-      const { data, error } = await supabase
-        .from('discord_bot_config')
-        .select('is_active, updated_at, total_messages')
-        .single();
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
 
-      if (error && error.code !== 'PGRST116') {
-        toast({
-          variant: "destructive",
-          title: "Error fetching bot status",
-          description: error.message
-        });
-        return;
-      }
+        const { data, error } = await supabase
+          .from('discord_bot_config')
+          .select('is_active, updated_at, total_messages')
+          .eq('user_id', session.user.id)
+          .single();
 
-      if (data) {
-        setStatus({
-          isActive: data.is_active,
-          lastPing: data.updated_at,
-          messageCount: data.total_messages
-        });
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching bot status:', error);
+          return;
+        }
+
+        if (data) {
+          setStatus({
+            isActive: data.is_active,
+            lastPing: data.updated_at,
+            messageCount: data.total_messages || 0
+          });
+        }
+      } catch (error) {
+        console.error('Error in fetchBotStatus:', error);
       }
     };
 
     // Set up real-time subscription for logs
-    const logsChannel = supabase
+    const logsSubscription = supabase
       .channel('bot-logs')
       .on(
         'postgres_changes',
@@ -77,13 +98,14 @@ export const BotMonitor = () => {
           table: 'discord_bot_logs'
         },
         (payload) => {
+          console.log('New log received:', payload);
           setLogs(prev => [payload.new as LogEntry, ...prev].slice(0, 50));
         }
       )
       .subscribe();
 
     // Set up real-time subscription for bot status
-    const statusChannel = supabase
+    const statusSubscription = supabase
       .channel('bot-status')
       .on(
         'postgres_changes',
@@ -93,10 +115,11 @@ export const BotMonitor = () => {
           table: 'discord_bot_config'
         },
         (payload) => {
+          console.log('Bot status updated:', payload);
           setStatus({
             isActive: payload.new.is_active,
             lastPing: payload.new.updated_at,
-            messageCount: payload.new.total_messages
+            messageCount: payload.new.total_messages || 0
           });
         }
       )
@@ -105,9 +128,10 @@ export const BotMonitor = () => {
     fetchInitialLogs();
     fetchBotStatus();
 
+    // Cleanup subscriptions
     return () => {
-      supabase.removeChannel(logsChannel);
-      supabase.removeChannel(statusChannel);
+      logsSubscription.unsubscribe();
+      statusSubscription.unsubscribe();
     };
   }, [toast]);
 
@@ -123,13 +147,16 @@ export const BotMonitor = () => {
   };
 
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="p-6 space-y-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h3 className="text-lg font-semibold">Bot Monitor</h3>
           <p className="text-sm text-muted-foreground">Real-time bot status and logs</p>
         </div>
-        <Badge variant={status.isActive ? "default" : "destructive"}>
+        <Badge 
+          variant={status.isActive ? "default" : "destructive"}
+          className={status.isActive ? "bg-green-500/20 text-green-500 backdrop-blur-sm border border-green-500/50" : ""}
+        >
           {status.isActive ? (
             <CheckCircle className="h-4 w-4 mr-1" />
           ) : (
@@ -141,38 +168,51 @@ export const BotMonitor = () => {
 
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-1">
-          <p className="text-sm font-medium">Status</p>
+          <p className="text-sm font-medium text-muted-foreground">Status</p>
           <p className="text-2xl font-bold">
             {status.isActive ? "Online" : "Offline"}
           </p>
         </div>
         <div className="space-y-1">
-          <p className="text-sm font-medium">Last Update</p>
+          <p className="text-sm font-medium text-muted-foreground">Last Update</p>
           <p className="text-2xl font-bold">
             {status.lastPing ? new Date(status.lastPing).toLocaleTimeString() : "N/A"}
           </p>
         </div>
         <div className="space-y-1">
-          <p className="text-sm font-medium">Messages Processed</p>
+          <p className="text-sm font-medium text-muted-foreground">Messages Processed</p>
           <p className="text-2xl font-bold">{status.messageCount}</p>
         </div>
       </div>
 
       <div className="space-y-2">
         <h4 className="font-medium">Recent Logs</h4>
-        <ScrollArea className="h-[300px] rounded-md border">
+        <ScrollArea className="h-[300px] rounded-md border bg-card">
           <div className="p-4 space-y-4">
-            {logs.map((log) => (
-              <div key={log.id} className="flex items-start space-x-2">
-                {getLogIcon(log.level)}
-                <div className="space-y-1">
-                  <p className="text-sm">{log.message}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(log.created_at).toLocaleString()}
-                  </p>
+            {logs.length > 0 ? (
+              logs.map((log) => (
+                <div key={log.id} className="flex items-start space-x-2 p-2 rounded-lg bg-background/40 backdrop-blur-sm">
+                  {getLogIcon(log.level)}
+                  <div className="space-y-1 flex-1">
+                    <p className="text-sm">{log.message}</p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(log.created_at).toLocaleString()}
+                      </p>
+                      {log.metadata && (
+                        <Badge variant="outline" className="text-xs">
+                          {log.metadata.source || 'system'}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                No logs available
               </div>
-            ))}
+            )}
           </div>
         </ScrollArea>
       </div>
