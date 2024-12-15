@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Download, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface FileInfo {
   name: string;
@@ -22,6 +24,7 @@ interface FileInfo {
 export const FileManager = () => {
   const [files, setFiles] = useState<FileInfo[]>([]);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     loadFiles();
@@ -59,7 +62,6 @@ export const FileManager = () => {
 
       if (error) throw error;
 
-      // Create download link
       const url = URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
@@ -103,7 +105,10 @@ export const FileManager = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className={cn(
+      "space-y-6",
+      isMobile ? "p-0" : "container mx-auto p-6"
+    )}>
       <h2 className="text-2xl font-bold mb-6">File Manager</h2>
       
       <div className="rounded-md border">
@@ -111,8 +116,8 @@ export const FileManager = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Size</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead className={cn(isMobile && "hidden")}>Size</TableHead>
+              <TableHead className={cn(isMobile && "hidden")}>Created</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -120,8 +125,10 @@ export const FileManager = () => {
             {files.map((file) => (
               <TableRow key={file.path}>
                 <TableCell>{file.name}</TableCell>
-                <TableCell>{Math.round(file.size / 1024)} KB</TableCell>
-                <TableCell>
+                <TableCell className={cn(isMobile && "hidden")}>
+                  {Math.round(file.size / 1024)} KB
+                </TableCell>
+                <TableCell className={cn(isMobile && "hidden")}>
                   {new Date(file.created_at).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
