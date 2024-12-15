@@ -27,10 +27,27 @@
   }
   
   body {
-    @apply bg-dark text-foreground antialiased min-h-screen;
+    @apply bg-dark text-foreground antialiased min-h-screen overflow-x-hidden;
   }
 
   #root {
     @apply min-h-screen flex flex-col;
+  }
+
+  /* Custom Scrollbar Styling */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-lighter/30;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gradient-to-b from-neon-blue via-neon-pink to-neon-violet rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gradient-to-b from-neon-pink via-neon-violet to-neon-blue;
   }
 }

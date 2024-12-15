@@ -45,21 +45,17 @@
 
   .twinkling-stars {
     @apply fixed inset-0 -z-20;
-    background: radial-gradient(circle at center, 
-      rgba(255, 255, 255, 0.1) 0%,
-      transparent 60%
+    background: radial-gradient(
+      1px 1px at random(100) random(100),
+      theme('colors.white') 50%,
+      transparent
     );
-    mask-image: repeating-linear-gradient(
-      0deg,
-      #000 0%,
-      #000 1%,
-      transparent 2%
-    );
+    background-size: 200px 200px;
     animation: twinkle 2s ease-in-out infinite alternate;
   }
 
   .floating-squares {
-    @apply fixed inset-0 -z-30 overflow-hidden;
+    @apply fixed inset-0 -z-30 overflow-hidden pointer-events-none;
   }
 
   .floating-square {
