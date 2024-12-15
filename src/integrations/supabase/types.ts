@@ -306,6 +306,42 @@ export type Database = {
         }
         Relationships: []
       }
+      setup_wizard_config: {
+        Row: {
+          ai_config: Json | null
+          bot_config: Json | null
+          created_at: string | null
+          current_step: number | null
+          environment_config: Json | null
+          id: string
+          setup_status: Database["public"]["Enums"]["setup_status"] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_config?: Json | null
+          bot_config?: Json | null
+          created_at?: string | null
+          current_step?: number | null
+          environment_config?: Json | null
+          id?: string
+          setup_status?: Database["public"]["Enums"]["setup_status"] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_config?: Json | null
+          bot_config?: Json | null
+          created_at?: string | null
+          current_step?: number | null
+          environment_config?: Json | null
+          id?: string
+          setup_status?: Database["public"]["Enums"]["setup_status"] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_visual_preferences: {
         Row: {
           created_at: string | null
@@ -353,6 +389,7 @@ export type Database = {
         | "cohere"
       log_level: "info" | "warning" | "error"
       quote_type: "idiot" | "dope"
+      setup_status: "not_started" | "in_progress" | "completed"
       task_type: "code" | "analysis" | "automation" | "data"
     }
     CompositeTypes: {
