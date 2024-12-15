@@ -1,10 +1,11 @@
-import { Bot, Code, FileText, Loader } from "lucide-react";
+import { Bot, Code, FileText, Loader, WifiOff } from "lucide-react";
 import type { AIMode } from "@/types/ai";
 
 interface AIInputFormProps {
   input: string;
   mode: AIMode;
   isProcessing: boolean;
+  isOffline: boolean;
   onInputChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
@@ -13,6 +14,7 @@ export const AIInputForm = ({
   input,
   mode,
   isProcessing,
+  isOffline,
   onInputChange,
   onSubmit,
 }: AIInputFormProps) => {
@@ -36,7 +38,9 @@ export const AIInputForm = ({
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
         placeholder={
-          mode === "chat"
+          isOffline
+            ? "Working in offline mode. Limited functionality available..."
+            : mode === "chat"
             ? "Ask me anything..."
             : mode === "code"
             ? "Describe the code changes you need..."
@@ -45,11 +49,16 @@ export const AIInputForm = ({
       />
       <button 
         type="submit" 
-        className="ai-assistant__button"
-        disabled={isProcessing}
+        className={`ai-assistant__button ${isOffline ? 'opacity-70' : ''}`}
+        disabled={isProcessing || (isOffline && mode !== "chat")}
       >
         {isProcessing ? (
           <Loader className="w-4 h-4 animate-spin mr-2 inline" />
+        ) : isOffline ? (
+          <>
+            <WifiOff className="w-4 h-4 mr-2" />
+            <span>Offline Mode</span>
+          </>
         ) : (
           <>
             {getModeIcon(mode)}

@@ -8,18 +8,23 @@ import type { AIProvider } from "@/types/ai";
 interface AIProviderSelectorProps {
   provider: AIProvider;
   onProviderChange: (provider: AIProvider) => void;
+  availableProviders: AIProvider[];
 }
 
-export const AIProviderSelector = ({ provider, onProviderChange }: AIProviderSelectorProps) => {
+export const AIProviderSelector = ({ 
+  provider, 
+  onProviderChange, 
+  availableProviders 
+}: AIProviderSelectorProps) => {
   const { toast } = useToast();
   const [enabledProviders, setEnabledProviders] = useState<Record<string, boolean>>({
     [provider]: true
   });
 
   const handleToggleProvider = async (providerId: string) => {
-    const providerConfig = AI_PROVIDERS[providerId];
+    const providerConfig = AI_PROVIDERS[providerId as AIProvider];
     
-    if (providerConfig.apiKeyRequired && !enabledProviders[providerId]) {
+    if (providerConfig.apiKeyRequired && !availableProviders.includes(providerId as AIProvider)) {
       toast({
         title: `${providerConfig.name} API Key Required`,
         description: "Please add your API key in settings to enable this provider",
@@ -33,6 +38,7 @@ export const AIProviderSelector = ({ provider, onProviderChange }: AIProviderSel
           </Button>
         ),
       });
+      return;
     }
 
     setEnabledProviders(prev => ({
@@ -51,6 +57,8 @@ export const AIProviderSelector = ({ provider, onProviderChange }: AIProviderSel
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {Object.entries(AI_PROVIDERS).map(([id, config]) => {
           const IconComponent = config.icon;
+          const isAvailable = availableProviders.includes(id as AIProvider);
+          
           return (
             <div 
               key={id}
@@ -62,12 +70,15 @@ export const AIProviderSelector = ({ provider, onProviderChange }: AIProviderSel
                 <IconComponent className="w-5 h-5 text-neon-blue" />
                 <div>
                   <h4 className="font-medium">{config.name}</h4>
-                  <p className="text-sm text-gray-400">{config.description}</p>
+                  <p className="text-sm text-gray-400">
+                    {isAvailable ? config.description : 'API key required'}
+                  </p>
                 </div>
               </div>
               <Switch
                 checked={enabledProviders[id]}
                 onCheckedChange={() => handleToggleProvider(id)}
+                disabled={!isAvailable && config.apiKeyRequired}
               />
             </div>
           );
