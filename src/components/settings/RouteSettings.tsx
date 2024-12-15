@@ -1,25 +1,16 @@
 import { useState } from "react";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, Toggle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
-import { useSettingsStore } from "@/stores";
-
-interface Route {
-  id: string;
-  path: string;
-  label: string;
-  icon?: string;
-}
+import { Switch } from "@/components/ui/switch";
+import { useRoutesStore } from "@/stores/routes";
+import type { Route } from "@/stores/routes";
 
 export function RouteSettings() {
   const { toast } = useToast();
-  const [routes, setRoutes] = useState<Route[]>([
-    { id: "1", path: "/dashboard", label: "Dashboard" },
-    { id: "2", path: "/settings", label: "Settings" },
-    { id: "3", path: "/profile", label: "Profile" }
-  ]);
+  const { routes, addRoute, updateRoute, deleteRoute, toggleRoute } = useRoutesStore();
   const [newRoute, setNewRoute] = useState({ path: "", label: "" });
 
   const handleAddRoute = () => {
@@ -32,10 +23,14 @@ export function RouteSettings() {
       return;
     }
 
-    setRoutes([
-      ...routes,
-      { id: crypto.randomUUID(), ...newRoute }
-    ]);
+    addRoute({
+      path: newRoute.path,
+      label: newRoute.label,
+      icon: null,
+      isEnabled: true,
+      requiresAuth: true,
+    });
+
     setNewRoute({ path: "", label: "" });
     
     toast({
@@ -44,19 +39,19 @@ export function RouteSettings() {
     });
   };
 
-  const handleDeleteRoute = (id: string) => {
-    setRoutes(routes.filter(route => route.id !== id));
+  const handleToggleRoute = (id: string) => {
+    toggleRoute(id);
     toast({
-      title: "Route Deleted",
-      description: "The route has been removed",
+      title: "Route Updated",
+      description: "Route visibility has been toggled",
     });
   };
 
-  const handleSaveRoutes = () => {
-    // Here you would typically save to your state management or backend
+  const handleDeleteRoute = (id: string) => {
+    deleteRoute(id);
     toast({
-      title: "Routes Saved",
-      description: "Your route configuration has been updated",
+      title: "Route Deleted",
+      description: "The route has been removed",
     });
   };
 
@@ -64,13 +59,6 @@ export function RouteSettings() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Routes & Navigation</h2>
-        <Button 
-          onClick={handleSaveRoutes}
-          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
-        >
-          <Save className="w-4 h-4 mr-2" />
-          Save Changes
-        </Button>
       </div>
 
       <Card className="p-4 bg-[#1A1F2C] border-purple-500/20">
@@ -104,17 +92,24 @@ export function RouteSettings() {
                 className="flex items-center justify-between p-3 rounded-lg bg-[#221F26] border border-purple-500/20"
               >
                 <div className="flex items-center gap-4">
+                  {route.icon && <route.icon className="w-4 h-4 text-purple-400" />}
                   <span className="text-purple-300">{route.label}</span>
                   <span className="text-gray-400">{route.path}</span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDeleteRoute(route.id)}
-                  className="hover:bg-red-500/20 hover:text-red-400"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <div className="flex items-center gap-4">
+                  <Switch
+                    checked={route.isEnabled}
+                    onCheckedChange={() => handleToggleRoute(route.id)}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDeleteRoute(route.id)}
+                    className="hover:bg-red-500/20 hover:text-red-400"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

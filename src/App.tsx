@@ -5,12 +5,15 @@ import Dashboard from "@/pages/Dashboard";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Profile from "@/pages/Profile";
+import Index from "@/pages/Index";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useRoutesStore } from "@/stores/routes";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const routes = useRoutesStore((state) => state.routes);
 
   useEffect(() => {
     // Check initial auth state
@@ -54,7 +57,7 @@ function App() {
             )
           }
         >
-          <Route index element={<Dashboard />} />
+          <Route index element={<Index />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="settings" element={<Settings />} />
           <Route path="profile" element={<Profile />} />

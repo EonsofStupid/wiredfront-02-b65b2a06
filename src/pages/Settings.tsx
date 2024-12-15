@@ -7,6 +7,7 @@ import { AccessibilitySettings } from "@/components/settings/AccessibilitySettin
 import { AISettings } from "@/components/settings/AISettings";
 import { DiscordBotSettings } from "@/components/settings/DiscordBotSettings";
 import { RouteSettings } from "@/components/settings/RouteSettings";
+import { RouteLogger } from "@/components/settings/RouteLogger";
 
 export default function Settings() {
   return (
@@ -46,7 +47,10 @@ export default function Settings() {
 
         <Card className="p-6 bg-[#1A1F2C] border-purple-500/20">
           <TabsContent value="routes">
-            <RouteSettings />
+            <div className="space-y-6">
+              <RouteSettings />
+              <RouteLogger />
+            </div>
           </TabsContent>
           <TabsContent value="ai">
             <AISettings />
