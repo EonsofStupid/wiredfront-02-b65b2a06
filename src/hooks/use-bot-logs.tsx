@@ -19,7 +19,7 @@ export const useBotLogs = () => {
           .limit(50);
 
         if (error) throw error;
-        setLogs(data || []);
+        setLogs(data as LogEntry[]);
       } catch (error) {
         console.error('Error fetching logs:', error);
       }
@@ -40,7 +40,7 @@ export const useBotLogs = () => {
         },
         (payload) => {
           console.log('New log received:', payload);
-          setLogs(prev => [payload.new as LogEntry, ...prev].slice(0, 50));
+          setLogs(prev => [(payload.new as LogEntry), ...prev].slice(0, 50));
         }
       )
       .subscribe();

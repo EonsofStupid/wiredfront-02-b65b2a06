@@ -5,7 +5,7 @@ export interface LogEntry {
   level: 'info' | 'warning' | 'error';
   message: string;
   created_at: string;
-  metadata: Record<string, any> | null;
+  metadata: Json | null;
   user_id: string;
 }
 
