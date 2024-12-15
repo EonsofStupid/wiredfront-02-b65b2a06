@@ -2,13 +2,17 @@ import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { GalaxyBackground } from "@/components/background/GalaxyBackground";
 import { AnimatedCubes } from "@/components/background/AnimatedCubes";
+import { DataStream } from "@/components/ai-elements/DataStream";
 import { HeroSection } from "@/components/index/HeroSection";
 import { features } from "@/data/features";
 
 const Index = () => {
   return (
     <div className="relative min-h-screen overflow-hidden">
+      {/* Background layers */}
+      <div className="absolute inset-0 bg-black/10" /> {/* Brightness reduction overlay */}
       <GalaxyBackground />
+      <DataStream />
       <AnimatedCubes />
       
       {/* Content */}
