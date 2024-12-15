@@ -1,11 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { Settings as SettingsIcon, Bell, Eye, Globe, Bot } from "lucide-react";
+import { Settings as SettingsIcon, Bell, Eye, Globe, Bot, Link } from "lucide-react";
 import { GeneralSettings } from "@/components/settings/GeneralSettings";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { AccessibilitySettings } from "@/components/settings/AccessibilitySettings";
 import { AISettings } from "@/components/settings/AISettings";
 import { DiscordBotSettings } from "@/components/settings/DiscordBotSettings";
+import { RouteSettings } from "@/components/settings/RouteSettings";
 
 export default function Settings() {
   return (
@@ -15,8 +16,12 @@ export default function Settings() {
         <h1 className="text-3xl font-bold">Settings</h1>
       </div>
 
-      <Tabs defaultValue="ai" className="space-y-4">
+      <Tabs defaultValue="routes" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="routes">
+            <Link className="h-4 w-4 mr-2" />
+            Routes
+          </TabsTrigger>
           <TabsTrigger value="ai">
             <Globe className="h-4 w-4 mr-2" />
             AI Settings
@@ -39,7 +44,10 @@ export default function Settings() {
           </TabsTrigger>
         </TabsList>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-[#1A1F2C] border-purple-500/20">
+          <TabsContent value="routes">
+            <RouteSettings />
+          </TabsContent>
           <TabsContent value="ai">
             <AISettings />
           </TabsContent>
