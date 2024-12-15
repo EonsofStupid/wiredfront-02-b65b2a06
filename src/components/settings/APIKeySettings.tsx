@@ -6,15 +6,18 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
+import type { AIProvider } from "@/types/ai";
 
 export function APIKeySettings() {
   const { toast } = useToast();
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
-  const [keys, setKeys] = useState({
-    openai: "",
+  const [keys, setKeys] = useState<Record<string, string>>({
     gemini: "",
+    chatgpt: "",
     anthropic: "",
     huggingface: "",
+    mistral: "",
+    cohere: ""
   });
 
   const toggleShowKey = (provider: string) => {
@@ -40,8 +43,8 @@ export function APIKeySettings() {
         .from('ai_settings')
         .upsert({
           user_id: session.user.id,
-          provider: provider,
-          api_key: keys[provider as keyof typeof keys],
+          provider: provider as AIProvider,
+          api_key: keys[provider],
           is_active: true
         });
 
@@ -71,15 +74,15 @@ export function APIKeySettings() {
 
       <div className="grid gap-6">
         {Object.entries({
-          openai: {
-            name: "OpenAI",
-            description: "Required for GPT-4 and other OpenAI models",
-            placeholder: "sk-..."
-          },
           gemini: {
             name: "Google Gemini",
             description: "Required for Google Gemini AI models",
             placeholder: "AIza..."
+          },
+          chatgpt: {
+            name: "OpenAI",
+            description: "Required for GPT-4 and other OpenAI models",
+            placeholder: "sk-..."
           },
           anthropic: {
             name: "Anthropic",
@@ -90,6 +93,16 @@ export function APIKeySettings() {
             name: "Hugging Face",
             description: "Required for accessing Hugging Face models",
             placeholder: "hf_..."
+          },
+          mistral: {
+            name: "Mistral AI",
+            description: "Required for Mistral models",
+            placeholder: "..."
+          },
+          cohere: {
+            name: "Cohere",
+            description: "Required for Cohere models",
+            placeholder: "..."
           }
         }).map(([provider, config]) => (
           <Card key={provider} className="p-4">
@@ -103,7 +116,7 @@ export function APIKeySettings() {
                 <div className="flex-1">
                   <Input
                     type={showKeys[provider] ? "text" : "password"}
-                    value={keys[provider as keyof typeof keys]}
+                    value={keys[provider]}
                     onChange={(e) => setKeys(prev => ({
                       ...prev,
                       [provider]: e.target.value
@@ -121,7 +134,7 @@ export function APIKeySettings() {
                 </Button>
                 <Button 
                   onClick={() => handleSaveKey(provider)}
-                  disabled={!keys[provider as keyof typeof keys]}
+                  disabled={!keys[provider]}
                 >
                   Save
                 </Button>
