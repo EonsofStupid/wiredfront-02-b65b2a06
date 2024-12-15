@@ -25,3 +25,14 @@ export interface AIConfigMetadata {
     isEnabled: boolean;
   }>;
 }
+
+export interface BotFunction {
+  id: string;
+  name: string;
+  description: string;
+  category: 'moderation' | 'fun' | 'utility' | 'custom';
+  isEnabled: boolean;
+  isPremium: boolean;
+  configuration: Record<string, any>;
+  code?: string;
+}
