@@ -1,14 +1,14 @@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import type { BackendConfig } from "@/types/wizard";
+import type { IBackendConfig } from "@/types/wizard";
 
-interface BackendConfigProps {
-  config: BackendConfig;
-  onConfigChange: (key: keyof BackendConfig, value: boolean) => void;
+interface BackendConfigSectionProps {
+  config: IBackendConfig;
+  onConfigChange: (key: keyof IBackendConfig, value: boolean) => void;
 }
 
-export const BackendConfig = ({ config, onConfigChange }: BackendConfigProps) => {
+export const BackendConfigSection = ({ config, onConfigChange }: BackendConfigSectionProps) => {
   return (
     <Card className="p-6 space-y-8">
       <div className="space-y-4">

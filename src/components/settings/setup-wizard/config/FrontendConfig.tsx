@@ -1,14 +1,14 @@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import type { FrontendConfig } from "@/types/wizard";
+import type { IFrontendConfig } from "@/types/wizard";
 
-interface FrontendConfigProps {
-  config: FrontendConfig;
-  onConfigChange: (key: keyof FrontendConfig, value: boolean) => void;
+interface FrontendConfigSectionProps {
+  config: IFrontendConfig;
+  onConfigChange: (key: keyof IFrontendConfig, value: boolean) => void;
 }
 
-export const FrontendConfig = ({ config, onConfigChange }: FrontendConfigProps) => {
+export const FrontendConfigSection = ({ config, onConfigChange }: FrontendConfigSectionProps) => {
   return (
     <Card className="p-6 space-y-8">
       <div className="space-y-4">

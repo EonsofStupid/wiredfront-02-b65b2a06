@@ -1,14 +1,14 @@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import type { DeploymentConfig } from "@/types/wizard";
+import type { IDeploymentConfig } from "@/types/wizard";
 
-interface DeploymentConfigProps {
-  config: DeploymentConfig;
-  onConfigChange: (key: keyof DeploymentConfig, value: boolean) => void;
+interface DeploymentConfigSectionProps {
+  config: IDeploymentConfig;
+  onConfigChange: (key: keyof IDeploymentConfig, value: boolean) => void;
 }
 
-export const DeploymentConfig = ({ config, onConfigChange }: DeploymentConfigProps) => {
+export const DeploymentConfigSection = ({ config, onConfigChange }: DeploymentConfigSectionProps) => {
   return (
     <Card className="p-6 space-y-8">
       <div className="space-y-4">

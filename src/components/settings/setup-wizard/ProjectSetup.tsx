@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { FrontendConfig } from "./config/FrontendConfig";
-import { BackendConfig } from "./config/BackendConfig";
-import { DeploymentConfig } from "./config/DeploymentConfig";
-import type { ProjectConfig, FrontendConfig as IFrontendConfig, BackendConfig as IBackendConfig, DeploymentConfig as IDeploymentConfig } from "@/types/wizard";
+import { FrontendConfigSection } from "./config/FrontendConfig";
+import { BackendConfigSection } from "./config/BackendConfig";
+import { DeploymentConfigSection } from "./config/DeploymentConfig";
+import type { ProjectConfig, IFrontendConfig, IBackendConfig, IDeploymentConfig } from "@/types/wizard";
 
 export const ProjectSetup = () => {
   const { toast } = useToast();
@@ -71,7 +71,7 @@ export const ProjectSetup = () => {
         .from('setup_wizard_config')
         .upsert({
           user_id: session.user.id,
-          environment_config: config,
+          environment_config: JSON.parse(JSON.stringify(config)),
           setup_status: 'in_progress',
         });
 
@@ -100,17 +100,17 @@ export const ProjectSetup = () => {
       </div>
 
       <div className="space-y-6">
-        <FrontendConfig 
+        <FrontendConfigSection 
           config={config.frontend}
           onConfigChange={handleFrontendConfigChange}
         />
         
-        <BackendConfig
+        <BackendConfigSection
           config={config.backend}
           onConfigChange={handleBackendConfigChange}
         />
         
-        <DeploymentConfig
+        <DeploymentConfigSection
           config={config.deployment}
           onConfigChange={handleDeploymentConfigChange}
         />

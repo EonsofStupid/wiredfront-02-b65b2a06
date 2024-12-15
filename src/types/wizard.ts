@@ -2,6 +2,28 @@ import { Json } from "@/integrations/supabase/types";
 
 export type SetupStatus = 'not_started' | 'in_progress' | 'completed';
 
+export interface IFrontendConfig {
+  typescript: boolean;
+  tailwind: boolean;
+  shadcn: boolean;
+}
+
+export interface IBackendConfig {
+  supabase: boolean;
+  redis: boolean;
+}
+
+export interface IDeploymentConfig {
+  docker: boolean;
+  localSupabase: boolean;
+}
+
+export interface ProjectConfig {
+  frontend: IFrontendConfig;
+  backend: IBackendConfig;
+  deployment: IDeploymentConfig;
+}
+
 export interface EnvironmentConfig {
   typescript?: boolean;
   tailwind?: boolean;
@@ -22,28 +44,6 @@ export interface BotConfig {
   enableLogging?: boolean;
   enableAutoComplete?: boolean;
   personality?: string;
-}
-
-export interface FrontendConfig {
-  typescript: boolean;
-  tailwind: boolean;
-  shadcn: boolean;
-}
-
-export interface BackendConfig {
-  supabase: boolean;
-  redis: boolean;
-}
-
-export interface DeploymentConfig {
-  docker: boolean;
-  localSupabase: boolean;
-}
-
-export interface ProjectConfig {
-  frontend: FrontendConfig;
-  backend: BackendConfig;
-  deployment: DeploymentConfig;
 }
 
 export interface WizardConfig {
