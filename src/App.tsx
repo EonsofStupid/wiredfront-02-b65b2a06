@@ -9,9 +9,11 @@ import Index from "@/pages/Index";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useRoutesStore } from "@/stores/routes";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const routes = useRoutesStore((state) => state.routes);
 
   useEffect(() => {
     // Check initial auth state
