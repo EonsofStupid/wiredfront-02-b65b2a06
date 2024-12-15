@@ -3,13 +3,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Bot, Settings, Quote, Trophy, Shield } from "lucide-react";
 import { BotGeneralSettings } from "./discord/BotGeneralSettings";
-import { BotAISettings } from "./discord/BotAISettings";
+import { BotAIConfig } from "./discord/BotAIConfig";
 import { BotMonitor } from "./discord/BotMonitor";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
 export const DiscordBotSettings = () => {
-  const { toast } = useToast();
   const [isConnecting, setIsConnecting] = useState(false);
   const [botConfig, setBotConfig] = useState({
     name: "",
@@ -143,10 +142,7 @@ export const DiscordBotSettings = () => {
           </TabsContent>
           
           <TabsContent value="ai">
-            <BotAISettings
-              aiConfig={aiConfig}
-              onUpdateAIConfig={handleUpdateAIConfig}
-            />
+            <BotAIConfig />
           </TabsContent>
           
           <TabsContent value="quotes">
