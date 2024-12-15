@@ -10,9 +10,9 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 export default function Settings() {
   return (
     <SettingsProvider>
-      <div className="container mx-auto py-6 space-y-8 min-h-full bg-[#1A1F2C]">
-        <div className="glass-card p-6">
-          <h1 className="text-3xl font-bold mb-2 gradient-text">Settings</h1>
+      <div className="container mx-auto py-6 space-y-8 min-h-full bg-gradient-to-b from-[#1A1F2C] to-[#2D3344]">
+        <div className="glass-card p-6 border border-white/10 shadow-xl">
+          <h1 className="text-3xl font-bold mb-2 gradient-text animate-gradient-x">Settings</h1>
           <p className="text-muted-foreground">
             Manage your application preferences and configurations
           </p>
@@ -20,27 +20,45 @@ export default function Settings() {
 
         <Tabs defaultValue="setup" className="space-y-6">
           <TabsList className="glass-card p-1 space-x-2">
-            <TabsTrigger value="setup" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+            <TabsTrigger 
+              value="setup" 
+              className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
+            >
               Setup Wizard
             </TabsTrigger>
-            <TabsTrigger value="general" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+            <TabsTrigger 
+              value="general" 
+              className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
+            >
               General
             </TabsTrigger>
-            <TabsTrigger value="ai" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+            <TabsTrigger 
+              value="ai" 
+              className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
+            >
               AI
             </TabsTrigger>
-            <TabsTrigger value="discord" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+            <TabsTrigger 
+              value="discord" 
+              className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
+            >
               Discord Bot
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+            <TabsTrigger 
+              value="notifications" 
+              className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
+            >
               Notifications
             </TabsTrigger>
-            <TabsTrigger value="accessibility" className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white">
+            <TabsTrigger 
+              value="accessibility" 
+              className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
+            >
               Accessibility
             </TabsTrigger>
           </TabsList>
 
-          <div className="glass-card p-6">
+          <div className="glass-card p-6 border border-white/10 shadow-xl backdrop-blur-lg">
             <TabsContent value="setup" className="mt-0">
               <SetupWizard />
             </TabsContent>

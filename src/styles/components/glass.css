@@ -1,6 +1,6 @@
 @layer components {
   .glass-card {
-    @apply bg-dark-lighter/30 backdrop-blur-md border border-white/10 rounded-xl shadow-xl;
+    @apply bg-[#1A1F2C]/30 backdrop-blur-md border border-white/10 rounded-xl shadow-xl;
     position: relative;
     overflow: hidden;
   }
@@ -62,77 +62,9 @@
     z-index: 1;
   }
 
-  .cyber-button {
-    @apply relative transition-all duration-300 hover:scale-110;
-  }
-
-  .cyber-button::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-t from-neon-blue via-neon-pink to-neon-violet opacity-0 transition-all duration-300;
-    transform: translateY(100%);
-  }
-
-  .cyber-button:hover::before {
-    @apply opacity-20;
-    transform: translateY(0);
-  }
-
-  .cyber-button:hover {
-    @apply animate-float shadow-lg;
-    box-shadow: 0 0 20px theme('colors.neon.blue'),
-                0 0 40px theme('colors.neon.pink');
-  }
-
   .glass-input {
-    @apply bg-dark-lighter/30 backdrop-blur-md border border-white/10 rounded-xl 
+    @apply bg-[#1A1F2C]/30 backdrop-blur-md border border-white/10 rounded-xl 
            text-white placeholder-white/50 focus:ring-2 focus:ring-neon-blue/50
            focus:border-transparent transition-all duration-300;
-  }
-
-  /* Custom scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-dark-lighter/30;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-[#5E498B] rounded-full;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-[#4E397B];
-  }
-
-  ::-webkit-scrollbar-corner {
-    @apply bg-transparent;
-  }
-
-  /* Scrollbar arrows (buttons) */
-  ::-webkit-scrollbar-button:single-button {
-    @apply bg-[#5E498B] rounded-sm;
-    height: 16px;
-    width: 16px;
-  }
-
-  ::-webkit-scrollbar-button:single-button:hover {
-    @apply bg-[#4E397B];
-  }
-
-  /* Up arrow */
-  ::-webkit-scrollbar-button:single-button:vertical:decrement {
-    border-width: 0 8px 8px 8px;
-    border-color: transparent transparent #fff transparent;
-  }
-
-  /* Down arrow */
-  ::-webkit-scrollbar-button:single-button:vertical:increment {
-    border-width: 8px 8px 0 8px;
-    border-color: #fff transparent transparent transparent;
   }
 }
