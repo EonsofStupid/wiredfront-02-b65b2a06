@@ -9,11 +9,11 @@
   }
 
   .top-bar {
-    @apply sticky top-0 left-0 right-0 h-16 z-30;
+    @apply fixed top-0 left-0 right-0 h-16 z-30 w-full;
   }
 
   .side-bar {
-    @apply sticky top-16 bottom-8 w-12 z-20;
+    @apply fixed top-16 bottom-8 w-12 z-20;
   }
 
   .side-bar-left {
@@ -25,12 +25,13 @@
   }
 
   .status-bar {
-    @apply sticky bottom-0 left-0 right-0 h-8 z-30;
+    @apply fixed bottom-0 left-0 right-0 h-8 z-30 w-full;
   }
 
   /* Main content area */
   .main-content {
-    @apply flex-1 overflow-auto relative;
+    @apply flex-1 overflow-auto relative mt-16 mb-8;
+    height: calc(100vh - theme('spacing.16') - theme('spacing.8'));
   }
 
   /* Button effects - consistent across all bars */

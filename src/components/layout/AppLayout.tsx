@@ -5,7 +5,7 @@ import { FileBar } from "@/components/layout/FileBar";
 import { StatusBar } from "@/components/layout/StatusBar";
 import { TopBar } from "@/components/layout/TopBar";
 import { AIAssistant } from "@/components/ai-elements/AIAssistant";
-import { useLayoutStore } from "@/stores/layout";
+import { useLayoutStore } from "@/stores";
 import { cn } from "@/lib/utils";
 
 export const AppLayout = () => {
@@ -25,12 +25,12 @@ export const AppLayout = () => {
       <AIAssistant />
       <div className="flex flex-col h-screen">
         {topBarVisible && <TopBar />}
-        <div className="flex-1 flex relative overflow-hidden">
+        <div className="main-content">
           <FileBar position="left" />
           <ResizablePanelGroup 
             direction="horizontal" 
             className={cn(
-              "min-h-0 flex-1",
+              "h-full",
               !sidebarOpen && "pl-0",
               !rightSidebarOpen && "pr-0"
             )}
@@ -46,7 +46,7 @@ export const AppLayout = () => {
             </ResizablePanel>
             {sidebarOpen && <ResizableHandle />}
             <ResizablePanel>
-              <main className="h-full overflow-auto">
+              <main className="h-full overflow-auto p-4">
                 <Outlet />
               </main>
             </ResizablePanel>
