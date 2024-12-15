@@ -1,16 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { generateAIResponse } from "@/utils/ai/aiProviders";
+import { handleCommand, getSuggestions } from "@/utils/ai/commandHandler";
 import { AIHeader } from "./AIHeader";
 import { AIModeSelector } from "./AIModeSelector";
 import { AIProviderSelector } from "./AIProviderSelector";
 import { AIInputForm } from "./AIInputForm";
 import { AIResponse } from "./AIResponse";
 import type { AIMode, AIProvider } from "@/types/ai";
+import type { Command } from "@/utils/ai/commandHandler";
 
 export const AIAssistant = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -22,8 +26,36 @@ export const AIAssistant = () => {
   const [provider, setProvider] = useState<AIProvider>("gemini");
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [availableProviders, setAvailableProviders] = useState<AIProvider[]>([]);
+  const [suggestions, setSuggestions] = useState<Command[]>([]);
   const constraintsRef = useRef(null);
   const { toast } = useToast();
+
+  // Speech recognition setup
+  const [isListening, setIsListening] = useState(false);
+  const recognition = useRef<SpeechRecognition | null>(null);
+
+  useEffect(() => {
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      recognition.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.current.continuous = false;
+      recognition.current.interimResults = false;
+
+      recognition.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(transcript);
+        handleSubmit(new Event('submit') as any, transcript);
+      };
+
+      recognition.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
@@ -32,7 +64,6 @@ export const AIAssistant = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Fetch available providers on mount
     fetchAvailableProviders();
 
     return () => {
@@ -40,6 +71,11 @@ export const AIAssistant = () => {
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  useEffect(() => {
+    const newSuggestions = getSuggestions(input);
+    setSuggestions(newSuggestions);
+  }, [input]);
 
   const fetchAvailableProviders = async () => {
     try {
@@ -58,12 +94,33 @@ export const AIAssistant = () => {
       const providers = data.map(item => item.provider);
       setAvailableProviders(providers);
 
-      // Set default provider if current one is not available
       if (providers.length > 0 && !providers.includes(provider)) {
         setProvider(providers[0]);
       }
     } catch (error) {
       console.error('Error fetching available providers:', error);
+    }
+  };
+
+  const toggleVoiceInput = () => {
+    if (!recognition.current) {
+      toast({
+        title: "Error",
+        description: "Speech recognition is not supported in your browser",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isListening) {
+      recognition.current.stop();
+    } else {
+      try {
+        recognition.current.start();
+        setIsListening(true);
+      } catch (error) {
+        console.error('Speech recognition error:', error);
+      }
     }
   };
 
@@ -73,20 +130,27 @@ export const AIAssistant = () => {
     setPosition({ x: position.x + info.offset.x, y: position.y + info.offset.y });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, voiceInput?: string) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    const currentInput = voiceInput || input;
+    if (!currentInput.trim()) return;
+
+    // First, check if it's a command
+    const isCommand = handleCommand(currentInput, navigate);
+    if (isCommand) {
+      setInput("");
+      return;
+    }
 
     setIsProcessing(true);
     try {
       if (isOffline) {
-        // Use local model or cached responses when offline
         const offlineResponse = "I'm currently in offline mode. I'll use my local knowledge to assist you.";
         setResponse(offlineResponse);
         return;
       }
 
-      const result = await generateAIResponse(provider, input);
+      const result = await generateAIResponse(provider, currentInput);
       setResponse(result);
       toast({
         title: "AI Response Generated",
@@ -101,6 +165,7 @@ export const AIAssistant = () => {
       });
     } finally {
       setIsProcessing(false);
+      setInput("");
     }
   };
 
@@ -136,6 +201,8 @@ export const AIAssistant = () => {
             onMinimize={() => setIsMinimized(!isMinimized)}
             onClose={() => setIsOpen(false)}
             isOffline={isOffline}
+            isListening={isListening}
+            onVoiceToggle={toggleVoiceInput}
           />
 
           {!isMinimized && (
@@ -153,6 +220,7 @@ export const AIAssistant = () => {
                 onInputChange={setInput}
                 onSubmit={handleSubmit}
                 isOffline={isOffline}
+                suggestions={suggestions}
               />
               <AIResponse response={response} />
             </div>
