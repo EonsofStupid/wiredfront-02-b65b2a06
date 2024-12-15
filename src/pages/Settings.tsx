@@ -6,6 +6,7 @@ import { AccessibilitySettings } from "@/components/settings/AccessibilitySettin
 import { DiscordBotSettings } from "@/components/settings/DiscordBotSettings";
 import { SetupWizard } from "@/components/settings/setup-wizard/SetupWizard";
 import { AIModelManagement } from "@/components/settings/ai/AIModelManagement";
+import { APIKeySettings } from "@/components/settings/APIKeySettings";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
@@ -24,48 +25,14 @@ export default function Settings() {
 
           <Tabs defaultValue="setup" className="space-y-6">
             <TabsList className="glass-card p-1 space-x-2">
-              <TabsTrigger 
-                value="setup" 
-                className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
-              >
-                Setup Wizard
-              </TabsTrigger>
-              <TabsTrigger 
-                value="general" 
-                className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
-              >
-                General
-              </TabsTrigger>
-              <TabsTrigger 
-                value="ai" 
-                className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
-              >
-                AI
-              </TabsTrigger>
-              <TabsTrigger 
-                value="ai-models" 
-                className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
-              >
-                AI Models
-              </TabsTrigger>
-              <TabsTrigger 
-                value="discord" 
-                className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
-              >
-                Discord Bot
-              </TabsTrigger>
-              <TabsTrigger 
-                value="notifications" 
-                className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
-              >
-                Notifications
-              </TabsTrigger>
-              <TabsTrigger 
-                value="accessibility" 
-                className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white hover:text-white transition-all"
-              >
-                Accessibility
-              </TabsTrigger>
+              <TabsTrigger value="setup">Setup Wizard</TabsTrigger>
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="api-keys">API Keys</TabsTrigger>
+              <TabsTrigger value="ai">AI</TabsTrigger>
+              <TabsTrigger value="ai-models">AI Models</TabsTrigger>
+              <TabsTrigger value="discord">Discord Bot</TabsTrigger>
+              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="accessibility">Accessibility</TabsTrigger>
             </TabsList>
 
             <div className="glass-card p-6 border border-white/10 shadow-xl backdrop-blur-lg">
@@ -75,6 +42,10 @@ export default function Settings() {
 
               <TabsContent value="general" className="mt-0">
                 <GeneralSettings />
+              </TabsContent>
+
+              <TabsContent value="api-keys" className="mt-0">
+                <APIKeySettings />
               </TabsContent>
 
               <TabsContent value="ai" className="mt-0">
