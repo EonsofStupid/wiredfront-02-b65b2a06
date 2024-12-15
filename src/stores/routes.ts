@@ -14,7 +14,7 @@ export interface Route {
 
 interface RoutesState {
   routes: Route[];
-  addRoute: (route: Partial<Route>) => void;
+  addRoute: (route: Pick<Route, 'path' | 'label'>) => void;
   removeRoute: (path: string) => void;
   updateRoute: (id: string, updates: Partial<Route>) => void;
   toggleRoute: (id: string) => void;
@@ -67,12 +67,13 @@ export const useRoutesStore = create<RoutesState>()(
       ],
       addRoute: (route) =>
         set((state) => ({
-          routes: [...state.routes, { 
-            ...route, 
+          routes: [...state.routes, {
             id: crypto.randomUUID(),
+            path: route.path,
+            label: route.label,
+            icon: FileText,
             isEnabled: true,
             requiresAuth: true,
-            icon: FileText // Default icon
           }],
         })),
       removeRoute: (path) =>
