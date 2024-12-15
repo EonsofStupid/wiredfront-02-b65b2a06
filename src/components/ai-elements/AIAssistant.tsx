@@ -10,6 +10,8 @@ import { AIModeSelector } from "./AIModeSelector";
 import { AIProviderSelector } from "./AIProviderSelector";
 import { AIInputForm } from "./AIInputForm";
 import { AIResponse } from "./AIResponse";
+import { AICommandSuggestions } from "./AICommandSuggestions";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import type { AIMode, AIProvider } from "@/types/ai";
 import type { Command } from "@/utils/ai/commandHandler";
 
@@ -30,32 +32,12 @@ export const AIAssistant = () => {
   const constraintsRef = useRef(null);
   const { toast } = useToast();
 
-  // Speech recognition setup
-  const [isListening, setIsListening] = useState(false);
-  const recognition = useRef<SpeechRecognition | null>(null);
+  const handleTranscript = (transcript: string) => {
+    setInput(transcript);
+    handleSubmit(new Event('submit') as any, transcript);
+  };
 
-  useEffect(() => {
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      recognition.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.current.continuous = false;
-      recognition.current.interimResults = false;
-
-      recognition.current.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setInput(transcript);
-        handleSubmit(new Event('submit') as any, transcript);
-      };
-
-      recognition.current.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        setIsListening(false);
-      };
-
-      recognition.current.onend = () => {
-        setIsListening(false);
-      };
-    }
-  }, []);
+  const { isListening, toggleVoiceInput } = useSpeechRecognition(handleTranscript);
 
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
@@ -99,28 +81,6 @@ export const AIAssistant = () => {
       }
     } catch (error) {
       console.error('Error fetching available providers:', error);
-    }
-  };
-
-  const toggleVoiceInput = () => {
-    if (!recognition.current) {
-      toast({
-        title: "Error",
-        description: "Speech recognition is not supported in your browser",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (isListening) {
-      recognition.current.stop();
-    } else {
-      try {
-        recognition.current.start();
-        setIsListening(true);
-      } catch (error) {
-        console.error('Speech recognition error:', error);
-      }
     }
   };
 
