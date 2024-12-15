@@ -1,37 +1,22 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-
-export type SetupStatus = 'not_started' | 'in_progress' | 'completed';
-
-export interface WizardConfig {
-  current_step: number;
-  setup_status: SetupStatus;
-  environment_config: {
-    typescript?: boolean;
-    tailwind?: boolean;
-    shadcn?: boolean;
-    supabase?: boolean;
-  };
-  ai_config: {
-    provider?: string;
-    model?: string;
-    temperature?: number;
-    maxTokens?: number;
-  };
-  bot_config: {
-    name?: string;
-    description?: string;
-    enableLogging?: boolean;
-    enableAutoComplete?: boolean;
-    personality?: string;
-  };
-}
+import { WizardConfig, WizardConfigResponse, SetupStatus } from "@/types/wizard";
 
 export const useSetupWizard = () => {
   const [config, setConfig] = useState<WizardConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+
+  const transformResponse = (data: WizardConfigResponse): WizardConfig => {
+    return {
+      current_step: data.current_step,
+      setup_status: data.setup_status,
+      environment_config: typeof data.environment_config === 'object' ? data.environment_config as any : {},
+      ai_config: typeof data.ai_config === 'object' ? data.ai_config as any : {},
+      bot_config: typeof data.bot_config === 'object' ? data.bot_config as any : {},
+    };
+  };
 
   useEffect(() => {
     fetchConfig();
@@ -50,7 +35,7 @@ export const useSetupWizard = () => {
       if (error) throw error;
 
       if (data) {
-        setConfig(data);
+        setConfig(transformResponse(data as WizardConfigResponse));
       } else {
         // Initialize with default values if no config exists
         const defaultConfig: WizardConfig = {
