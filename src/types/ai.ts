@@ -1,31 +1,20 @@
-import { LucideIcon } from "lucide-react";
+export type AIProvider = "gemini" | "chatgpt" | "huggingface" | "anthropic" | "mistral" | "cohere";
 
-export type AIMode = "chat" | "code" | "file";
-export type AIProvider = "gemini" | "chatgpt" | "anthropic" | "huggingface" | "mistral" | "cohere";
-
-export interface AIProviderConfig {
-  id: string;
-  name: string;
-  description: string;
-  isEnabled: boolean;
-  apiKeyRequired: boolean;
-  models: string[];
-  icon: LucideIcon;
-}
-
-export interface AIResponse {
-  text: string;
-  metadata?: {
-    model: string;
-    processingTime: number;
-    tokens?: number;
-  };
-}
-
-export interface AISettings {
+export interface AISettingsData {
+  id?: string;
+  user_id: string;
   provider: AIProvider;
-  model: string;
-  temperature: number;
-  maxTokens: number;
-  isEnabled: boolean;
+  api_key: string | null;
+  model_name: string | null;
+  max_tokens: number | null;
+  temperature: number | null;
+  is_active: boolean;
+  metadata?: {
+    fallbackEnabled?: boolean;
+    offlineMode?: boolean;
+    routingStrategy?: string;
+    [key: string]: any;
+  };
+  created_at?: string | null;
+  updated_at?: string | null;
 }

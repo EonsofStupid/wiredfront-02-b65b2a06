@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Activity, AlertTriangle, CheckCircle, Clock } from "lucide-react";
 
@@ -129,7 +129,7 @@ export const BotMonitor = () => {
           <h3 className="text-lg font-semibold">Bot Monitor</h3>
           <p className="text-sm text-muted-foreground">Real-time bot status and logs</p>
         </div>
-        <Badge variant={status.isActive ? "success" : "destructive"}>
+        <Badge variant={status.isActive ? "default" : "destructive"}>
           {status.isActive ? (
             <CheckCircle className="h-4 w-4 mr-1" />
           ) : (

@@ -6,7 +6,7 @@ import { BotGeneralSettings } from "./discord/BotGeneralSettings";
 import { BotAIConfig } from "./discord/BotAIConfig";
 import { BotMonitor } from "./discord/BotMonitor";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const DiscordBotSettings = () => {
   const [isConnecting, setIsConnecting] = useState(false);
@@ -176,3 +176,4 @@ export const DiscordBotSettings = () => {
     </div>
   );
 };
+

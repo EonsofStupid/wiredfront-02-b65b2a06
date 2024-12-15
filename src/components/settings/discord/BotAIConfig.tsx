@@ -4,12 +4,24 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { AIProvider } from "@/types/ai";
+
+interface AIConfigMetadata {
+  fallbackEnabled: boolean;
+  offlineMode: boolean;
+  routingStrategy: string;
+}
 
 export const BotAIConfig = () => {
   const { toast } = useToast();
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<{
+    primaryProvider: AIProvider;
+    fallbackEnabled: boolean;
+    offlineMode: boolean;
+    routingStrategy: string;
+  }>({
     primaryProvider: "gemini",
     fallbackEnabled: false,
     offlineMode: false,
@@ -37,12 +49,13 @@ export const BotAIConfig = () => {
       }
 
       if (data) {
+        const metadata = (data.metadata || {}) as AIConfigMetadata;
         setConfig(prev => ({
           ...prev,
           primaryProvider: data.provider,
-          fallbackEnabled: data.metadata?.fallbackEnabled || false,
-          offlineMode: data.metadata?.offlineMode || false,
-          routingStrategy: data.metadata?.routingStrategy || "cost-effective"
+          fallbackEnabled: metadata.fallbackEnabled || false,
+          offlineMode: metadata.offlineMode || false,
+          routingStrategy: metadata.routingStrategy || "cost-effective"
         }));
       }
     };
