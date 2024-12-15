@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import type { AIProvider } from "@/types/ai";
+import type { AIProvider, AISettingsData } from "@/types/ai";
 
 interface AIConfigMetadata {
   fallbackEnabled: boolean;
@@ -52,7 +52,7 @@ export const BotAIConfig = () => {
         const metadata = (data.metadata || {}) as AIConfigMetadata;
         setConfig(prev => ({
           ...prev,
-          primaryProvider: data.provider,
+          primaryProvider: data.provider as AIProvider,
           fallbackEnabled: metadata.fallbackEnabled || false,
           offlineMode: metadata.offlineMode || false,
           routingStrategy: metadata.routingStrategy || "cost-effective"
@@ -77,7 +77,7 @@ export const BotAIConfig = () => {
           offlineMode: config.offlineMode,
           routingStrategy: config.routingStrategy
         }
-      });
+      } as AISettingsData);
 
     if (error) {
       toast({

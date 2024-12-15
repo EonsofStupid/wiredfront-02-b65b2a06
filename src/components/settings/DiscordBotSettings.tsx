@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export const DiscordBotSettings = () => {
+  const { toast } = useToast();
   const [isConnecting, setIsConnecting] = useState(false);
   const [botConfig, setBotConfig] = useState({
     name: "",
@@ -176,4 +177,3 @@ export const DiscordBotSettings = () => {
     </div>
   );
 };
-

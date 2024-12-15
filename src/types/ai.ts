@@ -1,4 +1,17 @@
+import { LucideIcon } from "lucide-react";
+
+export type AIMode = "chat" | "code" | "file";
 export type AIProvider = "gemini" | "chatgpt" | "huggingface" | "anthropic" | "mistral" | "cohere";
+
+export interface AIProviderConfig {
+  id: string;
+  name: string;
+  description: string;
+  isEnabled: boolean;
+  apiKeyRequired: boolean;
+  models: string[];
+  icon: LucideIcon;
+}
 
 export interface AISettingsData {
   id?: string;

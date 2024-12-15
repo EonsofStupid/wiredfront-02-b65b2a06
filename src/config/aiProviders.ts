@@ -1,7 +1,7 @@
 import { Bot, Brain, Sparkles, Cpu, Network, Workflow } from "lucide-react";
-import type { AIProviderConfig } from "@/types/ai";
+import type { AIProvider, AIProviderConfig } from "@/types/ai";
 
-export const AI_PROVIDERS: Record<string, AIProviderConfig> = {
+export const AI_PROVIDERS: Record<AIProvider, AIProviderConfig> = {
   gemini: {
     id: "gemini",
     name: "Google Gemini",
@@ -58,5 +58,5 @@ export const AI_PROVIDERS: Record<string, AIProviderConfig> = {
   }
 };
 
-export const DEFAULT_PROVIDER = "gemini";
+export const DEFAULT_PROVIDER: AIProvider = "gemini";
 export const DEFAULT_MODEL = "gemini-pro";
