@@ -109,7 +109,7 @@ export const BotMonitor = () => {
             <Bot className="h-4 w-4" />
             <span>Status</span>
           </div>
-          <Badge variant={isOnline ? "success" : "destructive"}>
+          <Badge variant={isOnline ? "default" : "destructive"}>
             {isOnline ? "Online" : "Offline"}
           </Badge>
         </Card>
