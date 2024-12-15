@@ -13,11 +13,23 @@ export function AITrainingSettings() {
 
   const handleSubmitTraining = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "You must be logged in to add training data.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('ai_training_data')
         .insert({
           category,
           content: trainingData,
+          user_id: user.id
         });
 
       if (error) throw error;
@@ -28,6 +40,7 @@ export function AITrainingSettings() {
       });
       setTrainingData("");
     } catch (error) {
+      console.error("Error adding training data:", error);
       toast({
         title: "Error adding training data",
         description: "Failed to save training data.",
