@@ -1,10 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { Settings as SettingsIcon, Bell, Eye, Globe } from "lucide-react";
+import { Settings as SettingsIcon, Bell, Eye, Globe, Bot } from "lucide-react";
 import { GeneralSettings } from "@/components/settings/GeneralSettings";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { AccessibilitySettings } from "@/components/settings/AccessibilitySettings";
 import { AISettings } from "@/components/settings/AISettings";
+import { DiscordBotSettings } from "@/components/settings/DiscordBotSettings";
 
 export default function Settings() {
   return (
@@ -19,6 +20,10 @@ export default function Settings() {
           <TabsTrigger value="ai">
             <Globe className="h-4 w-4 mr-2" />
             AI Settings
+          </TabsTrigger>
+          <TabsTrigger value="discord">
+            <Bot className="h-4 w-4 mr-2" />
+            Discord Bot
           </TabsTrigger>
           <TabsTrigger value="general">
             <Globe className="h-4 w-4 mr-2" />
@@ -37,6 +42,9 @@ export default function Settings() {
         <Card className="p-6">
           <TabsContent value="ai">
             <AISettings />
+          </TabsContent>
+          <TabsContent value="discord">
+            <DiscordBotSettings />
           </TabsContent>
           <TabsContent value="general">
             <GeneralSettings />
