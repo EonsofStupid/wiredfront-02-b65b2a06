@@ -3,9 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Activity, CheckCircle, Clock } from "lucide-react";
+import { Activity, CheckCircle, Clock, Download } from "lucide-react";
 import { BotLogViewer } from "./BotLogViewer";
 import type { LogEntry, BotStatus } from "@/types/discord";
+import { Button } from "@/components/ui/button";
 
 export const BotMonitor = () => {
   const { toast } = useToast();
@@ -36,19 +37,16 @@ export const BotMonitor = () => {
           .order('created_at', { ascending: false })
           .limit(50);
 
-        if (error) {
-          console.error('Error fetching logs:', error);
-          toast({
-            variant: "destructive",
-            title: "Error fetching logs",
-            description: error.message
-          });
-          return;
-        }
+        if (error) throw error;
 
-        setLogs(data as LogEntry[] || []);
-      } catch (error) {
-        console.error('Error in fetchInitialLogs:', error);
+        setLogs(data || []);
+      } catch (error: any) {
+        console.error('Error fetching logs:', error);
+        toast({
+          variant: "destructive",
+          title: "Error fetching logs",
+          description: error.message
+        });
       }
     };
 
@@ -63,10 +61,7 @@ export const BotMonitor = () => {
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching bot status:', error);
-          return;
-        }
+        if (error) throw error;
 
         if (data) {
           setStatus({
@@ -75,8 +70,8 @@ export const BotMonitor = () => {
             messageCount: data.total_messages || 0
           });
         }
-      } catch (error) {
-        console.error('Error in fetchBotStatus:', error);
+      } catch (error: any) {
+        console.error('Error fetching bot status:', error);
       }
     };
 
@@ -86,13 +81,15 @@ export const BotMonitor = () => {
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
           table: 'discord_bot_logs'
         },
         (payload) => {
           console.log('New log received:', payload);
-          setLogs(prev => [payload.new as LogEntry, ...prev].slice(0, 50));
+          if (payload.eventType === 'INSERT') {
+            setLogs(prev => [payload.new as LogEntry, ...prev].slice(0, 50));
+          }
         }
       )
       .subscribe();
