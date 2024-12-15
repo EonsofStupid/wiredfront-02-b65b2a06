@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -9,11 +10,9 @@ import Index from "@/pages/Index";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useRoutesStore } from "@/stores/routes";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const routes = useRoutesStore((state) => state.routes);
 
   useEffect(() => {
     // Check initial auth state
@@ -33,9 +32,11 @@ function App() {
 
   // Show loading state while checking auth
   if (isAuthenticated === null) {
-    return <div className="flex items-center justify-center min-h-screen bg-[#1A1F2C]">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500"></div>
-    </div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#1A1F2C]">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500"></div>
+      </div>
+    );
   }
 
   return (
