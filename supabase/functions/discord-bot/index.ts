@@ -9,14 +9,21 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { action, config } = await req.json();
+    console.log('Received request:', { action, config });
 
     if (action === 'start') {
+      if (!config?.bot_token) {
+        throw new Error('Bot token is required');
+      }
+
+      console.log('Creating bot with token');
       const bot = createBot({
         token: config.bot_token,
         intents: Intents.Guilds | Intents.GuildMessages | Intents.MessageContent,
@@ -27,54 +34,53 @@ serve(async (req) => {
           messageCreate: async (bot, message) => {
             if (message.isFromBot) return;
 
-            // Handle custom commands
-            if (config.commands) {
-              const command = config.commands.find((cmd: any) => 
-                message.content.startsWith(cmd.name)
-              );
+            try {
+              // Handle custom commands
+              if (config.commands) {
+                const command = config.commands.find((cmd: any) => 
+                  message.content.startsWith(cmd.name)
+                );
 
-              if (command) {
-                if (command.type === 'ai') {
-                  try {
+                if (command) {
+                  if (command.type === 'ai') {
                     const response = await generateAIResponse(message.content);
                     await bot.helpers.sendMessage(message.channelId, { 
                       content: response 
                     });
-                  } catch (error) {
-                    console.error('Error generating AI response:', error);
+                  } else {
                     await bot.helpers.sendMessage(message.channelId, { 
-                      content: "I encountered an error processing your request." 
+                      content: command.response 
                     });
                   }
-                } else {
-                  await bot.helpers.sendMessage(message.channelId, { 
-                    content: command.response 
-                  });
+                  return;
                 }
-                return;
               }
-            }
 
-            // Default AI response for non-command messages
-            try {
+              // Default AI response for non-command messages
               const response = await generateAIResponse(message.content);
               await bot.helpers.sendMessage(message.channelId, { 
                 content: response 
               });
             } catch (error) {
-              console.error('Error generating AI response:', error);
+              console.error('Error handling message:', error);
               await bot.helpers.sendMessage(message.channelId, { 
-                content: "I apologize, but I encountered an error processing your request." 
+                content: "I encountered an error processing your request." 
               });
             }
           },
         },
       });
 
-      await startBot(bot);
-      return new Response(JSON.stringify({ success: true }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      try {
+        await startBot(bot);
+        console.log('Bot started successfully');
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error('Error starting bot:', error);
+        throw error;
+      }
     }
 
     return new Response(JSON.stringify({ error: 'Invalid action' }), {
@@ -82,8 +88,11 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('Error in discord-bot function:', error);
+    return new Response(JSON.stringify({ 
+      error: error.message || 'An unexpected error occurred',
+      details: error.toString()
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
