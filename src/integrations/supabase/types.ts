@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ai_custom_prompts: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          name: string
+          prompt: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          name: string
+          prompt: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          name?: string
+          prompt?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_settings: {
         Row: {
           api_key: string | null
@@ -16,6 +52,7 @@ export type Database = {
           id: string
           is_active: boolean
           max_tokens: number | null
+          metadata: Json | null
           model_name: string | null
           provider: Database["public"]["Enums"]["ai_provider"]
           temperature: number | null
@@ -28,6 +65,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           max_tokens?: number | null
+          metadata?: Json | null
           model_name?: string | null
           provider?: Database["public"]["Enums"]["ai_provider"]
           temperature?: number | null
@@ -40,6 +78,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           max_tokens?: number | null
+          metadata?: Json | null
           model_name?: string | null
           provider?: Database["public"]["Enums"]["ai_provider"]
           temperature?: number | null
@@ -100,6 +139,36 @@ export type Database = {
           status?: string
           task_id?: string
           type?: Database["public"]["Enums"]["task_type"]
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_training_data: {
+        Row: {
+          category: string
+          content: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
           updated_at?: string | null
           user_id?: string | null
         }
