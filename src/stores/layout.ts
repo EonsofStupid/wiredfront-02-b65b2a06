@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from "@/components/ui/use-toast";
 
 interface LayoutState {
   sidebarOpen: boolean;
@@ -20,6 +20,15 @@ interface LayoutState {
   initializeLayoutPreferences: () => Promise<void>;
 }
 
+const DEFAULT_PREFERENCES = {
+  sidebar_open: true,
+  right_sidebar_open: false,
+  top_bar_visible: true,
+  bottom_bar_visible: true,
+  sidebar_width: 20,
+  right_sidebar_width: 20,
+};
+
 export const useLayoutStore = create<LayoutState>((set, get) => ({
   sidebarOpen: true,
   rightSidebarOpen: false,
@@ -34,10 +43,13 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
     const newValue = !get().sidebarOpen;
     set({ sidebarOpen: newValue });
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
       const { error } = await supabase
         .from('layout_preferences')
         .update({ sidebar_open: newValue })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        .eq('user_id', user.id);
       
       if (error) throw error;
     } catch (error) {
@@ -50,10 +62,13 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
     const newValue = !get().rightSidebarOpen;
     set({ rightSidebarOpen: newValue });
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
       const { error } = await supabase
         .from('layout_preferences')
         .update({ right_sidebar_open: newValue })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        .eq('user_id', user.id);
       
       if (error) throw error;
     } catch (error) {
@@ -66,10 +81,13 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
     const newValue = !get().topBarVisible;
     set({ topBarVisible: newValue });
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
       const { error } = await supabase
         .from('layout_preferences')
         .update({ top_bar_visible: newValue })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        .eq('user_id', user.id);
       
       if (error) throw error;
     } catch (error) {
@@ -82,10 +100,13 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
     const newValue = !get().bottomBarVisible;
     set({ bottomBarVisible: newValue });
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
       const { error } = await supabase
         .from('layout_preferences')
         .update({ bottom_bar_visible: newValue })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        .eq('user_id', user.id);
       
       if (error) throw error;
     } catch (error) {
@@ -97,10 +118,13 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   setSidebarWidth: async (width: number) => {
     set({ sidebarWidth: width });
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
       const { error } = await supabase
         .from('layout_preferences')
         .update({ sidebar_width: width })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        .eq('user_id', user.id);
       
       if (error) throw error;
     } catch (error) {
@@ -112,10 +136,13 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   setRightSidebarWidth: async (width: number) => {
     set({ rightSidebarWidth: width });
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
       const { error } = await supabase
         .from('layout_preferences')
         .update({ right_sidebar_width: width })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        .eq('user_id', user.id);
       
       if (error) throw error;
     } catch (error) {
@@ -127,62 +154,55 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   initializeLayoutPreferences: async () => {
     set({ isLoading: true, error: null });
     try {
-      const user = (await supabase.auth.getUser()).data.user;
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
       // First, try to get existing preferences
-      const { data: existingPrefs, error: fetchError } = await supabase
+      const { data: existingPrefs, error } = await supabase
         .from('layout_preferences')
         .select('*')
-        .eq('user_id', user.id)
-        .single();
+        .eq('user_id', user.id);
 
-      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 means no rows returned
-        throw fetchError;
-      }
-
-      if (!existingPrefs) {
-        // Create default preferences if none exist
+      // If no preferences exist or there's a PGRST116 error (no rows), create default preferences
+      if (!existingPrefs?.length || (error && error.code === 'PGRST116')) {
         const { data: newPrefs, error: insertError } = await supabase
           .from('layout_preferences')
-          .insert([
-            {
-              user_id: user.id,
-              sidebar_open: true,
-              right_sidebar_open: false,
-              top_bar_visible: true,
-              bottom_bar_visible: true,
-              sidebar_width: 20,
-              right_sidebar_width: 20
-            }
-          ])
+          .insert([{ user_id: user.id, ...DEFAULT_PREFERENCES }])
           .select()
           .single();
 
         if (insertError) throw insertError;
         
-        set({
-          sidebarOpen: newPrefs.sidebar_open,
-          rightSidebarOpen: newPrefs.right_sidebar_open,
-          topBarVisible: newPrefs.top_bar_visible,
-          bottomBarVisible: newPrefs.bottom_bar_visible,
-          sidebarWidth: newPrefs.sidebar_width,
-          rightSidebarWidth: newPrefs.right_sidebar_width,
-        });
-      } else {
+        if (newPrefs) {
+          set({
+            sidebarOpen: newPrefs.sidebar_open,
+            rightSidebarOpen: newPrefs.right_sidebar_open,
+            topBarVisible: newPrefs.top_bar_visible,
+            bottomBarVisible: newPrefs.bottom_bar_visible,
+            sidebarWidth: newPrefs.sidebar_width,
+            rightSidebarWidth: newPrefs.right_sidebar_width,
+          });
+        }
+      } else if (existingPrefs[0]) {
         // Use existing preferences
+        const prefs = existingPrefs[0];
         set({
-          sidebarOpen: existingPrefs.sidebar_open,
-          rightSidebarOpen: existingPrefs.right_sidebar_open,
-          topBarVisible: existingPrefs.top_bar_visible,
-          bottomBarVisible: existingPrefs.bottom_bar_visible,
-          sidebarWidth: existingPrefs.sidebar_width,
-          rightSidebarWidth: existingPrefs.right_sidebar_width,
+          sidebarOpen: prefs.sidebar_open,
+          rightSidebarOpen: prefs.right_sidebar_open,
+          topBarVisible: prefs.top_bar_visible,
+          bottomBarVisible: prefs.bottom_bar_visible,
+          sidebarWidth: prefs.sidebar_width,
+          rightSidebarWidth: prefs.right_sidebar_width,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error initializing layout preferences:', error);
       set({ error: 'Failed to load layout preferences' });
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load layout preferences. Using defaults."
+      });
     } finally {
       set({ isLoading: false });
     }
