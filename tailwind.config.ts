@@ -98,6 +98,16 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.6" },
         },
+        "data-pulse": {
+          "0%, 100%": { 
+            opacity: "0.3",
+            transform: "translateX(0) scale(1)"
+          },
+          "50%": { 
+            opacity: "1",
+            transform: "translateX(10px) scale(1.05)"
+          }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -105,6 +115,7 @@ export default {
         "gradient-x": "gradient-x 15s ease infinite",
         float: "float 6s ease-in-out infinite",
         glow: "glow 2s ease-in-out infinite",
+        "data-pulse": "data-pulse 2s ease-in-out infinite",
       },
     },
   },

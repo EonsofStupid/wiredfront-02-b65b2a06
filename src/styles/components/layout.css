@@ -3,45 +3,98 @@
     @apply min-h-screen flex flex-col bg-dark-darker;
   }
 
-  /* Frame elements */
+  /* Frame elements with enhanced depth and machinery aesthetics */
   .frame-element {
     @apply fixed z-20;
   }
 
   .top-bar {
     @apply fixed top-0 left-0 right-0 h-16 z-30 w-full;
-    @apply bg-dark-lighter/30 backdrop-blur-md border-b border-white/5;
-    @apply shadow-lg shadow-dark-darker/50;
+    @apply bg-gradient-to-b from-dark-darker via-dark-lighter to-dark-darker;
+    @apply border-b border-white/5 shadow-[0_4px_15px_rgba(0,255,255,0.1)];
+    @apply before:absolute before:inset-0 before:bg-gradient-to-r;
+    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-blue/5;
+    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
+    @apply rounded-b-lg border-x border-white/5;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      calc(100% - 10px) 100%,
+      10px 100%
+    );
   }
 
   .side-bar {
     @apply fixed top-16 bottom-8 w-12 z-20;
-    @apply bg-dark-lighter/20 backdrop-blur-md;
+    @apply bg-gradient-to-b from-dark-darker via-dark-lighter to-dark-darker;
     @apply shadow-lg shadow-dark-darker/50;
     @apply transition-all duration-300 ease-in-out;
+    @apply before:absolute before:inset-0 before:bg-gradient-to-b;
+    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-purple/5;
+    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
   }
 
   .side-bar-left {
     @apply left-0 border-r border-white/5;
+    clip-path: polygon(
+      0 0,
+      100% 10px,
+      100% calc(100% - 10px),
+      0 100%
+    );
   }
 
   .side-bar-right {
     @apply right-0 border-l border-white/5;
+    clip-path: polygon(
+      0 10px,
+      100% 0,
+      100% 100%,
+      0 calc(100% - 10px)
+    );
   }
 
   .status-bar {
     @apply fixed bottom-0 left-0 right-0 h-8 z-30 w-full;
-    @apply bg-dark-lighter/30 backdrop-blur-md border-t border-white/5;
-    @apply shadow-lg shadow-dark-darker/50;
+    @apply bg-gradient-to-t from-dark-darker via-dark-lighter to-dark-darker;
+    @apply border-t border-white/5 shadow-[0_-4px_15px_rgba(0,255,255,0.1)];
+    @apply before:absolute before:inset-0 before:bg-gradient-to-r;
+    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-blue/5;
+    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
+    @apply rounded-t-lg border-x border-white/5;
+    clip-path: polygon(
+      10px 0,
+      calc(100% - 10px) 0,
+      100% 100%,
+      0 100%
+    );
   }
 
-  /* Main content area */
+  /* Data stream effect */
+  .data-stream {
+    @apply absolute inset-0 overflow-hidden pointer-events-none;
+    @apply before:absolute before:inset-0;
+    @apply before:bg-gradient-to-b before:from-transparent before:via-neon-blue/10 before:to-transparent;
+    @apply before:animate-data-stream;
+  }
+
+  /* Pulse effect for interactions */
+  .pulse-highlight {
+    @apply relative overflow-hidden;
+    @apply after:absolute after:inset-0 after:bg-neon-blue/20;
+    @apply after:scale-x-0 after:origin-left;
+    @apply after:transition-transform after:duration-500;
+    @apply hover:after:scale-x-100;
+  }
+
+  /* Main content area with enhanced depth */
   .main-content {
     @apply flex-1 overflow-hidden relative mt-16 mb-8;
-    height: calc(100vh - 4rem - 2rem); /* Accounting for top and bottom bars */
+    @apply bg-gradient-to-br from-dark-darker via-dark to-dark-darker;
+    height: calc(100vh - 4rem - 2rem);
   }
 
-  /* Custom scrollbar */
+  /* Custom scrollbar with cyberpunk theme */
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: theme('colors.neon.blue/50') theme('colors.dark.lighter/20');
@@ -53,40 +106,29 @@
 
   .custom-scrollbar::-webkit-scrollbar-track {
     @apply bg-dark-lighter/20 rounded-full;
+    @apply shadow-[inset_0_0_6px_rgba(0,255,255,0.1)];
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-gradient-to-b from-neon-blue/50 to-neon-pink/50 rounded-full;
     @apply hover:from-neon-blue hover:to-neon-pink;
     @apply transition-colors duration-200;
+    @apply shadow-[0_0_10px_theme('colors.neon.blue')];
   }
 
-  /* Glass card effect */
-  .glass-card {
-    @apply bg-dark-lighter/10 backdrop-blur-md relative;
-    @apply border border-white/5 shadow-xl;
-    @apply before:absolute before:inset-0 before:bg-gradient-to-br;
-    @apply before:from-white/5 before:to-transparent;
-    @apply before:pointer-events-none;
-    @apply before:rounded-xl;
-  }
-
-  /* Navigation buttons */
+  /* Navigation buttons with enhanced effects */
   .nav-button {
     @apply relative overflow-hidden;
     @apply hover:text-neon-blue hover:scale-110;
     @apply active:scale-95;
     @apply transition-all duration-200;
-  }
-
-  .nav-button::after {
-    content: '';
-    @apply absolute inset-0 bg-neon-blue/10;
-    @apply scale-x-0 origin-left;
-    @apply transition-transform duration-200;
-  }
-
-  .nav-button:hover::after {
-    @apply scale-x-100;
+    @apply before:absolute before:inset-0 before:bg-neon-blue/10;
+    @apply before:scale-x-0 before:origin-left;
+    @apply before:transition-transform before:duration-200;
+    @apply hover:before:scale-x-100;
+    @apply after:absolute after:inset-0 after:bg-gradient-to-r;
+    @apply after:from-neon-blue/20 after:to-neon-pink/20;
+    @apply after:opacity-0 after:transition-opacity;
+    @apply hover:after:opacity-100;
   }
 }
