@@ -1,11 +1,14 @@
 @layer components {
   .glass-card {
-    @apply bg-dark-lighter/10 backdrop-blur-md border border-white/5 rounded-xl shadow-xl relative overflow-hidden;
+    @apply bg-dark-lighter/10 backdrop-blur-md border border-white/5;
+    @apply shadow-xl relative overflow-hidden;
+    @apply transition-all duration-300;
   }
 
   .glass-card::before {
     content: '';
     @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent;
+    @apply pointer-events-none rounded-xl;
     mask-image: radial-gradient(circle at center, black, transparent 80%);
   }
 
@@ -29,6 +32,12 @@
 
   .cyber-card {
     @apply glass-card border border-neon-blue/20;
+    @apply hover:border-neon-blue/40;
+    @apply transition-all duration-300;
     box-shadow: 0 0 20px theme('colors.neon.blue/10');
+  }
+
+  .cyber-card:hover {
+    box-shadow: 0 0 30px theme('colors.neon.blue/20');
   }
 }

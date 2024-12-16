@@ -21,53 +21,78 @@ export const AppLayout = () => {
   } = useLayoutStore();
 
   return (
-    <div className="app-layout">
+    <div className="h-screen w-full bg-dark-darker overflow-hidden">
       <AIAssistant />
-      <div className="flex flex-col h-screen">
-        {topBarVisible && <TopBar />}
-        <div className="main-content">
+      
+      {/* Fixed Top Bar */}
+      {topBarVisible && (
+        <div className="fixed top-0 left-0 right-0 z-30">
+          <TopBar />
+        </div>
+      )}
+
+      {/* Main Content Area with Sidebars */}
+      <div className="flex h-full pt-16 pb-8"> {/* Adjust for top/bottom bars */}
+        {/* Left FileBar */}
+        <div className="fixed left-0 top-16 bottom-8 z-20">
           <FileBar position="left" />
-          <ResizablePanelGroup 
-            direction="horizontal" 
-            className={cn(
-              "h-full",
-              !sidebarOpen && "pl-0",
-              !rightSidebarOpen && "pr-0"
+        </div>
+
+        {/* Main Resizable Content */}
+        <div className="flex-1 ml-12 mr-12"> {/* Adjust for FileBars */}
+          <ResizablePanelGroup direction="horizontal">
+            {sidebarOpen && (
+              <>
+                <ResizablePanel 
+                  defaultSize={sidebarWidth} 
+                  minSize={15} 
+                  maxSize={30}
+                  onResize={setSidebarWidth}
+                  className="glass-card border-r border-white/5"
+                >
+                  <Sidebar />
+                </ResizablePanel>
+                <ResizableHandle />
+              </>
             )}
-          >
-            <ResizablePanel 
-              defaultSize={sidebarWidth} 
-              minSize={15} 
-              maxSize={30}
-              onResize={(size) => setSidebarWidth(size)}
-              className={cn(!sidebarOpen && "hidden")}
-            >
-              <Sidebar />
-            </ResizablePanel>
-            {sidebarOpen && <ResizableHandle />}
+
             <ResizablePanel>
-              <main className="h-full overflow-auto p-4">
+              <main className="h-full custom-scrollbar overflow-y-auto px-4">
                 <Outlet />
               </main>
             </ResizablePanel>
-            {rightSidebarOpen && <ResizableHandle />}
+
             {rightSidebarOpen && (
-              <ResizablePanel 
-                defaultSize={rightSidebarWidth}
-                minSize={15} 
-                maxSize={30}
-                onResize={(size) => setRightSidebarWidth(size)}
-              >
-                <div className="h-full bg-sidebar">
-                  {/* Right sidebar content */}
-                </div>
-              </ResizablePanel>
+              <>
+                <ResizableHandle />
+                <ResizablePanel 
+                  defaultSize={rightSidebarWidth}
+                  minSize={15} 
+                  maxSize={30}
+                  onResize={setRightSidebarWidth}
+                  className="glass-card border-l border-white/5"
+                >
+                  <div className="h-full">
+                    {/* Right sidebar content */}
+                  </div>
+                </ResizablePanel>
+              </>
             )}
           </ResizablePanelGroup>
+        </div>
+
+        {/* Right FileBar */}
+        <div className="fixed right-0 top-16 bottom-8 z-20">
           <FileBar position="right" />
         </div>
-        {bottomBarVisible && <StatusBar />}
       </div>
+
+      {/* Fixed Bottom Bar */}
+      {bottomBarVisible && (
+        <div className="fixed bottom-0 left-0 right-0 z-30">
+          <StatusBar />
+        </div>
+      )}
     </div>
   );
 };
