@@ -6,6 +6,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { PageErrorBoundary } from "@/components/shared/PageErrorBoundary";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface BotStats {
   totalQuotes: number;
@@ -13,7 +16,23 @@ interface BotStats {
   serverCount: number;
 }
 
-const Dashboard = () => {
+const StatsSkeleton = () => (
+  <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
+    {[1, 2, 3].map((i) => (
+      <Card key={i} className="p-4 bg-[#1A1F2C] border-purple-500/20">
+        <div className="flex flex-col items-center space-y-2">
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <div className="text-center space-y-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-6 w-12" />
+          </div>
+        </div>
+      </Card>
+    ))}
+  </div>
+);
+
+const DashboardContent = () => {
   const [stats, setStats] = useState<BotStats>({
     totalQuotes: 0,
     totalAchievements: 0,
@@ -44,6 +63,7 @@ const Dashboard = () => {
           description: "Failed to load bot statistics",
           variant: "destructive",
         });
+        throw error;
       } finally {
         setIsLoading(false);
       }
@@ -53,20 +73,11 @@ const Dashboard = () => {
   }, [toast]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500"></div>
-      </div>
-    );
+    return <StatsSkeleton />;
   }
 
   return (
-    <div className={cn(
-      "container mx-auto space-y-6",
-      isMobile ? "p-0" : "p-6"
-    )}>
-      <h1 className="text-2xl font-bold mb-6">Discord Bot Dashboard</h1>
-      
+    <>
       <div className={cn(
         "grid gap-4",
         isMobile ? "grid-cols-2" : "grid-cols-1 md:grid-cols-3"
@@ -106,7 +117,7 @@ const Dashboard = () => {
       </div>
 
       <div className={cn(
-        "grid gap-6",
+        "grid gap-6 mt-6",
         isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"
       )}>
         <Card className="p-4 bg-[#1A1F2C] border-purple-500/20">
@@ -123,6 +134,23 @@ const Dashboard = () => {
           </div>
         </Card>
       </div>
+    </>
+  );
+};
+
+const Dashboard = () => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <div className={cn(
+      "container mx-auto space-y-6",
+      isMobile ? "p-0" : "p-6"
+    )}>
+      <h1 className="text-2xl font-bold mb-6">Discord Bot Dashboard</h1>
+      
+      <ErrorBoundary FallbackComponent={PageErrorBoundary}>
+        <DashboardContent />
+      </ErrorBoundary>
     </div>
   );
 };

@@ -5,51 +5,87 @@ import { useAuthStore } from "@/stores";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { PageErrorBoundary } from "@/components/shared/PageErrorBoundary";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
-export default function Profile() {
+const ProfileSkeleton = () => (
+  <Card className="glass-card p-6 space-y-4">
+    <Skeleton className="h-8 w-48" />
+    <div className="space-y-2">
+      <Skeleton className="h-4 w-64" />
+      <Skeleton className="h-10 w-24" />
+    </div>
+  </Card>
+);
+
+const ProfileContent = () => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(true);
-  const isMobile = useIsMobile();
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    } else {
-      setIsLoading(false);
-    }
-  }, [user, navigate]);
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          navigate("/login");
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to check authentication status",
+          variant: "destructive",
+        });
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [navigate, toast]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500"></div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!user) return null;
+
+  return (
+    <Card className="glass-card p-6 space-y-4">
+      <h1 className="text-2xl font-bold gradient-text">Profile</h1>
+      <div className="space-y-2">
+        <p className="text-gray-300">Email: {user.email}</p>
+        <Button
+          onClick={async () => {
+            await supabase.auth.signOut();
+            navigate("/login");
+          }}
+          className="cyber-button"
+        >
+          Sign Out
+        </Button>
+      </div>
+    </Card>
+  );
+};
+
+export default function Profile() {
+  const isMobile = useIsMobile();
 
   return (
     <div className={cn(
       "container mx-auto",
       isMobile ? "p-0" : "p-6"
     )}>
-      <Card className="glass-card p-6 space-y-4">
-        <h1 className="text-2xl font-bold gradient-text">Profile</h1>
-        <div className="space-y-2">
-          <p className="text-gray-300">Email: {user.email}</p>
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-              navigate("/login");
-            }}
-            className="cyber-button px-4 py-2 rounded-lg"
-          >
-            Sign Out
-          </button>
-        </div>
-      </Card>
+      <ErrorBoundary FallbackComponent={PageErrorBoundary}>
+        <ProfileContent />
+      </ErrorBoundary>
     </div>
   );
 }
