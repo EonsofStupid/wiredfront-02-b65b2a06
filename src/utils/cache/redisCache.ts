@@ -1,5 +1,4 @@
 import { createClient } from '@redis/client';
-import { supabase } from '@/integrations/supabase/client';
 
 const redisClient = createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379',
@@ -16,7 +15,7 @@ export const initializeRedis = async () => {
   }
 };
 
-export const cacheGet = async (key: string) => {
+export const cacheGet = async <T>(key: string): Promise<T | null> => {
   try {
     const value = await redisClient.get(key);
     return value ? JSON.parse(value) : null;
@@ -26,7 +25,7 @@ export const cacheGet = async (key: string) => {
   }
 };
 
-export const cacheSet = async (key: string, value: any, ttl?: number) => {
+export const cacheSet = async (key: string, value: any, ttl?: number): Promise<boolean> => {
   try {
     const stringValue = JSON.stringify(value);
     if (ttl) {
@@ -41,7 +40,7 @@ export const cacheSet = async (key: string, value: any, ttl?: number) => {
   }
 };
 
-export const cacheDelete = async (key: string) => {
+export const cacheDelete = async (key: string): Promise<boolean> => {
   try {
     await redisClient.del(key);
     return true;
@@ -51,7 +50,7 @@ export const cacheDelete = async (key: string) => {
   }
 };
 
-export const clearCache = async () => {
+export const clearCache = async (): Promise<boolean> => {
   try {
     await redisClient.flushAll();
     return true;
