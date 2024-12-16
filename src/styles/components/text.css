@@ -1,6 +1,6 @@
 @layer components {
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-blue via-neon-pink to-neon-violet animate-gradient-x;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#00FFFF] via-[#FF007F] to-[#9D00FF] animate-gradient-x;
   }
 
   h1, h2, h3, h4, h5, h6 {
