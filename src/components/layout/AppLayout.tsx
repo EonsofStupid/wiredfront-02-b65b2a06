@@ -4,6 +4,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { FileBar } from "@/components/layout/FileBar";
 import { StatusBar } from "@/components/layout/StatusBar";
 import { TopBar } from "@/components/layout/TopBar";
+import { TabBar } from "@/components/layout/TabBar";
 import { AIAssistant } from "@/components/ai-elements/AIAssistant";
 import { useLayoutStore } from "@/stores";
 import { cn } from "@/lib/utils";
@@ -26,20 +27,29 @@ export const AppLayout = () => {
       
       {/* Fixed Top Bar */}
       {topBarVisible && (
-        <div className="fixed top-0 left-0 right-0 z-30 h-16">
+        <div className="fixed top-0 left-0 right-0 z-30">
           <TopBar />
+          <TabBar />
         </div>
       )}
 
       {/* Main Content Area with Sidebars */}
       <div className="flex h-full">
         {/* Left FileBar */}
-        <div className="fixed left-0 top-16 bottom-8 z-20 w-12">
+        <div className={cn(
+          "fixed left-0 z-20 w-12",
+          topBarVisible ? "top-24" : "top-0",
+          bottomBarVisible ? "bottom-8" : "bottom-0"
+        )}>
           <FileBar position="left" />
         </div>
 
         {/* Main Resizable Content */}
-        <div className="flex-1 ml-12 mr-12 mt-16 mb-8"> {/* Adjust margins for bars */}
+        <div className={cn(
+          "flex-1 ml-12 mr-12",
+          topBarVisible ? "mt-24" : "mt-0",
+          bottomBarVisible ? "mb-8" : "mb-0"
+        )}>
           <ResizablePanelGroup direction="horizontal">
             {sidebarOpen && (
               <>
@@ -82,7 +92,11 @@ export const AppLayout = () => {
         </div>
 
         {/* Right FileBar */}
-        <div className="fixed right-0 top-16 bottom-8 z-20 w-12">
+        <div className={cn(
+          "fixed right-0 z-20 w-12",
+          topBarVisible ? "top-24" : "top-0",
+          bottomBarVisible ? "bottom-8" : "bottom-0"
+        )}>
           <FileBar position="right" />
         </div>
       </div>
