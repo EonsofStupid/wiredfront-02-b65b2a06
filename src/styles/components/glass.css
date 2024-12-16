@@ -1,15 +1,34 @@
 @layer components {
   .glass-card {
-    @apply bg-dark-lighter/10 backdrop-blur-md border border-white/5 rounded-xl shadow-xl;
-    position: relative;
-    overflow: hidden;
+    @apply bg-dark-lighter/10 backdrop-blur-md border border-white/5 rounded-xl shadow-xl relative overflow-hidden;
   }
 
-  .glass-card::before,
-  .glass-card::after {
+  .glass-card::before {
     content: '';
     @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent;
-    -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
     mask-image: radial-gradient(circle at center, black, transparent 80%);
+  }
+
+  .neon-border {
+    @apply relative;
+    box-shadow: 0 0 10px theme('colors.neon.blue'),
+                0 0 20px theme('colors.neon.pink');
+  }
+
+  .neon-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl;
+    background: linear-gradient(90deg, 
+      theme('colors.neon.blue'), 
+      theme('colors.neon.pink'), 
+      theme('colors.neon.purple')
+    );
+    z-index: -1;
+    margin: -1px;
+  }
+
+  .cyber-card {
+    @apply glass-card border border-neon-blue/20;
+    box-shadow: 0 0 20px theme('colors.neon.blue/10');
   }
 }
