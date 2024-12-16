@@ -1,30 +1,22 @@
 @layer components {
+  /* Gradient text effects */
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-blue via-neon-pink to-neon-purple animate-gradient-x;
+    @apply bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-neon-blue via-neon-pink to-neon-purple;
+    @apply animate-gradient-x;
   }
 
-  .text-glow {
-    text-shadow: 0 0 10px theme('colors.neon.blue'),
-                 0 0 20px theme('colors.neon.pink');
+  /* Neon text effects */
+  .neon-text {
+    @apply relative;
+    text-shadow: 
+      0 0 10px theme('colors.neon.blue'),
+      0 0 20px theme('colors.neon.pink');
   }
 
-  .cyber-text {
-    @apply text-neon-blue font-medium tracking-wide;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight;
-  }
-
-  h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl;
-  }
-
-  h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
-  }
-
-  h3 {
-    @apply text-2xl md:text-3xl lg:text-4xl;
-  }
+  /* Text sizes with consistent scale */
+  .text-display { @apply text-4xl md:text-6xl lg:text-8xl font-bold; }
+  .text-title { @apply text-3xl md:text-4xl lg:text-5xl font-bold; }
+  .text-subtitle { @apply text-xl md:text-2xl lg:text-3xl font-medium; }
+  .text-body { @apply text-base md:text-lg; }
 }
