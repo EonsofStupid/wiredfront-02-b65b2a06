@@ -8,8 +8,9 @@ export const colors = {
     success: "#42f5bf",
   },
   dark: {
-    DEFAULT: "#1A1A1A",
-    lighter: "#2B2B2B",
+    DEFAULT: "#1A1F2C",
+    lighter: "#222633",
+    darker: "#141820",
   },
   border: "hsl(var(--border))",
   background: "hsl(var(--background))",
