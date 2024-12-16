@@ -13,8 +13,8 @@ export const FileBar = ({ position }: FileBarProps) => {
 
   return (
     <div className={cn(
-      "side-bar glass-card border-white/10 flex flex-col items-center py-4 gap-4",
-      position === 'left' ? 'side-bar-left' : 'side-bar-right'
+      "h-full glass-card border-white/10 flex flex-col items-center py-4 gap-4",
+      position === 'left' ? 'border-r' : 'border-l'
     )}>
       <Link to="/files">
         <Button 

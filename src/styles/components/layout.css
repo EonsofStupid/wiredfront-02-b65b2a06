@@ -38,7 +38,7 @@
   /* Main content area */
   .main-content {
     @apply flex-1 overflow-hidden relative mt-16 mb-8;
-    height: calc(100vh - 4rem - 2rem);
+    height: calc(100vh - 4rem - 2rem); /* Accounting for top and bottom bars */
   }
 
   /* Custom scrollbar */

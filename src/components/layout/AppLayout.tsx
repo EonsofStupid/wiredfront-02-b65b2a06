@@ -26,20 +26,20 @@ export const AppLayout = () => {
       
       {/* Fixed Top Bar */}
       {topBarVisible && (
-        <div className="fixed top-0 left-0 right-0 z-30">
+        <div className="fixed top-0 left-0 right-0 z-30 h-16">
           <TopBar />
         </div>
       )}
 
       {/* Main Content Area with Sidebars */}
-      <div className="flex h-full pt-16 pb-8"> {/* Adjust for top/bottom bars */}
+      <div className="flex h-full">
         {/* Left FileBar */}
-        <div className="fixed left-0 top-16 bottom-8 z-20">
+        <div className="fixed left-0 top-16 bottom-8 z-20 w-12">
           <FileBar position="left" />
         </div>
 
         {/* Main Resizable Content */}
-        <div className="flex-1 ml-12 mr-12"> {/* Adjust for FileBars */}
+        <div className="flex-1 ml-12 mr-12 mt-16 mb-8"> {/* Adjust margins for bars */}
           <ResizablePanelGroup direction="horizontal">
             {sidebarOpen && (
               <>
@@ -82,14 +82,14 @@ export const AppLayout = () => {
         </div>
 
         {/* Right FileBar */}
-        <div className="fixed right-0 top-16 bottom-8 z-20">
+        <div className="fixed right-0 top-16 bottom-8 z-20 w-12">
           <FileBar position="right" />
         </div>
       </div>
 
       {/* Fixed Bottom Bar */}
       {bottomBarVisible && (
-        <div className="fixed bottom-0 left-0 right-0 z-30">
+        <div className="fixed bottom-0 left-0 right-0 z-30 h-8">
           <StatusBar />
         </div>
       )}
