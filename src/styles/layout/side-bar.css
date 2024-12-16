@@ -6,22 +6,24 @@
   }
 
   .side-bar-left {
-    @apply left-0 border-r;
+    @apply left-0;
     clip-path: polygon(
       0 0,
-      100% 10px,
-      100% calc(100% - 10px),
+      100% 16px,
+      100% calc(100% - 16px),
       0 100%
     );
+    border-right: 1px solid rgba(0, 220, 245, 0.1);
   }
 
   .side-bar-right {
-    @apply right-0 border-l;
+    @apply right-0;
     clip-path: polygon(
-      0 10px,
+      0 16px,
       100% 0,
       100% 100%,
-      0 calc(100% - 10px)
+      0 calc(100% - 16px)
     );
+    border-left: 1px solid rgba(0, 220, 245, 0.1);
   }
 }

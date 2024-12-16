@@ -2,12 +2,24 @@
   .status-bar {
     @apply frame-element machinery-bar;
     @apply fixed bottom-0 left-0 right-0 h-8 z-30;
-    @apply border-t border-x rounded-t-lg;
     clip-path: polygon(
-      10px 0,
-      calc(100% - 10px) 0,
+      16px 0,
+      calc(100% - 16px) 0,
       100% 100%,
       0 100%
     );
+
+    &::before {
+      content: '';
+      @apply absolute top-0 left-0 right-0 h-[1px];
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(50, 237, 131, 0.5) 20%,
+        rgba(194, 2, 175, 0.5) 50%,
+        rgba(50, 237, 131, 0.5) 80%,
+        transparent
+      );
+    }
   }
 }

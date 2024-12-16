@@ -1,0 +1,33 @@
+@layer utilities {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 220, 245, 0.5) rgba(29, 36, 46, 0.3);
+    
+    &::-webkit-scrollbar {
+      @apply w-2;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(29, 36, 46, 0.3);
+      border-radius: 8px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: linear-gradient(
+        180deg,
+        rgba(0, 220, 245, 0.5),
+        rgba(194, 2, 175, 0.5)
+      );
+      border-radius: 8px;
+      border: 2px solid rgba(29, 36, 46, 0.3);
+      
+      &:hover {
+        background: linear-gradient(
+          180deg,
+          rgba(0, 220, 245, 0.8),
+          rgba(194, 2, 175, 0.8)
+        );
+      }
+    }
+  }
+}
