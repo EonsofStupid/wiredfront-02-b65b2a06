@@ -31,15 +31,14 @@
   /* Main content area */
   .main-content {
     @apply flex-1 overflow-auto relative mt-16 mb-8;
-    /* Replace calc() with hardcoded value if not customizable */
-    height: calc(100vh - 4rem - 2rem); /* Static fallback for theme spacing */
+    height: calc(100vh - 4rem - 2rem);
   }
 
   /* Button effects - consistent across all bars */
   .nav-button {
     @apply relative transition-all duration-300 
            hover:scale-110 hover:-translate-y-0.5
-           focus:outline-none focus:ring-2 focus:ring-[#00FFFF]/50; /* Use static color */
+           focus:outline-none focus:ring-2 focus:ring-[#00FFFF]/50;
   }
 
   .nav-button::before {
@@ -54,6 +53,6 @@
 
   .nav-button:hover {
     @apply shadow-lg;
-    box-shadow: 0 0 20px #00FFFF, 0 0 40px #FF007F; /* Use static values */
+    box-shadow: 0 0 20px #00FFFF, 0 0 40px #FF007F;
   }
 }
