@@ -19,14 +19,16 @@ export const HeroSection = () => {
             animate={{ scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-display gradient-text mb-6">
+            <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-neon-blue via-neon-pink to-neon-purple bg-clip-text text-transparent animate-gradient-x">
               wiredFRONT
             </h1>
             <div className="flex items-center justify-center gap-2 mb-4">
               <Sparkles className="w-6 h-6 text-neon-blue animate-pulse" />
-              <span className="text-subtitle text-neon-pink">AI-Powered Workspace</span>
+              <span className="text-xl md:text-2xl font-semibold text-neon-pink">
+                AI-Powered Workspace
+              </span>
             </div>
-            <p className="text-body text-neon-success max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-neon-success max-w-2xl mx-auto">
               Transform your workflow with AI-driven file management, automation, and seamless integrations.
             </p>
           </motion.div>
@@ -36,7 +38,8 @@ export const HeroSection = () => {
           <Link to="/dashboard">
             <Button 
               className="glass-interactive neon-border text-neon-blue
-                       text-base md:text-lg px-6 md:px-8 py-4 md:py-6 w-full md:w-auto"
+                       text-base md:text-lg px-6 md:px-8 py-4 md:py-6 w-full md:w-auto
+                       hover:shadow-[0_0_20px_theme('colors.neon.blue')]"
             >
               <Zap className="w-5 h-5 mr-2" />
               Launch App
@@ -47,7 +50,8 @@ export const HeroSection = () => {
               <Button 
                 variant="outline"
                 className="glass-interactive neon-border text-neon-pink
-                         text-base md:text-lg px-6 md:px-8 py-4 md:py-6 w-full md:w-auto"
+                         text-base md:text-lg px-6 md:px-8 py-4 md:py-6 w-full md:w-auto
+                         hover:shadow-[0_0_20px_theme('colors.neon.pink')]"
               >
                 <Bot className="w-5 h-5 mr-2" />
                 Try AI Demo
