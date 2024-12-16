@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { File, Bot, Image, Upload } from "lucide-react";
-import { useAIStore } from "@/stores";
+import { Upload } from "lucide-react";
+import { useAIStore, useRoutesStore } from "@/stores";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const NavigationButtons = () => {
   const { toast } = useToast();
   const toggleAI = useAIStore((state) => state.toggleAIAssistant);
+  const navigationRoutes = useRoutesStore((state) => 
+    state.routes.filter(route => route.isEnabled && route.showInNavigation)
+  );
   
   const [fileInputRef] = useState(() => document.createElement('input'));
   fileInputRef.type = 'file';
@@ -62,24 +65,23 @@ export const NavigationButtons = () => {
       >
         <Upload className="h-4 w-4" />
       </Button>
-      <Link to="/files">
-        <Button variant="ghost" size="icon" className="nav-button">
-          <File className="h-4 w-4" />
-        </Button>
-      </Link>
+      
+      {navigationRoutes.map(route => (
+        <Link key={route.id} to={route.path}>
+          <Button variant="ghost" size="icon" className="nav-button">
+            <route.icon className="h-4 w-4" />
+          </Button>
+        </Link>
+      ))}
+      
       <Button 
         variant="ghost" 
         size="icon" 
         onClick={toggleAI}
         className="nav-button"
       >
-        <Bot className="h-4 w-4" />
+        <route.icon className="h-4 w-4" />
       </Button>
-      <Link to="/media">
-        <Button variant="ghost" size="icon" className="nav-button">
-          <Image className="h-4 w-4" />
-        </Button>
-      </Link>
     </div>
   );
 };

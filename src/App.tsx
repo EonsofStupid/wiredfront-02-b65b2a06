@@ -11,18 +11,28 @@ import { FileManager } from "@/components/file/FileManager";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useLayoutStore } from "@/stores";
+import { useLayoutStore, useRoutesStore } from "@/stores";
+import { useToast } from "@/components/ui/use-toast";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const initializeLayoutPreferences = useLayoutStore(state => state.initializeLayoutPreferences);
+  const { toast } = useToast();
+  const routes = useRoutesStore(state => state.routes);
 
   useEffect(() => {
     // Check initial auth state
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAuthenticated(!!session);
       if (session) {
-        initializeLayoutPreferences();
+        initializeLayoutPreferences().catch(error => {
+          console.error('Failed to initialize layout preferences:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load your preferences. Using defaults.",
+            variant: "destructive",
+          });
+        });
       }
     });
 
@@ -30,14 +40,21 @@ function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
       if (session) {
-        initializeLayoutPreferences();
+        initializeLayoutPreferences().catch(error => {
+          console.error('Failed to initialize layout preferences:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load your preferences. Using defaults.",
+            variant: "destructive",
+          });
+        });
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [initializeLayoutPreferences]);
+  }, [initializeLayoutPreferences, toast]);
 
   // Show loading state while checking auth
   if (isAuthenticated === null) {
@@ -72,6 +89,16 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="profile" element={<Profile />} />
           <Route path="files" element={<FileManager />} />
+          {/* Dynamic routes from state */}
+          {routes
+            .filter(route => route.isEnabled)
+            .map(route => (
+              <Route
+                key={route.id}
+                path={route.path}
+                element={<route.component />}
+              />
+            ))}
         </Route>
       </Routes>
       <Toaster />

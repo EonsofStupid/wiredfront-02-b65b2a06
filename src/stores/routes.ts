@@ -1,21 +1,28 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Home, Settings, User, Bot, FileText } from 'lucide-react';
+import { Home, Settings, User, Bot, FileText, Image } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import Dashboard from '@/pages/Dashboard';
+import Settings from '@/pages/Settings';
+import Profile from '@/pages/Profile';
+import { FileManager } from '@/components/file/FileManager';
 
 export interface Route {
   id: string;
   path: string;
   label: string;
   icon: LucideIcon;
+  component: React.ComponentType;
   isEnabled: boolean;
   requiresAuth: boolean;
+  showInSidebar: boolean;
+  showInNavigation: boolean;
 }
 
 interface RoutesState {
   routes: Route[];
-  addRoute: (route: Pick<Route, 'path' | 'label'>) => void;
-  removeRoute: (path: string) => void;
+  addRoute: (route: Omit<Route, 'id'>) => void;
+  removeRoute: (id: string) => void;
   updateRoute: (id: string, updates: Partial<Route>) => void;
   toggleRoute: (id: string) => void;
 }
@@ -29,56 +36,78 @@ export const useRoutesStore = create<RoutesState>()(
           path: '/',
           label: 'Home',
           icon: Home,
+          component: Dashboard,
           isEnabled: true,
           requiresAuth: false,
+          showInSidebar: true,
+          showInNavigation: true,
         },
         {
           id: 'dashboard',
           path: '/dashboard',
           label: 'Dashboard',
           icon: FileText,
+          component: Dashboard,
           isEnabled: true,
           requiresAuth: true,
+          showInSidebar: true,
+          showInNavigation: true,
         },
         {
           id: 'settings',
           path: '/settings',
           label: 'Settings',
           icon: Settings,
+          component: Settings,
           isEnabled: true,
           requiresAuth: true,
+          showInSidebar: true,
+          showInNavigation: true,
         },
         {
           id: 'profile',
           path: '/profile',
           label: 'Profile',
           icon: User,
+          component: Profile,
           isEnabled: true,
           requiresAuth: true,
+          showInSidebar: true,
+          showInNavigation: true,
         },
         {
-          id: 'discord-bot',
-          path: '/discord-bot',
-          label: 'Discord Bot',
-          icon: Bot,
+          id: 'files',
+          path: '/files',
+          label: 'Files',
+          icon: FileText,
+          component: FileManager,
           isEnabled: true,
           requiresAuth: true,
+          showInSidebar: true,
+          showInNavigation: true,
+        },
+        {
+          id: 'media',
+          path: '/media',
+          label: 'Media',
+          icon: Image,
+          component: FileManager,
+          isEnabled: true,
+          requiresAuth: true,
+          showInSidebar: true,
+          showInNavigation: true,
         }
       ],
       addRoute: (route) =>
         set((state) => ({
           routes: [...state.routes, {
             id: crypto.randomUUID(),
-            path: route.path,
-            label: route.label,
-            icon: FileText,
-            isEnabled: true,
-            requiresAuth: true,
+            ...route,
           }],
         })),
-      removeRoute: (path) =>
+      removeRoute: (id) =>
         set((state) => ({
-          routes: state.routes.filter((route) => route.path !== path),
+          routes: state.routes.filter((route) => route.id !== id),
         })),
       updateRoute: (id, updates) =>
         set((state) => ({
