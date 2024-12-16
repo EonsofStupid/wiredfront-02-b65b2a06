@@ -1,23 +1,41 @@
 @layer components {
   .frame-element {
-    @apply fixed z-20 bg-gradient-to-b from-dark-darker via-dark-lighter to-dark-darker;
-    @apply shadow-lg shadow-dark-darker/50;
-    @apply before:absolute before:inset-0 before:bg-gradient-to-b;
-    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-purple/5;
-    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
+    @apply fixed z-20;
+    background: linear-gradient(165deg, #141326 0%, #1d242e 100%);
+    box-shadow: 
+      0 0 20px rgba(0, 220, 245, 0.1),
+      inset 0 0 30px rgba(92, 5, 252, 0.05);
   }
 
   .machinery-bar {
-    @apply relative border-white/5;
-    @apply before:absolute before:inset-0 before:bg-gradient-to-r;
-    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-blue/5;
-    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
+    @apply relative border-[#32ed83]/10;
+    background: linear-gradient(
+      165deg,
+      rgba(20, 19, 38, 0.8) 0%,
+      rgba(29, 36, 46, 0.9) 100%
+    );
+    backdrop-filter: blur(16px);
+    box-shadow: 
+      0 0 30px rgba(0, 220, 245, 0.1),
+      inset 0 0 20px rgba(50, 237, 131, 0.05);
   }
 
   .data-stream {
     @apply absolute inset-0 overflow-hidden pointer-events-none;
     @apply before:absolute before:inset-0;
-    @apply before:bg-gradient-to-b before:from-transparent before:via-neon-blue/10 before:to-transparent;
+    @apply before:bg-gradient-to-b;
+    @apply before:from-transparent before:via-[#00dcf5]/10 before:to-transparent;
     @apply before:animate-data-stream;
+  }
+
+  .nav-button {
+    @apply relative overflow-hidden;
+    @apply hover:bg-[#141326]/30 hover:text-[#00dcf5];
+    @apply active:scale-95 transition-all duration-200;
+    @apply after:absolute after:inset-0 after:rounded-md;
+    @apply after:opacity-0 hover:after:opacity-100;
+    @apply after:bg-gradient-to-r;
+    @apply after:from-[#00dcf5]/10 after:to-[#32ed83]/10;
+    @apply after:transition-opacity after:duration-200;
   }
 }

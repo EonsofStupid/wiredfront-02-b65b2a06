@@ -1,0 +1,53 @@
+@layer components {
+  .glass-card {
+    @apply bg-[#141326]/10 backdrop-blur-md border border-[#32ed83]/10;
+    @apply shadow-xl relative overflow-hidden;
+    @apply transition-all duration-300;
+    box-shadow: 
+      0 0 30px rgba(0, 220, 245, 0.1),
+      inset 0 0 20px rgba(92, 5, 252, 0.05);
+  }
+
+  .glass-card::before {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(165deg, 
+      rgba(0, 220, 245, 0.05) 0%,
+      rgba(92, 5, 252, 0.02) 100%
+    );
+    @apply pointer-events-none rounded-xl;
+    mask-image: radial-gradient(circle at center, black, transparent 80%);
+  }
+
+  .neon-border {
+    @apply relative;
+    box-shadow: 
+      0 0 20px #00dcf5,
+      0 0 40px #5805fc;
+  }
+
+  .neon-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl;
+    background: linear-gradient(90deg, 
+      #00dcf5,
+      #32ed83,
+      #5805fc
+    );
+    z-index: -1;
+    margin: -1px;
+  }
+
+  .cyber-card {
+    @apply glass-card border border-[#00dcf5]/20;
+    @apply hover:border-[#32ed83]/40;
+    @apply transition-all duration-300;
+    box-shadow: 0 0 30px rgba(0, 220, 245, 0.1);
+  }
+
+  .cyber-card:hover {
+    box-shadow: 
+      0 0 40px rgba(0, 220, 245, 0.2),
+      0 0 80px rgba(92, 5, 252, 0.1);
+  }
+}
