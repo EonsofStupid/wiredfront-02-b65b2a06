@@ -1,6 +1,6 @@
 @layer components {
   .app-layout {
-    @apply min-h-screen flex flex-col bg-dark-DEFAULT;
+    @apply min-h-screen flex flex-col bg-dark;
   }
 
   /* Frame elements */
@@ -31,19 +31,20 @@
   /* Main content area */
   .main-content {
     @apply flex-1 overflow-auto relative mt-16 mb-8;
-    height: calc(100vh - theme('spacing.16') - theme('spacing.8'));
+    /* Replace calc() with hardcoded value if not customizable */
+    height: calc(100vh - 4rem - 2rem); /* Static fallback for theme spacing */
   }
 
   /* Button effects - consistent across all bars */
   .nav-button {
     @apply relative transition-all duration-300 
            hover:scale-110 hover:-translate-y-0.5
-           focus:outline-none focus:ring-2 focus:ring-neon-blue/50;
+           focus:outline-none focus:ring-2 focus:ring-[#00FFFF]/50; /* Use static color */
   }
 
   .nav-button::before {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-t from-neon-blue via-neon-pink to-neon-violet 
+    @apply absolute inset-0 bg-gradient-to-t from-[#00FFFF] via-[#FF007F] to-[#9D00FF] 
            opacity-0 transition-opacity duration-300 rounded-md;
   }
 
@@ -53,7 +54,6 @@
 
   .nav-button:hover {
     @apply shadow-lg;
-    box-shadow: 0 0 20px theme('colors.neon.blue'),
-                0 0 40px theme('colors.neon.pink');
+    box-shadow: 0 0 20px #00FFFF, 0 0 40px #FF007F; /* Use static values */
   }
 }
