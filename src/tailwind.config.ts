@@ -20,9 +20,9 @@ export default {
     extend: {
       colors: {
         dark: {
-          DEFAULT: "#1A1F2C",
-          lighter: "#222633",
-          darker: "#141820",
+          DEFAULT: "#141820", // Darkened from #1A1F2C
+          lighter: "#1A1F2C", // Previous DEFAULT color
+          darker: "#0F1218", // Darkened further
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
