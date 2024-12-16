@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Bot } from "lucide-react";
 import { useAIStore, useRoutesStore } from "@/stores";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
 interface FileBarProps {
   position: 'left' | 'right';
@@ -10,8 +11,12 @@ interface FileBarProps {
 
 export const FileBar = ({ position }: FileBarProps) => {
   const toggleAIAssistant = useAIStore((state) => state.toggleAIAssistant);
-  const sidebarRoutes = useRoutesStore((state) => 
-    state.routes.filter(route => route.isEnabled && route.showInSidebar)
+  const routes = useRoutesStore((state) => state.routes);
+  
+  // Memoize filtered routes to prevent unnecessary re-renders
+  const sidebarRoutes = useMemo(() => 
+    routes.filter(route => route.isEnabled && route.showInSidebar),
+    [routes]
   );
 
   return (
