@@ -1,0 +1,11 @@
+@layer components {
+  .background-layer {
+    @apply fixed inset-0 -z-10;
+    @apply bg-gradient-to-br from-dark-darker via-dark to-dark-darker;
+  }
+
+  .background-overlay {
+    @apply absolute inset-0;
+    @apply bg-gradient-to-t from-dark-darker/80 to-transparent;
+  }
+}

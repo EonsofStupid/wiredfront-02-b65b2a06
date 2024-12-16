@@ -1,0 +1,18 @@
+@layer components {
+  .data-pulse {
+    @apply animate-data-pulse;
+  }
+
+  .data-flow {
+    @apply relative overflow-hidden;
+    @apply before:absolute before:inset-0;
+    @apply before:bg-gradient-to-b before:from-transparent before:via-neon-blue/10 before:to-transparent;
+    @apply before:animate-data-stream;
+  }
+
+  .cyber-grid {
+    background-image: linear-gradient(to right, theme('colors.neon.blue/10') 1px, transparent 1px),
+                      linear-gradient(to bottom, theme('colors.neon.blue/10') 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}

@@ -1,0 +1,27 @@
+@layer components {
+  .side-bar {
+    @apply frame-element machinery-bar;
+    @apply fixed top-16 bottom-8 w-12 z-20;
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .side-bar-left {
+    @apply left-0 border-r;
+    clip-path: polygon(
+      0 0,
+      100% 10px,
+      100% calc(100% - 10px),
+      0 100%
+    );
+  }
+
+  .side-bar-right {
+    @apply right-0 border-l;
+    clip-path: polygon(
+      0 10px,
+      100% 0,
+      100% 100%,
+      0 calc(100% - 10px)
+    );
+  }
+}

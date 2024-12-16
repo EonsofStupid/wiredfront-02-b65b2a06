@@ -1,0 +1,13 @@
+@layer components {
+  .top-bar {
+    @apply frame-element machinery-bar;
+    @apply fixed top-0 left-0 right-0 h-16 z-30;
+    @apply border-b border-x rounded-b-lg;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      calc(100% - 10px) 100%,
+      10px 100%
+    );
+  }
+}

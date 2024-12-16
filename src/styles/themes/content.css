@@ -1,0 +1,13 @@
+@layer components {
+  .content-layer {
+    @apply bg-dark-darker/80;
+    @apply backdrop-blur-md;
+    @apply border border-white/5;
+  }
+
+  .content-section {
+    @apply bg-dark-lighter/30;
+    @apply backdrop-blur-sm;
+    @apply border-t border-white/5;
+  }
+}

@@ -1,0 +1,13 @@
+@layer components {
+  .admin-layer {
+    @apply bg-dark-darker/90;
+    @apply border border-neon-blue/10;
+    @apply shadow-lg shadow-neon-blue/5;
+  }
+
+  .admin-content {
+    @apply bg-dark-lighter/50;
+    @apply backdrop-blur-sm;
+    @apply border-t border-neon-blue/10;
+  }
+}
