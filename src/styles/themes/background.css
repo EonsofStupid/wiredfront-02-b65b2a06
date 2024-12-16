@@ -3,9 +3,9 @@
     @apply fixed inset-0 -z-10;
     background: linear-gradient(
       165deg,
-      #141a17 0%,
-      #141326 50%,
-      #1d242e 100%
+      theme('colors.dark.darker') 0%,
+      theme('colors.dark.lighter') 50%,
+      theme('colors.dark.DEFAULT') 100%
     );
   }
 
@@ -14,34 +14,14 @@
     background: 
       radial-gradient(
         circle at 50% 50%,
-        rgba(0, 220, 245, 0.1) 0%,
+        theme('colors.neon.blue/10') 0%,
         transparent 60%
       ),
       radial-gradient(
         circle at 80% 20%,
-        rgba(194, 2, 175, 0.1) 0%,
+        theme('colors.neon.pink/10') 0%,
         transparent 40%
       );
     filter: blur(60px);
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0) rotate(0deg);
-      opacity: 0.5;
-    }
-    50% {
-      transform: translateY(-20px) rotate(5deg);
-      opacity: 0.8;
-    }
-  }
-
-  @keyframes dataFlow {
-    0% {
-      transform: translateY(-100%);
-    }
-    100% {
-      transform: translateY(100%);
-    }
   }
 }

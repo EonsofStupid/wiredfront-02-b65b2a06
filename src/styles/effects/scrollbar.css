@@ -1,33 +1,22 @@
 @layer utilities {
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(0, 220, 245, 0.5) rgba(29, 36, 46, 0.3);
-    
-    &::-webkit-scrollbar {
-      @apply w-2;
-    }
-    
-    &::-webkit-scrollbar-track {
-      background: rgba(29, 36, 46, 0.3);
-      border-radius: 8px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background: linear-gradient(
-        180deg,
-        rgba(0, 220, 245, 0.5),
-        rgba(194, 2, 175, 0.5)
-      );
-      border-radius: 8px;
-      border: 2px solid rgba(29, 36, 46, 0.3);
-      
-      &:hover {
-        background: linear-gradient(
-          180deg,
-          rgba(0, 220, 245, 0.8),
-          rgba(194, 2, 175, 0.8)
-        );
-      }
-    }
+    scrollbar-color: theme('colors.neon.blue/50') theme('colors.dark.lighter/20');
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-dark-lighter/20 rounded-full;
+    @apply shadow-[inset_0_0_6px_rgba(0,255,255,0.1)];
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gradient-to-b from-neon-blue/50 to-neon-pink/50 rounded-full;
+    @apply hover:from-neon-blue hover:to-neon-pink;
+    @apply transition-colors duration-200;
+    @apply shadow-[0_0_10px_theme('colors.neon.blue')];
   }
 }

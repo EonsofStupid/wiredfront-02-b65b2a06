@@ -2,24 +2,22 @@
   .top-bar {
     @apply frame-element machinery-bar;
     @apply fixed top-0 left-0 right-0 h-16 z-30;
+    @apply border-b border-x rounded-b-lg;
     clip-path: polygon(
       0 0,
       100% 0,
-      calc(100% - 16px) 100%,
-      16px 100%
+      calc(100% - 10px) 100%,
+      10px 100%
     );
+  }
 
-    &::after {
-      content: '';
-      @apply absolute bottom-0 left-0 right-0 h-[1px];
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(0, 220, 245, 0.5) 20%,
-        rgba(194, 2, 175, 0.5) 50%,
-        rgba(0, 220, 245, 0.5) 80%,
-        transparent
-      );
-    }
+  .nav-button {
+    @apply relative overflow-hidden;
+    @apply hover:bg-dark-lighter/30 hover:text-neon-blue;
+    @apply active:scale-95 transition-all duration-200;
+    @apply after:absolute after:inset-0 after:rounded-md;
+    @apply after:opacity-0 hover:after:opacity-100;
+    @apply after:bg-gradient-to-r after:from-neon-blue/10 after:to-neon-pink/10;
+    @apply after:transition-opacity after:duration-200;
   }
 }

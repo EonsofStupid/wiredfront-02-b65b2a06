@@ -1,55 +1,23 @@
 @layer components {
-  /* Base bar structure with glass effect */
   .frame-element {
-    @apply fixed z-20;
-    background: linear-gradient(
-      165deg,
-      rgba(29, 36, 46, 0.7) 0%,
-      rgba(20, 19, 38, 0.8) 50%,
-      rgba(18, 10, 1, 0.9) 100%
-    );
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 220, 245, 0.1);
-    box-shadow: 
-      0 4px 24px -1px rgba(0, 220, 245, 0.2),
-      inset 0 0 24px rgba(50, 237, 131, 0.05);
+    @apply fixed z-20 bg-gradient-to-b from-dark-darker via-dark-lighter to-dark-darker;
+    @apply shadow-lg shadow-dark-darker/50;
+    @apply before:absolute before:inset-0 before:bg-gradient-to-b;
+    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-purple/5;
+    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
   }
 
-  /* Common machinery aesthetics */
   .machinery-bar {
-    @apply relative;
-    &::before {
-      @apply absolute inset-0;
-      content: '';
-      background: linear-gradient(
-        90deg,
-        rgba(0, 220, 245, 0.1),
-        rgba(194, 2, 175, 0.1),
-        rgba(0, 220, 245, 0.1)
-      );
-      mask-image: linear-gradient(
-        to bottom,
-        transparent,
-        black 20%,
-        black 80%,
-        transparent
-      );
-    }
+    @apply relative border-white/5;
+    @apply before:absolute before:inset-0 before:bg-gradient-to-r;
+    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-blue/5;
+    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
   }
 
-  /* Data stream effect */
   .data-stream {
     @apply absolute inset-0 overflow-hidden pointer-events-none;
-    &::before {
-      @apply absolute inset-0;
-      content: '';
-      background: linear-gradient(
-        180deg,
-        transparent,
-        rgba(50, 237, 131, 0.1) 50%,
-        transparent
-      );
-      animation: dataFlow 8s linear infinite;
-    }
+    @apply before:absolute before:inset-0;
+    @apply before:bg-gradient-to-b before:from-transparent before:via-neon-blue/10 before:to-transparent;
+    @apply before:animate-data-stream;
   }
 }
