@@ -5,15 +5,11 @@
     overflow: hidden;
   }
 
-  .glass-card::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent;
-    mask-image: radial-gradient(circle at center, black, transparent 80%);
-  }
-
+  .glass-card::before,
   .glass-card::after {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-transparent to-white/5;
-    mask-image: radial-gradient(circle at center, transparent 50%, black);
+    @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent;
+    -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
+    mask-image: radial-gradient(circle at center, black, transparent 80%);
   }
 }
