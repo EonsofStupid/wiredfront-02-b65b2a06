@@ -19,16 +19,19 @@ export default {
     },
     extend: {
       colors: {
-        dark: {
-          DEFAULT: "#141820", // Darkened from #1A1F2C
-          lighter: "#1A1F2C", // Previous DEFAULT color
-          darker: "#0F1218", // Darkened further
+        background: {
+          DEFAULT: "hsl(var(--background))",
+          dark: "hsl(222, 20%, 8%)",
+        },
+        foreground: "hsl(var(--foreground))",
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+          dark: "hsl(222, 20%, 12%)",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -52,10 +55,6 @@ export default {
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
         },
       },
       borderRadius: {
