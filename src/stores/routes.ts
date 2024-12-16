@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Home, Settings as SettingsIcon, User, Bot, FileText, Image } from 'lucide-react';
+import { Home, Settings as SettingsIcon, User, FileText, Image } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import Dashboard from '@/pages/Dashboard';
 import SettingsPage from '@/pages/Settings';
@@ -32,21 +32,10 @@ export const useRoutesStore = create<RoutesState>()(
     (set) => ({
       routes: [
         {
-          id: 'home',
-          path: '/',
-          label: 'Home',
-          icon: Home,
-          component: Dashboard,
-          isEnabled: true,
-          requiresAuth: false,
-          showInSidebar: true,
-          showInNavigation: true,
-        },
-        {
           id: 'dashboard',
           path: '/dashboard',
           label: 'Dashboard',
-          icon: FileText,
+          icon: Home,
           component: Dashboard,
           isEnabled: true,
           requiresAuth: true,
@@ -80,17 +69,6 @@ export const useRoutesStore = create<RoutesState>()(
           path: '/files',
           label: 'Files',
           icon: FileText,
-          component: FileManager,
-          isEnabled: true,
-          requiresAuth: true,
-          showInSidebar: true,
-          showInNavigation: true,
-        },
-        {
-          id: 'media',
-          path: '/media',
-          label: 'Media',
-          icon: Image,
           component: FileManager,
           isEnabled: true,
           requiresAuth: true,
