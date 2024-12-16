@@ -1,6 +1,6 @@
 @layer components {
   .app-layout {
-    @apply min-h-screen flex flex-col bg-dark;
+    @apply min-h-screen flex flex-col bg-dark-DEFAULT;
   }
 
   /* Frame elements */
