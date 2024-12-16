@@ -9,23 +9,23 @@
   }
 
   .top-bar {
-    @apply fixed top-0 left-0 right-0 h-16 z-30 w-full;
+    @apply fixed top-0 left-0 right-0 h-16 z-30 w-full glass-card border-b border-white/5;
   }
 
   .side-bar {
-    @apply fixed top-16 bottom-8 w-12 z-20;
+    @apply fixed top-16 bottom-8 w-12 z-20 glass-card;
   }
 
   .side-bar-left {
-    @apply left-0;
+    @apply left-0 border-r border-white/5;
   }
 
   .side-bar-right {
-    @apply right-0;
+    @apply right-0 border-l border-white/5;
   }
 
   .status-bar {
-    @apply fixed bottom-0 left-0 right-0 h-8 z-30 w-full;
+    @apply fixed bottom-0 left-0 right-0 h-8 z-30 w-full glass-card border-t border-white/5;
   }
 
   /* Main content area */
@@ -34,25 +34,39 @@
     height: calc(100vh - 4rem - 2rem);
   }
 
-  /* Button effects - consistent across all bars */
-  .nav-button {
-    @apply relative transition-all duration-300 
-           hover:scale-110 hover:-translate-y-0.5
-           focus:outline-none focus:ring-2 focus:ring-[#00FFFF]/50;
+  /* AI Assistant specific layout */
+  .ai-assistant {
+    @apply fixed bottom-8 right-8 w-[450px] pointer-events-auto glass-card neon-border;
   }
 
-  .nav-button::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-t from-[#00FFFF] via-[#FF007F] to-[#9D00FF] 
-           opacity-0 transition-opacity duration-300 rounded-md;
+  .ai-assistant__handle {
+    @apply cursor-move w-full h-6 bg-dark-lighter/30 hover:bg-dark-lighter/50;
   }
 
-  .nav-button:hover::before {
-    @apply opacity-20;
+  .ai-assistant__content {
+    @apply p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto;
   }
 
-  .nav-button:hover {
-    @apply shadow-lg;
-    box-shadow: 0 0 20px #00FFFF, 0 0 40px #FF007F;
+  /* Custom scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.neon.blue') theme('colors.dark.lighter');
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-dark-lighter rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gradient-to-b from-neon-blue to-neon-pink rounded-full;
+    border: 2px solid theme('colors.dark.lighter');
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gradient-to-b from-neon-pink to-neon-blue;
   }
 }
