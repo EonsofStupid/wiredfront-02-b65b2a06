@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Bot, MessageSquare, Trophy } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { PageErrorBoundary } from "@/components/shared/PageErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface BotStats {
   totalQuotes: number;
@@ -51,10 +52,20 @@ const DashboardContent = () => {
           supabase.from('discord_server_config').select('count')
         ]);
 
+        if (quotesResponse.error || achievementsResponse.error || serversResponse.error) {
+          throw new Error('Failed to fetch statistics');
+        }
+
         setStats({
           totalQuotes: quotesResponse.count || 0,
           totalAchievements: achievementsResponse.count || 0,
           serverCount: serversResponse.count || 0
+        });
+
+        toast({
+          title: "Statistics Updated",
+          description: "Dashboard data has been refreshed",
+          className: "bg-dark-lighter border-neon-blue",
         });
       } catch (error) {
         console.error('Error fetching bot stats:', error);
@@ -63,7 +74,6 @@ const DashboardContent = () => {
           description: "Failed to load bot statistics",
           variant: "destructive",
         });
-        throw error;
       } finally {
         setIsLoading(false);
       }
@@ -77,44 +87,64 @@ const DashboardContent = () => {
   }
 
   return (
-    <>
-      <div className={cn(
-        "grid gap-4",
-        isMobile ? "grid-cols-2" : "grid-cols-1 md:grid-cols-3"
-      )}>
-        <Card className="p-4 bg-[#1A1F2C] border-purple-500/20">
-          <div className="flex flex-col items-center space-y-2">
-            <MessageSquare className="h-8 w-8 text-purple-500" />
-            <div className="text-center">
-              <p className="text-sm text-gray-400">Quotes</p>
-              <p className="text-xl font-bold">{stats.totalQuotes}</p>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className={cn(
+          "grid gap-4",
+          isMobile ? "grid-cols-2" : "grid-cols-1 md:grid-cols-3"
+        )}
+      >
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="card-container"
+        >
+          <Card className="p-4 bg-[#1A1F2C] border-purple-500/20">
+            <div className="flex flex-col items-center space-y-2">
+              <MessageSquare className="h-8 w-8 text-purple-500" />
+              <div className="text-center">
+                <p className="text-sm text-gray-400">Quotes</p>
+                <p className="text-xl font-bold">{stats.totalQuotes}</p>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card className="p-4 bg-[#1A1F2C] border-purple-500/20">
-          <div className="flex flex-col items-center space-y-2">
-            <Trophy className="h-8 w-8 text-purple-500" />
-            <div className="text-center">
-              <p className="text-sm text-gray-400">Achievements</p>
-              <p className="text-xl font-bold">{stats.totalAchievements}</p>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="card-container"
+        >
+          <Card className="p-4 bg-[#1A1F2C] border-purple-500/20">
+            <div className="flex flex-col items-center space-y-2">
+              <Trophy className="h-8 w-8 text-purple-500" />
+              <div className="text-center">
+                <p className="text-sm text-gray-400">Achievements</p>
+                <p className="text-xl font-bold">{stats.totalAchievements}</p>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card className={cn(
-          "p-4 bg-[#1A1F2C] border-purple-500/20",
-          isMobile && "col-span-2"
-        )}>
-          <div className="flex flex-col items-center space-y-2">
-            <Bot className="h-8 w-8 text-purple-500" />
-            <div className="text-center">
-              <p className="text-sm text-gray-400">Active Servers</p>
-              <p className="text-xl font-bold">{stats.serverCount}</p>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className={cn(
+            "card-container",
+            isMobile && "col-span-2"
+          )}
+        >
+          <Card className="p-4 bg-[#1A1F2C] border-purple-500/20">
+            <div className="flex flex-col items-center space-y-2">
+              <Bot className="h-8 w-8 text-purple-500" />
+              <div className="text-center">
+                <p className="text-sm text-gray-400">Active Servers</p>
+                <p className="text-xl font-bold">{stats.serverCount}</p>
+              </div>
             </div>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </motion.div>
+      </motion.div>
 
       <div className={cn(
         "grid gap-6 mt-6",
@@ -134,7 +164,7 @@ const DashboardContent = () => {
           </div>
         </Card>
       </div>
-    </>
+    </AnimatePresence>
   );
 };
 
