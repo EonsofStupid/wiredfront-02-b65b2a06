@@ -1,8 +1,5 @@
 @import './base/reset.css';
-@import './layout/bars.css';
-@import './layout/top-bar.css';
-@import './layout/status-bar.css';
-@import './layout/side-bar.css';
+@import './layout/machinery.css';
 @import './themes/admin.css';
 @import './themes/content.css';
 @import './themes/background.css';
