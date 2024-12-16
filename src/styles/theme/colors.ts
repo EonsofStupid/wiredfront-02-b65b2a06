@@ -1,4 +1,9 @@
 export const colors = {
+  dark: {
+    DEFAULT: "#1A1F2C",
+    lighter: "#222633",
+    darker: "#141820",
+  },
   neon: {
     pink: "#FF007F",
     blue: "#00FFFF",
@@ -6,11 +11,6 @@ export const colors = {
     teal: "#00E0D6",
     highlight: "#ff0088",
     success: "#42f5bf",
-  },
-  dark: {
-    DEFAULT: "#1A1F2C",
-    lighter: "#222633",
-    darker: "#141820",
   },
   border: "hsl(var(--border))",
   background: "hsl(var(--background))",
