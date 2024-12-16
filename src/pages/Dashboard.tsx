@@ -142,15 +142,17 @@ const Dashboard = () => {
   const isMobile = useIsMobile();
   
   return (
-    <div className={cn(
-      "container mx-auto space-y-6",
-      isMobile ? "p-0" : "p-6"
-    )}>
-      <h1 className="text-2xl font-bold mb-6">Discord Bot Dashboard</h1>
-      
-      <ErrorBoundary FallbackComponent={PageErrorBoundary}>
-        <DashboardContent />
-      </ErrorBoundary>
+    <div className="h-full w-full overflow-auto custom-scrollbar">
+      <div className={cn(
+        "container mx-auto space-y-6",
+        isMobile ? "p-0" : "p-6"
+      )}>
+        <h1 className="text-2xl font-bold mb-6">Discord Bot Dashboard</h1>
+        
+        <ErrorBoundary FallbackComponent={PageErrorBoundary}>
+          <DashboardContent />
+        </ErrorBoundary>
+      </div>
     </div>
   );
 };

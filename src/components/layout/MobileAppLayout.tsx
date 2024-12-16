@@ -17,7 +17,7 @@ export const MobileAwareLayout = () => {
     <div className="flex flex-col h-screen bg-dark">
       <AIAssistant />
       <MobileHeader />
-      <main className="flex-1 overflow-auto p-4">
+      <main className="flex-1 overflow-auto p-4 custom-scrollbar">
         <Outlet />
       </main>
       <MobileNavigation />

@@ -42,8 +42,8 @@ function App() {
   // Show loading state while checking auth
   if (isAuthenticated === null) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#1A1F2C]">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500"></div>
+      <div className="flex items-center justify-center min-h-screen bg-dark-darker">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-neon-blue"></div>
       </div>
     );
   }
