@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AISettings } from "@/components/settings/AISettings";
 import { GeneralSettings } from "@/components/settings/GeneralSettings";
@@ -126,9 +127,9 @@ export default function Settings() {
     <QueryClientProvider client={queryClient}>
       <SettingsProvider>
         <ErrorBoundary FallbackComponent={PageErrorBoundary}>
-          <React.Suspense fallback={<SettingsSkeleton />}>
+          <Suspense fallback={<SettingsSkeleton />}>
             <SettingsContent />
-          </React.Suspense>
+          </Suspense>
         </ErrorBoundary>
       </SettingsProvider>
     </QueryClientProvider>
