@@ -4,6 +4,7 @@ import { AppLayout } from "./AppLayout";
 import { MobileNavigation } from "./mobile/MobileNavigation";
 import { MobileHeader } from "./mobile/MobileHeader";
 import { useLayoutStore } from "@/stores";
+import { AIAssistant } from "@/components/ai-elements/AIAssistant";
 
 export const MobileAwareLayout = () => {
   const isMobile = useIsMobile();
@@ -14,6 +15,7 @@ export const MobileAwareLayout = () => {
 
   return (
     <div className="flex flex-col h-screen bg-dark">
+      <AIAssistant />
       <MobileHeader />
       <main className="flex-1 overflow-auto p-4">
         <Outlet />
