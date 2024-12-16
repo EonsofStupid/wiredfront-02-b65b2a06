@@ -2,12 +2,12 @@ import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
-  darkMode: ["class"],
+  darkMode: ["class"], // Enable dark mode with class strategy
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   theme: {
     container: {
@@ -76,12 +76,8 @@ export default {
           to: { height: "0" },
         },
         "gradient-x": {
-          "0%, 100%": {
-            "background-position": "left center",
-          },
-          "50%": {
-            "background-position": "right center",
-          },
+          "0%, 100%": { "background-position": "left center" },
+          "50%": { "background-position": "right center" },
         },
       },
       animation: {
