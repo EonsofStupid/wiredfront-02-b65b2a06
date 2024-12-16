@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Home, Settings, User, Bot, FileText, Image } from 'lucide-react';
+import { Home, Settings as SettingsIcon, User, Bot, FileText, Image } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import Dashboard from '@/pages/Dashboard';
-import Settings from '@/pages/Settings';
+import SettingsPage from '@/pages/Settings';
 import Profile from '@/pages/Profile';
 import { FileManager } from '@/components/file/FileManager';
 
@@ -57,8 +57,8 @@ export const useRoutesStore = create<RoutesState>()(
           id: 'settings',
           path: '/settings',
           label: 'Settings',
-          icon: Settings,
-          component: Settings,
+          icon: SettingsIcon,
+          component: SettingsPage,
           isEnabled: true,
           requiresAuth: true,
           showInSidebar: true,

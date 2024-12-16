@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { File, Settings, Image, Bot } from "lucide-react";
+import { Bot } from "lucide-react";
 import { useAIStore, useRoutesStore } from "@/stores";
 import { cn } from "@/lib/utils";
 

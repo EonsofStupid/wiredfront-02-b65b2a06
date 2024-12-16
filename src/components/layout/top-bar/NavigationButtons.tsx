@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { Upload, Bot } from "lucide-react";
 import { useAIStore, useRoutesStore } from "@/stores";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
@@ -80,7 +80,7 @@ export const NavigationButtons = () => {
         onClick={toggleAI}
         className="nav-button"
       >
-        <route.icon className="h-4 w-4" />
+        <Bot className="h-4 w-4" />
       </Button>
     </div>
   );
