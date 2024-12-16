@@ -37,33 +37,36 @@ export const FileBar = ({ position }: FileBarProps) => {
 
   return (
     <div className={cn(
-      "h-full glass-card border-white/10 flex flex-col items-center py-4 gap-4",
-      position === 'left' ? 'border-r' : 'border-l'
+      "side-bar",
+      position === 'left' ? 'side-bar-left' : 'side-bar-right'
     )}>
-      {sidebarRoutes.map(route => (
-        <Link 
-          key={route.id} 
-          to={route.path}
-          onClick={() => handleRouteClick(route)}
-        >
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="nav-button"
+      <div className="relative z-10 h-full flex flex-col items-center py-4 gap-4">
+        {sidebarRoutes.map(route => (
+          <Link 
+            key={route.id} 
+            to={route.path}
+            onClick={() => handleRouteClick(route)}
           >
-            <route.icon className="h-4 w-4" />
-          </Button>
-        </Link>
-      ))}
-      
-      <Button 
-        variant="ghost" 
-        size="icon"
-        onClick={handleAIToggle}
-        className="nav-button"
-      >
-        <Bot className="h-4 w-4" />
-      </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="nav-button"
+            >
+              <route.icon className="h-4 w-4" />
+            </Button>
+          </Link>
+        ))}
+        
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={handleAIToggle}
+          className="nav-button"
+        >
+          <Bot className="h-4 w-4" />
+        </Button>
+      </div>
+      <div className="data-stream" />
     </div>
   );
 };
