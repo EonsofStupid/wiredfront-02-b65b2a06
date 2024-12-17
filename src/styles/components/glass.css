@@ -12,32 +12,20 @@
     mask-image: radial-gradient(circle at center, black, transparent 80%);
   }
 
-  .neon-border {
-    @apply relative;
-    box-shadow: 0 0 10px theme('colors.neon.blue'),
-                0 0 20px theme('colors.neon.pink');
+  .glass-interactive {
+    @apply glass-card hover:bg-dark-lighter/20;
+    @apply transform-gpu transition-all duration-300;
+    @apply hover:scale-[1.02] hover:shadow-lg;
+    @apply active:scale-[0.98];
   }
 
-  .neon-border::before {
-    content: '';
-    @apply absolute inset-0 rounded-xl;
-    background: linear-gradient(90deg, 
-      theme('colors.neon.blue'), 
-      theme('colors.neon.pink'), 
-      theme('colors.neon.purple')
-    );
-    z-index: -1;
-    margin: -1px;
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-neon-blue via-neon-pink to-neon-purple;
+    @apply animate-gradient-x;
   }
 
-  .cyber-card {
-    @apply glass-card border border-neon-blue/20;
-    @apply hover:border-neon-blue/40;
-    @apply transition-all duration-300;
-    box-shadow: 0 0 20px theme('colors.neon.blue/10');
-  }
-
-  .cyber-card:hover {
-    box-shadow: 0 0 30px theme('colors.neon.blue/20');
-  }
+  .depth-layer-1 { @apply z-10; }
+  .depth-layer-2 { @apply z-20; }
+  .depth-layer-3 { @apply z-30; }
 }
