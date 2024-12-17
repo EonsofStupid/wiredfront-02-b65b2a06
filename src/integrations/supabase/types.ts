@@ -100,6 +100,7 @@ export type Database = {
           temperature: number | null
           updated_at: string | null
           user_id: string
+          visual_effects: Json | null
         }
         Insert: {
           api_key?: string | null
@@ -113,6 +114,7 @@ export type Database = {
           temperature?: number | null
           updated_at?: string | null
           user_id: string
+          visual_effects?: Json | null
         }
         Update: {
           api_key?: string | null
@@ -126,6 +128,7 @@ export type Database = {
           temperature?: number | null
           updated_at?: string | null
           user_id?: string
+          visual_effects?: Json | null
         }
         Relationships: []
       }
