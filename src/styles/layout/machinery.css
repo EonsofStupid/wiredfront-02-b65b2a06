@@ -1,17 +1,4 @@
-@layer components {
-  /* Base machinery frame with depth and cyberpunk aesthetics */
-  .machinery-frame {
-    @apply fixed z-20;
-    background: linear-gradient(
-      165deg,
-      theme('colors.dark.darker') 0%,
-      theme('colors.dark.lighter') 50%,
-      theme('colors.dark.DEFAULT') 100%
-    );
-    box-shadow: 
-      0 0 30px rgba(0, 220, 245, 0.1),
-      inset 0 0 20px rgba(50, 237, 131, 0.05);
-  }
+
 
   /* Shared machinery aesthetics for bars */
   .machinery-bar {
