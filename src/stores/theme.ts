@@ -31,16 +31,12 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
       set(state => ({
         componentThemes: {
           ...state.componentThemes,
-          [componentType]: data.styles
+          [`${componentType}-${themeName}`]: data.styles
         }
       }));
     } catch (error: any) {
       set({ error: error.message });
-      toast({
-        variant: "destructive",
-        title: "Error loading theme",
-        description: error.message
-      });
+      console.log('Error loading theme:', error.message);
     } finally {
       set({ isLoading: false });
     }
@@ -63,7 +59,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
       set(state => ({
         componentThemes: {
           ...state.componentThemes,
-          [componentType]: styles
+          [`${componentType}-${themeName}`]: styles
         }
       }));
 

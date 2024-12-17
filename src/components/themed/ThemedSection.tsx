@@ -28,6 +28,7 @@ export const ThemedSection = ({
         className
       )}
       style={theme?.styles}
+      data-theme={themeName}
     >
       {children}
     </section>

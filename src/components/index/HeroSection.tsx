@@ -9,7 +9,7 @@ export const HeroSection = () => {
   return (
     <ThemedSection 
       themeName="hero"
-      className="min-h-screen flex items-center justify-center px-4"
+      className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-dark to-dark-lighter"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
