@@ -1,6 +1,6 @@
 @layer components {
   .themed-section {
-    @apply relative overflow-hidden;
+    @apply relative overflow-hidden transition-all duration-300;
   }
 
   .themed-section[data-theme="hero"] {
@@ -13,5 +13,19 @@
 
   .themed-section[data-theme="cta"] {
     @apply bg-gradient-to-tr from-dark-lighter to-dark;
+  }
+
+  .themed-section[data-theme="custom"] {
+    @apply bg-gradient-to-r from-neon-blue/20 via-neon-pink/20 to-neon-violet/20;
+  }
+
+  /* Component themes */
+  .themed-component {
+    @apply transition-all duration-300;
+  }
+
+  /* Layout themes */
+  .themed-layout {
+    @apply transition-all duration-300;
   }
 }
