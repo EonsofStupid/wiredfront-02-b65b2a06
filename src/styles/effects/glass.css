@@ -1,4 +1,5 @@
 @layer components {
+  /* Base glass effect - Apple-inspired with cyberpunk accents */
   .glass-effect {
     @apply relative backdrop-blur-xl bg-glass-card;
     @apply border border-glass-border;
@@ -8,6 +9,7 @@
       inset 0 0 32px rgba(92, 5, 252, 0.05);
   }
 
+  /* Enhanced glass card with depth */
   .glass-card {
     @apply glass-effect rounded-xl overflow-hidden;
     @apply before:absolute before:inset-0 before:rounded-xl;
@@ -17,6 +19,7 @@
     @apply after:bg-gradient-to-b after:from-white/5 after:to-transparent;
   }
 
+  /* Interactive glass elements */
   .glass-interactive {
     @apply glass-effect hover:bg-glass-highlight;
     @apply transform-gpu transition-all duration-300;
@@ -24,15 +27,22 @@
     @apply active:scale-[0.98];
   }
 
+  /* Glass panels for layout elements */
   .glass-panel {
     @apply glass-effect border-glass-border;
     @apply bg-gradient-to-b from-glass-card to-glass-card/90;
   }
 
+  /* Neon borders and accents */
   .neon-border {
     @apply relative;
     @apply before:absolute before:inset-0 before:rounded-xl before:-z-[1];
     @apply before:p-[1px] before:bg-gradients-glow;
     @apply before:opacity-50 hover:before:opacity-75;
   }
+
+  /* Depth layers for proper z-indexing */
+  .depth-layer-1 { @apply z-10; }
+  .depth-layer-2 { @apply z-20; }
+  .depth-layer-3 { @apply z-30; }
 }

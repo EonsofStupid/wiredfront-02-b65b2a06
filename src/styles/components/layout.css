@@ -1,5 +1,6 @@
 @layer components {
-  .machinery-frame {
+  /* Frame elements with enhanced depth and machinery aesthetics */
+  .frame-element {
     @apply fixed z-20;
     @apply bg-gradient-to-b from-dark-darker via-dark-lighter to-dark-darker;
     @apply shadow-lg shadow-dark-darker/50;
@@ -8,52 +9,54 @@
     @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
   }
 
+  /* Shared bar styles for consistent machinery aesthetics */
   .machinery-bar {
-    @apply relative border-[#32ed83]/10;
-    background: linear-gradient(
-      165deg,
-      rgba(20, 19, 38, 0.8) 0%,
-      rgba(29, 36, 46, 0.9) 100%
-    );
-    backdrop-filter: blur(16px);
+    @apply relative border-white/5;
+    @apply before:absolute before:inset-0 before:bg-gradient-to-r;
+    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-blue/5;
+    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
   }
 
+  /* Top bar with floating effect */
   .top-bar {
-    @apply machinery-frame machinery-bar;
+    @apply frame-element machinery-bar;
     @apply fixed top-0 left-0 right-0 h-16 z-30;
     @apply border-b border-x rounded-b-lg;
     clip-path: polygon(
       0 0,
       100% 0,
-      calc(100% - 16px) 100%,
-      16px 100%
+      calc(100% - 10px) 100%,
+      10px 100%
     );
   }
 
+  /* Status bar with machinery aesthetics */
   .status-bar {
-    @apply machinery-frame machinery-bar;
+    @apply frame-element machinery-bar;
     @apply fixed bottom-0 left-0 right-0 h-8 z-30;
     @apply border-t border-x rounded-t-lg;
     clip-path: polygon(
-      16px 0,
-      calc(100% - 16px) 0,
+      10px 0,
+      calc(100% - 10px) 0,
       100% 100%,
       0 100%
     );
   }
 
+  /* Side bar base styles - reusable for both sides */
   .side-bar {
-    @apply machinery-frame machinery-bar;
+    @apply frame-element machinery-bar;
     @apply fixed top-16 bottom-8 w-12 z-20;
     @apply transition-all duration-300 ease-in-out;
   }
 
+  /* Side bar positioning variants */
   .side-bar-left {
     @apply left-0 border-r;
     clip-path: polygon(
       0 0,
-      100% 16px,
-      100% calc(100% - 16px),
+      100% 10px,
+      100% calc(100% - 10px),
       0 100%
     );
   }
@@ -61,29 +64,40 @@
   .side-bar-right {
     @apply right-0 border-l;
     clip-path: polygon(
-      0 16px,
+      0 10px,
       100% 0,
       100% 100%,
-      0 calc(100% - 16px)
+      0 calc(100% - 10px)
     );
   }
 
+  /* Data stream effect shared across all bars */
   .data-stream {
     @apply absolute inset-0 overflow-hidden pointer-events-none;
     @apply before:absolute before:inset-0;
-    @apply before:bg-gradient-to-b;
-    @apply before:from-transparent before:via-[#00dcf5]/10 before:to-transparent;
+    @apply before:bg-gradient-to-b before:from-transparent before:via-neon-blue/10 before:to-transparent;
     @apply before:animate-data-stream;
   }
 
-  .nav-button {
-    @apply relative overflow-hidden;
-    @apply hover:bg-[#141326]/30 hover:text-[#00dcf5];
-    @apply active:scale-95 transition-all duration-200;
-    @apply after:absolute after:inset-0 after:rounded-md;
-    @apply after:opacity-0 hover:after:opacity-100;
-    @apply after:bg-gradient-to-r;
-    @apply after:from-[#00dcf5]/10 after:to-[#32ed83]/10;
-    @apply after:transition-opacity after:duration-200;
+  /* Custom scrollbar with cyberpunk theme */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.neon.blue/50') theme('colors.dark.lighter/20');
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-dark-lighter/20 rounded-full;
+    @apply shadow-[inset_0_0_6px_rgba(0,255,255,0.1)];
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gradient-to-b from-neon-blue/50 to-neon-pink/50 rounded-full;
+    @apply hover:from-neon-blue hover:to-neon-pink;
+    @apply transition-colors duration-200;
+    @apply shadow-[0_0_10px_theme('colors.neon.blue')];
   }
 }

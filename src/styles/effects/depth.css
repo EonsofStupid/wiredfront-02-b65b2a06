@@ -1,16 +1,4 @@
 @layer components {
-  .depth-layer-1 {
-    @apply z-10;
-  }
-
-  .depth-layer-2 {
-    @apply z-20;
-  }
-
-  .depth-layer-3 {
-    @apply z-30;
-  }
-
   .depth-1 {
     @apply shadow-lg shadow-dark-darker/50;
     @apply before:absolute before:inset-0 before:bg-gradient-to-b;
