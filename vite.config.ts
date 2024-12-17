@@ -15,16 +15,6 @@ export default defineConfig(({ mode }) => ({
         target: 'http://localhost:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
-      },
-      '/supabase': {
-        target: 'http://localhost:54321',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/supabase/, '')
-      },
-      '/redis': {
-        target: 'http://localhost:6379',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/redis/, '')
       }
     }
   },
@@ -44,23 +34,11 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
-          'utils': ['@/lib/utils', '@/lib/api'],
-          'stores': ['@/stores'],
         }
       }
-    },
-    target: 'esnext',
-    minify: 'esbuild',
-    cssMinify: true,
-    cssCodeSplit: true,
+    }
   },
   optimizeDeps: {
-    include: [
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-slot',
-      'react',
-      'react-dom',
-      'zustand'
-    ]
+    include: ['@radix-ui/react-dialog', '@radix-ui/react-slot']
   }
 }));

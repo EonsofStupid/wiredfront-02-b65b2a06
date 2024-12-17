@@ -22,18 +22,12 @@ export const AnimatedCubes = () => {
       {cubes.map((cube) => (
         <motion.div
           key={cube.id}
-          className="absolute rounded-xl backdrop-blur-sm"
+          className="absolute rounded-xl bg-gradient-to-br from-[#38ffca]/10 to-[#e800aa]/10 backdrop-blur-sm"
           style={{
             width: cube.size,
             height: cube.size,
             left: cube.x,
             top: cube.y,
-            background: `linear-gradient(135deg, 
-              rgba(0, 220, 245, 0.1),
-              rgba(92, 5, 252, 0.05)
-            )`,
-            border: '1px solid rgba(50, 237, 131, 0.1)',
-            boxShadow: '0 0 30px rgba(0, 220, 245, 0.05)',
           }}
           animate={{
             x: [0, Math.random() * 200 - 100],

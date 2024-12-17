@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { generateAIResponse } from "@/utils/ai/aiProviders";
@@ -12,7 +12,6 @@ import { AIInputForm } from "./AIInputForm";
 import { AIResponse } from "./AIResponse";
 import { AICommandSuggestions } from "./AICommandSuggestions";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
-import { ProcessingRings } from "./ProcessingRings";
 import type { AIMode, AIProvider } from "@/types/ai";
 import type { Command } from "@/utils/ai/commandHandler";
 
@@ -63,14 +62,7 @@ export const AIAssistant = () => {
   const fetchAvailableProviders = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to access AI features",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (!session) return;
 
       const { data, error } = await supabase
         .from('ai_settings')
@@ -89,11 +81,6 @@ export const AIAssistant = () => {
       }
     } catch (error) {
       console.error('Error fetching available providers:', error);
-      toast({
-        title: "Configuration Error",
-        description: "Failed to load AI providers. Please check your settings.",
-        variant: "destructive",
-      });
     }
   };
 
@@ -108,26 +95,18 @@ export const AIAssistant = () => {
     const currentInput = voiceInput || input;
     if (!currentInput.trim()) return;
 
+    // First, check if it's a command
+    const isCommand = handleCommand(currentInput, navigate);
+    if (isCommand) {
+      setInput("");
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      // First, check if it's a command
-      const isCommand = handleCommand(currentInput, navigate);
-      if (isCommand) {
-        toast({
-          title: "Command Executed",
-          description: "Navigation command processed successfully",
-        });
-        setInput("");
-        return;
-      }
-
       if (isOffline) {
-        toast({
-          title: "Offline Mode",
-          description: "Using local knowledge base for assistance",
-          className: "bg-dark-lighter border-yellow-500",
-        });
-        setResponse("I'm currently in offline mode. I'll use my local knowledge to assist you.");
+        const offlineResponse = "I'm currently in offline mode. I'll use my local knowledge to assist you.";
+        setResponse(offlineResponse);
         return;
       }
 
@@ -136,7 +115,6 @@ export const AIAssistant = () => {
       toast({
         title: "AI Response Generated",
         description: "Response generated successfully",
-        className: "bg-dark-lighter border-neon-blue",
       });
     } catch (error) {
       console.error('Error generating response:', error);
@@ -177,21 +155,10 @@ export const AIAssistant = () => {
             ${isDragging ? 'ai-assistant--dragging' : ''}
             ${isOffline ? 'opacity-90' : ''}`}
         >
-          {isProcessing && <ProcessingRings />}
-          
           <div className="ai-assistant__handle" />
           <AIHeader
             isMinimized={isMinimized}
-            onMinimize={() => {
-              setIsMinimized(!isMinimized);
-              if (!isMinimized) {
-                toast({
-                  title: "AI Assistant Minimized",
-                  description: "Click the robot icon to restore",
-                  className: "bg-dark-lighter border-neon-blue",
-                });
-              }
-            }}
+            onMinimize={() => setIsMinimized(!isMinimized)}
             onClose={() => setIsOpen(false)}
             isOffline={isOffline}
             isListening={isListening}
