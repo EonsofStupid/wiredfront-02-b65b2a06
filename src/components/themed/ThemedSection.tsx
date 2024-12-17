@@ -23,14 +23,20 @@ export const ThemedSection = ({
   return (
     <section 
       className={cn(
-        "themed-section",
+        "themed-section relative min-h-screen",
         theme?.className,
         className
       )}
-      style={theme?.styles}
+      style={{
+        background: theme?.styles?.background || 'linear-gradient(135deg, #1a1a1a 0%, #2b2b2b 100%)',
+        ...theme?.styles
+      }}
       data-theme={themeName}
     >
-      {children}
+      <div className="absolute inset-0 bg-gradient-to-b from-dark/50 to-transparent" />
+      <div className="relative z-10">
+        {children}
+      </div>
     </section>
   );
 };
