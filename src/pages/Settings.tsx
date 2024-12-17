@@ -7,6 +7,7 @@ import { AccessibilitySettings } from "@/components/settings/AccessibilitySettin
 import { APIKeySettings } from "@/components/settings/APIKeySettings";
 import { RouteSettings } from "@/components/settings/RouteSettings";
 import { DiscordBotSettings } from "@/components/settings/DiscordBotSettings";
+import { LogViewer } from "@/components/settings/LogViewer";
 
 const Settings = () => {
   return (
@@ -14,7 +15,7 @@ const Settings = () => {
       <h1 className="text-3xl font-bold gradient-text">Settings</h1>
       
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid grid-cols-4 lg:grid-cols-8">
+        <TabsList className="grid grid-cols-4 lg:grid-cols-9">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="themes">Themes</TabsTrigger>
           <TabsTrigger value="ai">AI</TabsTrigger>
@@ -23,6 +24,7 @@ const Settings = () => {
           <TabsTrigger value="api">API Keys</TabsTrigger>
           <TabsTrigger value="routes">Routes</TabsTrigger>
           <TabsTrigger value="discord">Discord</TabsTrigger>
+          <TabsTrigger value="logs">Logs</TabsTrigger>
         </TabsList>
 
         <div className="mt-6">
@@ -56,6 +58,10 @@ const Settings = () => {
           
           <TabsContent value="discord">
             <DiscordBotSettings />
+          </TabsContent>
+
+          <TabsContent value="logs">
+            <LogViewer />
           </TabsContent>
         </div>
       </Tabs>
