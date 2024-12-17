@@ -20,6 +20,7 @@ export interface ThemeEffects {
   };
   gradient: {
     enabled: boolean;
+    intensity: number; // Added this property
     colors: string[];
     angle: number;
   };

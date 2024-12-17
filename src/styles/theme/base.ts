@@ -22,6 +22,7 @@ export const baseTheme: Theme = {
     },
     gradient: {
       enabled: true,
+      intensity: 0.7, // Added this property
       colors: ['#00FFFF', '#FF007F', '#9D00FF'],
       angle: 45
     }
