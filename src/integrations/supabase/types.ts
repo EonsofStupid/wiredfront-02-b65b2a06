@@ -260,6 +260,83 @@ export type Database = {
           },
         ]
       }
+      component_themes: {
+        Row: {
+          component_type: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          styles: Json
+          theme_name: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          component_type: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          styles?: Json
+          theme_name: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          component_type?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          styles?: Json
+          theme_name?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      custom_sections: {
+        Row: {
+          content: Json
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          position: number | null
+          section_name: string
+          theme_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: Json
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          position?: number | null
+          section_name: string
+          theme_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          position?: number | null
+          section_name?: string
+          theme_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_sections_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "component_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       discord_achievements: {
         Row: {
           achievement_type: string

@@ -1,0 +1,17 @@
+@layer components {
+  .themed-section {
+    @apply relative overflow-hidden;
+  }
+
+  .themed-section[data-theme="hero"] {
+    @apply bg-gradient-to-br from-dark to-dark-lighter;
+  }
+
+  .themed-section[data-theme="feature"] {
+    @apply bg-dark-lighter/50;
+  }
+
+  .themed-section[data-theme="cta"] {
+    @apply bg-gradient-to-tr from-dark-lighter to-dark;
+  }
+}

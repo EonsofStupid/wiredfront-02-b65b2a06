@@ -3,10 +3,14 @@ import { Sparkles, Zap, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+import { ThemedSection } from "@/components/themed/ThemedSection";
 
 export const HeroSection = () => {
   return (
-    <section className="min-h-screen flex items-center justify-center px-4">
+    <ThemedSection 
+      themeName="hero"
+      className="min-h-screen flex items-center justify-center px-4"
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -61,6 +65,6 @@ export const HeroSection = () => {
           </HoverCard>
         </div>
       </motion.div>
-    </section>
+    </ThemedSection>
   );
 };
