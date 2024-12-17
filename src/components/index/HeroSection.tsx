@@ -9,28 +9,56 @@ export const HeroSection = () => {
   return (
     <ThemedSection 
       themeName="hero"
-      className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-dark to-dark-lighter"
+      className="hero-container"
     >
+      <div className="animated-bg" />
+      <div className="hero-overlay" />
+      <div className="floating-elements">
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="floating-element"
+            style={{
+              width: Math.random() * 100 + 50,
+              height: Math.random() * 100 + 50,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              x: [0, Math.random() * 200 - 100],
+              y: [0, Math.random() * 200 - 100],
+              rotate: [0, 360],
+            }}
+            transition={{
+              duration: Math.random() * 10 + 15,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "linear",
+            }}
+          />
+        ))}
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-center z-10 max-w-4xl"
+        className="hero-content"
       >
-        <div className="neon-border p-4 md:p-8 glass-card mb-8">
+        <div className="hero-card">
           <motion.div
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold gradient-text mb-6">
+            <h1 className="hero-title">
               wiredFRONT
             </h1>
             <div className="flex items-center justify-center gap-2 mb-4">
               <Sparkles className="w-6 h-6 text-neon-blue animate-pulse" />
-              <span className="text-lg md:text-2xl text-neon-pink">AI-Powered Workspace</span>
+              <span className="hero-subtitle">AI-Powered Workspace</span>
             </div>
-            <p className="text-lg md:text-2xl text-gray-300 max-w-2xl mx-auto">
+            <p className="hero-description">
               Transform your workflow with AI-driven file management, automation, and seamless integrations.
             </p>
           </motion.div>

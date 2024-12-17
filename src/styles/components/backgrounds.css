@@ -1,0 +1,47 @@
+@layer components {
+  .animated-bg {
+    @apply fixed inset-0 -z-10 overflow-hidden;
+    background: linear-gradient(
+      45deg,
+      theme('colors.neon.blue'),
+      theme('colors.neon.violet'),
+      theme('colors.neon.pink')
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  .hero-overlay {
+    @apply absolute inset-0 bg-dark/60 backdrop-blur-sm;
+  }
+
+  .floating-elements {
+    @apply absolute inset-0 overflow-hidden pointer-events-none;
+  }
+
+  .floating-element {
+    @apply absolute rounded-lg bg-white/5 backdrop-blur-sm;
+    animation: float 20s linear infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate(100px, 100px) rotate(180deg);
+    }
+    100% {
+      transform: translate(0, 0) rotate(360deg);
+    }
+  }
+}

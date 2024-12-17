@@ -1,0 +1,63 @@
+@layer components {
+  .hero-container {
+    @apply min-h-screen flex items-center justify-center px-4 relative overflow-hidden;
+  }
+
+  .hero-content {
+    @apply relative z-10 max-w-4xl text-center;
+  }
+
+  .hero-card {
+    @apply relative p-4 md:p-8 mb-8 rounded-xl overflow-hidden;
+    background: linear-gradient(
+      to bottom right,
+      theme('colors.dark.DEFAULT/80'),
+      theme('colors.dark.lighter/60')
+    );
+    backdrop-filter: blur(12px);
+    border: 1px solid theme('colors.white/10');
+    box-shadow: 0 0 30px theme('colors.neon.blue/20');
+  }
+
+  .hero-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-30;
+    background: linear-gradient(
+      45deg,
+      theme('colors.neon.blue/20'),
+      theme('colors.neon.pink/20')
+    );
+    filter: blur(3px);
+  }
+
+  .hero-title {
+    @apply text-4xl md:text-6xl lg:text-8xl font-bold mb-6;
+    background: linear-gradient(
+      to right,
+      theme('colors.neon.blue'),
+      theme('colors.neon.pink'),
+      theme('colors.neon.violet')
+    );
+    background-size: 200% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-text 8s linear infinite;
+  }
+
+  .hero-subtitle {
+    @apply text-lg md:text-2xl;
+    color: theme('colors.neon.pink');
+    text-shadow: 0 0 10px theme('colors.neon.pink/50');
+  }
+
+  .hero-description {
+    @apply text-lg md:text-2xl text-gray-300 max-w-2xl mx-auto;
+  }
+
+  @keyframes gradient-text {
+    to {
+      background-position: 200% center;
+    }
+  }
+}
