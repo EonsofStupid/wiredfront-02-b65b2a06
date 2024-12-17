@@ -1,6 +1,14 @@
+@layer components {
+  /* Machinery Frame Components */
+  .machinery-frame {
+    @apply fixed z-20;
+    @apply bg-gradient-to-b from-dark-darker via-dark-lighter to-dark-darker;
+    @apply shadow-lg shadow-dark-darker/50;
+    @apply before:absolute before:inset-0 before:bg-gradient-to-b;
+    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-purple/5;
+    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
+  }
 
-
-  /* Shared machinery aesthetics for bars */
   .machinery-bar {
     @apply relative border-[#32ed83]/10;
     background: linear-gradient(
@@ -11,78 +19,74 @@
     backdrop-filter: blur(16px);
   }
 
-  /* Top bar specific styling */
-  .top-bar {
-    @apply machinery-frame machinery-bar;
-    @apply fixed top-0 left-0 right-0 h-16 z-30;
-    @apply border-b border-x rounded-b-lg;
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      calc(100% - 16px) 100%,
-      16px 100%
-    );
+  /* Machinery Cards and Interactive Elements */
+  .machinery-card {
+    @apply bg-dark-lighter/10 backdrop-blur-md border border-white/5;
+    @apply shadow-xl relative overflow-hidden;
+    @apply transition-all duration-300;
   }
 
-  /* Status bar specific styling */
-  .status-bar {
-    @apply machinery-frame machinery-bar;
-    @apply fixed bottom-0 left-0 right-0 h-8 z-30;
-    @apply border-t border-x rounded-t-lg;
-    clip-path: polygon(
-      16px 0,
-      calc(100% - 16px) 0,
-      100% 100%,
-      0 100%
-    );
+  .machinery-interactive {
+    @apply hover:bg-dark-lighter/20;
+    @apply transform-gpu transition-all duration-300;
+    @apply hover:scale-[1.02] hover:shadow-lg;
+    @apply active:scale-[0.98];
   }
 
-  /* Side bar base styling */
-  .side-bar {
-    @apply machinery-frame machinery-bar;
-    @apply fixed top-16 bottom-8 w-12 z-20;
-    @apply transition-all duration-300 ease-in-out;
+  /* Machinery Text Styles */
+  .machinery-text-gradient {
+    @apply bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-neon-blue via-neon-pink to-neon-purple;
+    @apply animate-gradient-x;
   }
 
-  /* Side bar positioning variants */
-  .side-bar-left {
-    @apply left-0 border-r;
-    clip-path: polygon(
-      0 0,
-      100% 16px,
-      100% calc(100% - 16px),
-      0 100%
-    );
+  .machinery-text-highlight {
+    @apply text-neon-pink;
+    text-shadow: 0 0 10px theme('colors.neon.pink');
   }
 
-  .side-bar-right {
-    @apply right-0 border-l;
-    clip-path: polygon(
-      0 16px,
-      100% 0,
-      100% 100%,
-      0 calc(100% - 16px)
-    );
+  .machinery-text {
+    @apply text-neon-blue;
+    text-shadow: 0 0 5px theme('colors.neon.blue/50');
   }
 
-  /* Data stream effect */
-  .data-stream {
-    @apply absolute inset-0 overflow-hidden pointer-events-none;
-    @apply before:absolute before:inset-0;
-    @apply before:bg-gradient-to-b;
-    @apply before:from-transparent before:via-[#00dcf5]/10 before:to-transparent;
-    @apply before:animate-data-stream;
-  }
-
-  /* Navigation button styling */
-  .nav-button {
+  /* Machinery Buttons */
+  .machinery-button {
     @apply relative overflow-hidden;
-    @apply hover:bg-[#141326]/30 hover:text-[#00dcf5];
+    @apply hover:bg-dark-lighter/30;
     @apply active:scale-95 transition-all duration-200;
     @apply after:absolute after:inset-0 after:rounded-md;
     @apply after:opacity-0 hover:after:opacity-100;
-    @apply after:bg-gradient-to-r;
-    @apply after:from-[#00dcf5]/10 after:to-[#32ed83]/10;
     @apply after:transition-opacity after:duration-200;
+  }
+
+  .machinery-button.machinery-primary {
+    @apply bg-gradient-to-r from-neon-blue to-neon-teal;
+    @apply hover:shadow-[0_0_20px_theme('colors.neon.blue')];
+  }
+
+  .machinery-button.machinery-secondary {
+    @apply bg-gradient-to-r from-neon-pink to-neon-purple;
+    @apply hover:shadow-[0_0_20px_theme('colors.neon.pink')];
+  }
+
+  /* Machinery Icons */
+  .machinery-icon {
+    @apply w-5 h-5 text-neon-blue;
+    filter: drop-shadow(0 0 5px theme('colors.neon.blue'));
+  }
+
+  .machinery-icon-container {
+    @apply relative p-2 rounded-full;
+    @apply bg-gradient-to-br from-dark-lighter to-dark-darker;
+    @apply border border-neon-blue/20;
+  }
+
+  /* Machinery List Items */
+  .machinery-list-item {
+    @apply text-sm text-neon-blue;
+    @apply flex items-center gap-2;
+    @apply transition-all duration-200;
+    @apply hover:translate-x-1;
   }
 }

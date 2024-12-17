@@ -9,17 +9,17 @@ import { features } from "@/data/features";
 const Index = () => {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Background layers with proper depth */}
-      <div className="absolute inset-0 bg-dark-overlay depth-layer-1" />
+      {/* Background machinery layers */}
+      <div className="absolute inset-0 machinery-frame machinery-bar depth-layer-1" />
       <GalaxyBackground />
       <DataStream />
       <AnimatedCubes />
       
-      {/* Content layers */}
+      {/* Content machinery layers */}
       <div className="relative depth-layer-2">
         <HeroSection />
 
-        {/* Features Section */}
+        {/* Features Section with machinery styling */}
         <section className="container mx-auto px-4 py-12 md:py-20">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -27,11 +27,11 @@ const Index = () => {
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h2 className="text-title gradient-text mb-4">
+            <h2 className="text-title machinery-text-gradient mb-4">
               Powered by Advanced AI
             </h2>
-            <p className="text-body text-neon-blue max-w-2xl mx-auto">
-              Seamlessly integrate AI capabilities into your workflow with our powerful features
+            <p className="text-body machinery-text-highlight max-w-2xl mx-auto">
+              Seamlessly integrate AI capabilities into your workflow
             </p>
           </motion.div>
 
@@ -43,20 +43,20 @@ const Index = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass-card neon-border p-6 md:p-8 group cursor-pointer"
+                className="machinery-card machinery-interactive depth-layer-2"
               >
-                <div className="text-neon-success mb-4 transition-transform duration-300 group-hover:scale-110">
+                <div className="machinery-icon-container mb-4 transition-transform duration-300 group-hover:scale-110">
                   {<feature.icon className="w-8 md:w-10 h-8 md:h-10" />}
                 </div>
-                <h3 className="text-subtitle gradient-text mb-3">
+                <h3 className="machinery-text-gradient mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-body text-neon-blue">{feature.description}</p>
+                <p className="machinery-text">{feature.description}</p>
                 {feature.capabilities && (
                   <ul className="mt-4 space-y-2">
                     {feature.capabilities.map((capability, idx) => (
-                      <li key={idx} className="text-sm text-neon-success flex items-center">
-                        <ChevronDown className="w-4 h-4 mr-2 text-neon-pink" />
+                      <li key={idx} className="machinery-list-item flex items-center">
+                        <ChevronDown className="machinery-icon mr-2" />
                         {capability}
                       </li>
                     ))}
