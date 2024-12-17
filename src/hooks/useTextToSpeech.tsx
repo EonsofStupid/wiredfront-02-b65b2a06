@@ -2,6 +2,11 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
+interface AISettingsMetadata {
+  elevenLabsApiKey?: string;
+  [key: string]: any;
+}
+
 export const useTextToSpeech = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -11,7 +16,6 @@ export const useTextToSpeech = () => {
     try {
       setIsLoading(true);
       
-      // Get ElevenLabs API key from Supabase
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('No session found');
 
@@ -23,7 +27,9 @@ export const useTextToSpeech = () => {
 
       if (settingsError) throw settingsError;
 
-      const apiKey = settings?.metadata?.elevenLabsApiKey;
+      const metadata = settings?.metadata as AISettingsMetadata;
+      const apiKey = metadata?.elevenLabsApiKey;
+      
       if (!apiKey) {
         toast({
           title: "API Key Required",
@@ -63,7 +69,7 @@ export const useTextToSpeech = () => {
       };
 
       await audio.play();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Text-to-speech error:', error);
       toast({
         title: "Speech Generation Failed",
