@@ -24,19 +24,19 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
         .eq('component_type', componentType)
         .eq('theme_name', themeName)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
       set(state => ({
         componentThemes: {
           ...state.componentThemes,
-          [`${componentType}-${themeName}`]: data.styles
+          [`${componentType}-${themeName}`]: data?.styles || null
         }
       }));
     } catch (error: any) {
+      console.error('Error loading theme:', error.message);
       set({ error: error.message });
-      console.log('Error loading theme:', error.message);
     } finally {
       set({ isLoading: false });
     }

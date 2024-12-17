@@ -20,14 +20,20 @@ export const ThemedSection = ({
     loadTheme('section', themeName);
   }, [themeName, loadTheme]);
 
+  // Provide default styles if no theme is found
+  const defaultStyles = {
+    backgroundColor: '#1A1A1A',
+    color: '#FFFFFF'
+  };
+
   return (
     <section 
       className={cn(
-        "themed-section",
+        "themed-section relative min-h-screen w-full",
         theme?.className,
         className
       )}
-      style={theme?.styles}
+      style={{ ...defaultStyles, ...theme?.styles }}
       data-theme={themeName}
     >
       {children}
