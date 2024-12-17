@@ -45,7 +45,7 @@ const Index = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="machinery-card machinery-interactive depth-layer-2"
               >
-                <div className="machinery-icon-container mb-4 transition-transform duration-300 group-hover:scale-110">
+                <div className="machinery-icon-container mb-4">
                   {<feature.icon className="w-8 md:w-10 h-8 md:h-10" />}
                 </div>
                 <h3 className="machinery-text-gradient mb-3">
@@ -55,7 +55,7 @@ const Index = () => {
                 {feature.capabilities && (
                   <ul className="mt-4 space-y-2">
                     {feature.capabilities.map((capability, idx) => (
-                      <li key={idx} className="machinery-list-item flex items-center">
+                      <li key={idx} className="machinery-list-item">
                         <ChevronDown className="machinery-icon mr-2" />
                         {capability}
                       </li>
