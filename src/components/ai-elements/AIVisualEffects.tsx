@@ -7,8 +7,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
 import { BarCustomization } from "./visual-effects/BarCustomization";
 import { EffectToggle } from "./visual-effects/EffectToggle";
-import { VisualPreferences, isValidVisualPreferences } from "./visual-effects/types";
-import type { Theme } from "@/types/theme";
+import { VisualPreferences, isValidVisualPreferences, toJson } from "./visual-effects/types";
 
 const defaultVisualPreferences: VisualPreferences = {
   effects: {
@@ -78,7 +77,7 @@ export const AIVisualEffects = () => {
         .from('user_visual_preferences')
         .upsert({
           user_id: session.user.id,
-          visual_effects: updates
+          visual_effects: toJson(updates)
         });
 
       if (error) throw error;

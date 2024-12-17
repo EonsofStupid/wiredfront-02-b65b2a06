@@ -35,12 +35,16 @@ export function LogViewer() {
         .limit(100);
 
       if (error) throw error;
-      setLogs(data.map(log => ({
+
+      // Transform the data to match our Log interface
+      const transformedLogs: Log[] = data.map(log => ({
         timestamp: new Date(log.created_at).toISOString(),
         level: log.level,
         message: log.message,
-        metadata: log.metadata
-      })));
+        metadata: log.metadata as Record<string, any>
+      }));
+
+      setLogs(transformedLogs);
     } catch (error) {
       console.error('Error loading logs:', error);
       toast({
@@ -105,7 +109,7 @@ export function LogViewer() {
             Export
           </Button>
           <Button
-            variant="outline"
+            variant="destructive"
             size="sm"
             onClick={handleClearLogs}
             className="flex items-center gap-2"
@@ -126,7 +130,7 @@ export function LogViewer() {
               <div className="flex items-center justify-between">
                 <Badge variant={
                   log.level === 'error' ? 'destructive' :
-                  log.level === 'warning' ? 'warning' : 'default'
+                  log.level === 'warning' ? 'outline' : 'default'
                 }>
                   {log.level}
                 </Badge>

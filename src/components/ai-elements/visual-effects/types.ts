@@ -1,3 +1,5 @@
+import type { Json } from '@/integrations/supabase/types';
+
 export interface BarPreference {
   color: string;
   opacity: number;
@@ -15,6 +17,11 @@ export interface VisualEffects {
 export interface VisualPreferences {
   effects: VisualEffects;
 }
+
+// Helper function to convert VisualPreferences to Json type for Supabase
+export const toJson = (prefs: VisualPreferences): Json => {
+  return prefs as Json;
+};
 
 // Type guard to validate the shape of data from Supabase
 export function isValidVisualPreferences(data: unknown): data is VisualPreferences {
