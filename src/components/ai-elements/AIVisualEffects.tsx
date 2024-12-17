@@ -7,7 +7,12 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
 import { BarCustomization } from "./visual-effects/BarCustomization";
 import { EffectToggle } from "./visual-effects/EffectToggle";
-import { VisualPreferences, isValidVisualPreferences, toJson } from "./visual-effects/types";
+import { 
+  VisualPreferences, 
+  isValidVisualPreferences, 
+  toJson,
+  ThemeEffects 
+} from "./visual-effects/types";
 
 const defaultVisualPreferences: VisualPreferences = {
   effects: {
@@ -117,7 +122,7 @@ export const AIVisualEffects = () => {
     }
   };
 
-  const handleEffectToggle = (effect: keyof Theme['effects'], enabled: boolean) => {
+  const handleEffectToggle = (effect: keyof ThemeEffects, enabled: boolean) => {
     updateTheme({
       effects: {
         ...theme.effects,
@@ -129,7 +134,7 @@ export const AIVisualEffects = () => {
     });
   };
 
-  const handleIntensityChange = (effect: keyof Theme['effects'], intensity: number) => {
+  const handleIntensityChange = (effect: keyof ThemeEffects, intensity: number) => {
     updateTheme({
       effects: {
         ...theme.effects,

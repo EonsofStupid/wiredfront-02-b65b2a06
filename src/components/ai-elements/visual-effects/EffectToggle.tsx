@@ -2,17 +2,17 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import type { Theme } from "@/types/theme";
+import { ThemeEffects } from "./types";
 
 interface EffectToggleProps {
   label: string;
-  effect: keyof Theme['effects'];
+  effect: keyof ThemeEffects;
   enabled: boolean;
   intensity: number;
   color?: string;
-  onToggle: (effect: keyof Theme['effects'], enabled: boolean) => void;
-  onIntensityChange: (effect: keyof Theme['effects'], intensity: number) => void;
-  onColorChange?: (effect: keyof Theme['effects'], color: string) => void;
+  onToggle: (effect: keyof ThemeEffects, enabled: boolean) => void;
+  onIntensityChange: (effect: keyof ThemeEffects, intensity: number) => void;
+  onColorChange?: (effect: keyof ThemeEffects, color: string) => void;
 }
 
 export const EffectToggle = ({

@@ -18,9 +18,24 @@ export interface VisualPreferences {
   effects: VisualEffects;
 }
 
+export interface ThemeEffects {
+  neon: {
+    enabled: boolean;
+    intensity: number;
+    color: string;
+  };
+  gradient: {
+    enabled: boolean;
+    intensity: number;
+    colors: string[];
+    angle: number;
+  };
+}
+
 // Helper function to convert VisualPreferences to Json type for Supabase
 export const toJson = (prefs: VisualPreferences): Json => {
-  return prefs as Json;
+  // First convert to unknown, then to Json to ensure type safety
+  return JSON.parse(JSON.stringify(prefs)) as Json;
 };
 
 // Type guard to validate the shape of data from Supabase
