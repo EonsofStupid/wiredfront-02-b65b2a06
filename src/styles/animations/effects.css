@@ -1,48 +1,38 @@
-
-    50% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(100%);
-      opacity: 0;
-    }
+@layer components {
+  .machinery-animation {
+    @apply transition-all duration-300;
   }
 
-  @keyframes pulse-glow {
+  .machinery-hover {
+    @apply hover:scale-105 hover:brightness-110;
+    @apply transition-all duration-300;
+  }
+
+  .machinery-pulse {
+    animation: machinery-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .machinery-float {
+    animation: machinery-float 6s ease-in-out infinite;
+  }
+
+  @keyframes machinery-pulse {
     0%, 100% {
-      box-shadow: 0 0 10px theme('colors.neon.blue'),
-                 0 0 20px theme('colors.neon.pink');
+      opacity: 1;
+      transform: scale(1);
     }
     50% {
-      box-shadow: 0 0 20px theme('colors.neon.blue'),
-                 0 0 40px theme('colors.neon.pink');
+      opacity: 0.8;
+      transform: scale(1.05);
     }
   }
 
-  .animate-data-stream {
-    animation: data-stream 2s linear infinite;
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
-  .hover-scale {
-    @apply transition-transform duration-200 hover:scale-105;
-  }
-
-  .hover-glow {
-    @apply transition-all duration-200;
-  }
-
-  .hover-glow:hover {
-    filter: drop-shadow(0 0 10px theme('colors.neon.blue'))
-           drop-shadow(0 0 20px theme('colors.neon.pink'));
-  }
-
-  .cyber-gradient {
-    @apply bg-gradient-to-r from-neon-blue via-neon-pink to-neon-purple;
-    @apply bg-clip-text text-transparent;
-    @apply animate-gradient-x;
+  @keyframes machinery-float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
   }
 }
