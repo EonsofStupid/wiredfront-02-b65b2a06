@@ -35,8 +35,4 @@
     @apply before:p-[1px] before:bg-gradients-glow;
     @apply before:opacity-50 hover:before:opacity-75;
   }
-
-  .depth-layer-1 { @apply z-10; }
-  .depth-layer-2 { @apply z-20; }
-  .depth-layer-3 { @apply z-30; }
 }
