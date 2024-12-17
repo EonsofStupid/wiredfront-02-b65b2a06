@@ -1,11 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
-
-interface AISettingsMetadata {
-  elevenLabsApiKey?: string;
-  [key: string]: any;
-}
+import { AISettingsMetadata, isAISettingsMetadata } from '@/types/ai-settings';
 
 export const useTextToSpeech = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,9 +23,12 @@ export const useTextToSpeech = () => {
 
       if (settingsError) throw settingsError;
 
-      const metadata = settings?.metadata as AISettingsMetadata;
-      const apiKey = metadata?.elevenLabsApiKey;
-      
+      const metadata = settings?.metadata;
+      if (!isAISettingsMetadata(metadata)) {
+        throw new Error('Invalid AI settings metadata format');
+      }
+
+      const apiKey = metadata.elevenLabsApiKey;
       if (!apiKey) {
         toast({
           title: "API Key Required",

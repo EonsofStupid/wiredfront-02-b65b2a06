@@ -34,7 +34,6 @@ export interface ThemeEffects {
 
 // Helper function to convert VisualPreferences to Json type for Supabase
 export const toJson = (prefs: VisualPreferences): Json => {
-  // First convert to unknown, then to Json to ensure type safety
   return JSON.parse(JSON.stringify(prefs)) as Json;
 };
 

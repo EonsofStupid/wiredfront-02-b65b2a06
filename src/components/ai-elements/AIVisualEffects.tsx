@@ -1,17 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/use-toast";
-import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
-import { BarCustomization } from "./visual-effects/BarCustomization";
-import { EffectToggle } from "./visual-effects/EffectToggle";
+import { EffectsConfiguration } from "./visual-effects/EffectsConfiguration";
 import { 
   VisualPreferences, 
   isValidVisualPreferences, 
-  toJson,
-  ThemeEffects 
+  toJson 
 } from "./visual-effects/types";
 
 const defaultVisualPreferences: VisualPreferences = {
@@ -26,7 +20,6 @@ const defaultVisualPreferences: VisualPreferences = {
 };
 
 export const AIVisualEffects = () => {
-  const { theme, updateTheme } = useTheme();
   const { toast } = useToast();
   const [visualPreferences, setVisualPreferences] = useState<VisualPreferences>(defaultVisualPreferences);
 
@@ -48,9 +41,7 @@ export const AIVisualEffects = () => {
         .eq('user_id', session.user.id)
         .single();
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (data?.visual_effects) {
         if (isValidVisualPreferences(data.visual_effects)) {
@@ -122,28 +113,16 @@ export const AIVisualEffects = () => {
     }
   };
 
-  const handleEffectToggle = (effect: keyof ThemeEffects, enabled: boolean) => {
-    updateTheme({
+  const handleOverallIntensityChange = (intensity: number) => {
+    const newPreferences: VisualPreferences = {
+      ...visualPreferences,
       effects: {
-        ...theme.effects,
-        [effect]: {
-          ...theme.effects[effect],
-          enabled
-        }
+        ...visualPreferences.effects,
+        intensity: intensity / 100
       }
-    });
-  };
-
-  const handleIntensityChange = (effect: keyof ThemeEffects, intensity: number) => {
-    updateTheme({
-      effects: {
-        ...theme.effects,
-        [effect]: {
-          ...theme.effects[effect],
-          intensity: intensity / 100
-        }
-      }
-    });
+    };
+    setVisualPreferences(newPreferences);
+    saveVisualPreferences(newPreferences);
   };
 
   const handleBarColorChange = (barType: 'top' | 'bottom' | 'side', color: string) => {
@@ -182,70 +161,12 @@ export const AIVisualEffects = () => {
     saveVisualPreferences(newPreferences);
   };
 
-  const handleOverallIntensityChange = (intensity: number) => {
-    const newPreferences: VisualPreferences = {
-      ...visualPreferences,
-      effects: {
-        ...visualPreferences.effects,
-        intensity: intensity / 100
-      }
-    };
-    setVisualPreferences(newPreferences);
-    saveVisualPreferences(newPreferences);
-  };
-
   return (
-    <Card className="p-6 space-y-6">
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold">Visual Effects</h3>
-        <p className="text-sm text-muted-foreground">
-          Customize how your AI assistant looks and feels
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        <Label>Overall Effects Intensity</Label>
-        <Slider
-          value={[visualPreferences.effects.intensity * 100]}
-          min={0}
-          max={100}
-          step={1}
-          onValueChange={([value]) => handleOverallIntensityChange(value)}
-        />
-      </div>
-
-      <div className="space-y-4">
-        <h4 className="text-md font-semibold">Bar Customization</h4>
-        {(['top', 'bottom', 'side'] as const).map((barType) => (
-          <BarCustomization
-            key={barType}
-            barType={barType}
-            color={visualPreferences.effects.bars[barType].color}
-            opacity={visualPreferences.effects.bars[barType].opacity}
-            onColorChange={handleBarColorChange}
-            onOpacityChange={handleBarOpacityChange}
-          />
-        ))}
-      </div>
-
-      <EffectToggle
-        label="Neon Effect"
-        effect="neon"
-        enabled={theme.effects.neon.enabled}
-        intensity={theme.effects.neon.intensity}
-        color={theme.effects.neon.color}
-        onToggle={handleEffectToggle}
-        onIntensityChange={handleIntensityChange}
-      />
-
-      <EffectToggle
-        label="Gradient Effect"
-        effect="gradient"
-        enabled={theme.effects.gradient.enabled}
-        intensity={theme.effects.gradient.intensity}
-        onToggle={handleEffectToggle}
-        onIntensityChange={handleIntensityChange}
-      />
-    </Card>
+    <EffectsConfiguration
+      visualPreferences={visualPreferences}
+      onOverallIntensityChange={handleOverallIntensityChange}
+      onBarColorChange={handleBarColorChange}
+      onBarOpacityChange={handleBarOpacityChange}
+    />
   );
 };
