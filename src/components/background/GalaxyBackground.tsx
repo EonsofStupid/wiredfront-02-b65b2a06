@@ -16,14 +16,13 @@ export const GalaxyBackground = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#34eba8] via-[#eb34c9] to-[#9900ff] opacity-20 animate-gradient-xy" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-[#ebeb34] via-[#38ffca] to-[#eb38ff] opacity-20 animate-gradient-y" />
+    <div className="galaxy-background">
+      <div className="galaxy-gradient" />
       
       {stars.map((star, index) => (
         <motion.div
           key={index}
-          className="absolute rounded-full bg-white"
+          className="galaxy-star"
           style={{
             left: `${star.x}%`,
             top: `${star.y}%`,

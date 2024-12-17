@@ -1,47 +1,54 @@
 @layer components {
-  .animated-bg {
-    @apply fixed inset-0 -z-10 overflow-hidden;
+  .galaxy-background {
+    @apply fixed inset-0 overflow-hidden pointer-events-none;
+  }
+
+  .galaxy-gradient {
+    @apply absolute inset-0;
+    background: linear-gradient(
+      to bottom right,
+      theme('colors.neon.blue/20'),
+      theme('colors.neon.pink/20'),
+      theme('colors.neon.violet/20')
+    );
+    opacity: 0.5;
+  }
+
+  .galaxy-star {
+    @apply absolute rounded-full bg-white;
+    animation: twinkle 2s infinite ease-in-out;
+  }
+
+  .animated-cubes {
+    @apply fixed inset-0 overflow-hidden pointer-events-none;
+  }
+
+  .animated-cube {
+    @apply absolute rounded-xl;
     background: linear-gradient(
       45deg,
-      theme('colors.neon.blue'),
-      theme('colors.neon.violet'),
-      theme('colors.neon.pink')
+      theme('colors.neon.blue/10'),
+      theme('colors.neon.pink/10')
     );
-    background-size: 400% 400%;
-    animation: gradient-shift 15s ease infinite;
+    backdrop-filter: blur(8px);
   }
 
-  .hero-overlay {
-    @apply absolute inset-0 bg-dark/60 backdrop-blur-sm;
+  .data-stream {
+    @apply fixed right-0 top-0 h-full w-1/4 pointer-events-none overflow-hidden opacity-20;
   }
 
-  .floating-elements {
-    @apply absolute inset-0 overflow-hidden pointer-events-none;
+  .data-stream-line {
+    @apply absolute text-neon-blue;
   }
 
-  .floating-element {
-    @apply absolute rounded-lg bg-white/5 backdrop-blur-sm;
-    animation: float 20s linear infinite;
-  }
-
-  @keyframes gradient-shift {
+  @keyframes twinkle {
     0%, 100% {
-      background-position: 0% 50%;
+      opacity: 0.2;
+      transform: scale(1);
     }
     50% {
-      background-position: 100% 50%;
-    }
-  }
-
-  @keyframes float {
-    0% {
-      transform: translate(0, 0) rotate(0deg);
-    }
-    50% {
-      transform: translate(100px, 100px) rotate(180deg);
-    }
-    100% {
-      transform: translate(0, 0) rotate(360deg);
+      opacity: 0.8;
+      transform: scale(1.2);
     }
   }
 }

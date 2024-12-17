@@ -18,11 +18,11 @@ export const AnimatedCubes = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+    <div className="animated-cubes">
       {cubes.map((cube) => (
         <motion.div
           key={cube.id}
-          className="absolute rounded-xl bg-gradient-to-br from-[#38ffca]/10 to-[#e800aa]/10 backdrop-blur-sm"
+          className="animated-cube"
           style={{
             width: cube.size,
             height: cube.size,
