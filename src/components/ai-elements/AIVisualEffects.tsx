@@ -1,20 +1,19 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
+import { BarCustomization } from "./visual-effects/BarCustomization";
+import { EffectToggle } from "./visual-effects/EffectToggle";
+import type { VisualPreferences } from "./visual-effects/types";
 import type { Theme } from "@/types/theme";
 
 export const AIVisualEffects = () => {
   const { theme, updateTheme } = useTheme();
   const { toast } = useToast();
-  const [visualPreferences, setVisualPreferences] = useState({
+  const [visualPreferences, setVisualPreferences] = useState<VisualPreferences>({
     effects: {
       intensity: 0.7,
       bars: {
@@ -42,14 +41,14 @@ export const AIVisualEffects = () => {
 
       if (error) throw error;
       if (data?.visual_effects) {
-        setVisualPreferences(data.visual_effects);
+        setVisualPreferences(data.visual_effects as VisualPreferences);
       }
     } catch (error) {
       console.error('Error loading visual preferences:', error);
     }
   };
 
-  const saveVisualPreferences = async (updates: any) => {
+  const saveVisualPreferences = async (updates: VisualPreferences) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
@@ -102,7 +101,7 @@ export const AIVisualEffects = () => {
   };
 
   const handleBarColorChange = (barType: 'top' | 'bottom' | 'side', color: string) => {
-    const newPreferences = {
+    const newPreferences: VisualPreferences = {
       ...visualPreferences,
       effects: {
         ...visualPreferences.effects,
@@ -120,7 +119,7 @@ export const AIVisualEffects = () => {
   };
 
   const handleBarOpacityChange = (barType: 'top' | 'bottom' | 'side', opacity: number) => {
-    const newPreferences = {
+    const newPreferences: VisualPreferences = {
       ...visualPreferences,
       effects: {
         ...visualPreferences.effects,
@@ -138,7 +137,7 @@ export const AIVisualEffects = () => {
   };
 
   const handleOverallIntensityChange = (intensity: number) => {
-    const newPreferences = {
+    const newPreferences: VisualPreferences = {
       ...visualPreferences,
       effects: {
         ...visualPreferences.effects,
@@ -158,7 +157,6 @@ export const AIVisualEffects = () => {
         </p>
       </div>
 
-      {/* Overall Effects Intensity */}
       <div className="space-y-4">
         <Label>Overall Effects Intensity</Label>
         <Slider
@@ -170,128 +168,38 @@ export const AIVisualEffects = () => {
         />
       </div>
 
-      {/* Bar Customization */}
       <div className="space-y-4">
         <h4 className="text-md font-semibold">Bar Customization</h4>
-        
-        {/* Top Bar */}
-        <div className="space-y-2">
-          <Label>Top Bar</Label>
-          <div className="flex gap-4">
-            <Input
-              type="color"
-              value={visualPreferences.effects.bars.top.color}
-              onChange={(e) => handleBarColorChange('top', e.target.value)}
-            />
-            <Slider
-              value={[visualPreferences.effects.bars.top.opacity * 100]}
-              min={0}
-              max={100}
-              step={1}
-              onValueChange={([value]) => handleBarOpacityChange('top', value)}
-            />
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="space-y-2">
-          <Label>Bottom Bar</Label>
-          <div className="flex gap-4">
-            <Input
-              type="color"
-              value={visualPreferences.effects.bars.bottom.color}
-              onChange={(e) => handleBarColorChange('bottom', e.target.value)}
-            />
-            <Slider
-              value={[visualPreferences.effects.bars.bottom.opacity * 100]}
-              min={0}
-              max={100}
-              step={1}
-              onValueChange={([value]) => handleBarOpacityChange('bottom', value)}
-            />
-          </div>
-        </div>
-
-        {/* Side Bars */}
-        <div className="space-y-2">
-          <Label>Side Bars</Label>
-          <div className="flex gap-4">
-            <Input
-              type="color"
-              value={visualPreferences.effects.bars.side.color}
-              onChange={(e) => handleBarColorChange('side', e.target.value)}
-            />
-            <Slider
-              value={[visualPreferences.effects.bars.side.opacity * 100]}
-              min={0}
-              max={100}
-              step={1}
-              onValueChange={([value]) => handleBarOpacityChange('side', value)}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Neon Effect */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label>Neon Effect</Label>
-          <Switch
-            checked={theme.effects.neon.enabled}
-            onCheckedChange={(checked) => handleEffectToggle('neon', checked)}
+        {(['top', 'bottom', 'side'] as const).map((barType) => (
+          <BarCustomization
+            key={barType}
+            barType={barType}
+            color={visualPreferences.effects.bars[barType].color}
+            opacity={visualPreferences.effects.bars[barType].opacity}
+            onColorChange={handleBarColorChange}
+            onOpacityChange={handleBarOpacityChange}
           />
-        </div>
-        {theme.effects.neon.enabled && (
-          <div className="space-y-2">
-            <Label>Intensity</Label>
-            <Slider
-              value={[theme.effects.neon.intensity * 100]}
-              min={0}
-              max={100}
-              step={1}
-              onValueChange={([value]) => handleIntensityChange('neon', value)}
-            />
-            <Input
-              type="color"
-              value={theme.effects.neon.color}
-              onChange={(e) => handleColorChange('neon', e.target.value)}
-            />
-          </div>
-        )}
+        ))}
       </div>
 
-      {/* Gradient Effect */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label>Gradient Effect</Label>
-          <Switch
-            checked={theme.effects.gradient.enabled}
-            onCheckedChange={(checked) => handleEffectToggle('gradient', checked)}
-          />
-        </div>
-        {theme.effects.gradient.enabled && (
-          <div className="space-y-2">
-            <Label>Angle</Label>
-            <Slider
-              value={[theme.effects.gradient.angle]}
-              min={0}
-              max={360}
-              step={1}
-              onValueChange={([value]) => 
-                updateTheme({
-                  effects: {
-                    ...theme.effects,
-                    gradient: {
-                      ...theme.effects.gradient,
-                      angle: value
-                    }
-                  }
-                })
-              }
-            />
-          </div>
-        )}
-      </div>
+      <EffectToggle
+        label="Neon Effect"
+        effect="neon"
+        enabled={theme.effects.neon.enabled}
+        intensity={theme.effects.neon.intensity}
+        color={theme.effects.neon.color}
+        onToggle={handleEffectToggle}
+        onIntensityChange={handleIntensityChange}
+      />
+
+      <EffectToggle
+        label="Gradient Effect"
+        effect="gradient"
+        enabled={theme.effects.gradient.enabled}
+        intensity={theme.effects.gradient.intensity}
+        onToggle={handleEffectToggle}
+        onIntensityChange={handleIntensityChange}
+      />
     </Card>
   );
 };
