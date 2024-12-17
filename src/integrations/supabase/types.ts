@@ -625,6 +625,7 @@ export type Database = {
           theme_preference: string | null
           updated_at: string | null
           user_id: string | null
+          visual_effects: Json | null
         }
         Insert: {
           created_at?: string | null
@@ -634,6 +635,7 @@ export type Database = {
           theme_preference?: string | null
           updated_at?: string | null
           user_id?: string | null
+          visual_effects?: Json | null
         }
         Update: {
           created_at?: string | null
@@ -643,6 +645,7 @@ export type Database = {
           theme_preference?: string | null
           updated_at?: string | null
           user_id?: string | null
+          visual_effects?: Json | null
         }
         Relationships: []
       }
