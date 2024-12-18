@@ -83,17 +83,22 @@ export const AIPersonalityConfig = () => {
         return;
       }
 
-      const metadata: AISettingsMetadata = {
-        personality,
-        memoryTypes,
+      const settingsData = {
+        key: 'personality_settings',
+        user_id: session.user.id,
+        value: {
+          personality,
+          memoryTypes,
+        },
+        metadata: {
+          lastUpdated: new Date().toISOString(),
+          version: '1.0'
+        }
       };
 
       const { error } = await supabase
         .from('ai_settings')
-        .upsert({
-          user_id: session.user.id,
-          metadata: metadata as any // Type assertion needed due to Supabase's Json type limitations
-        });
+        .upsert(settingsData);
 
       if (error) throw error;
 
@@ -105,7 +110,7 @@ export const AIPersonalityConfig = () => {
         title: "Settings saved",
         description: "AI personality settings have been updated"
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error saving settings",
         description: "Failed to save AI personality settings",

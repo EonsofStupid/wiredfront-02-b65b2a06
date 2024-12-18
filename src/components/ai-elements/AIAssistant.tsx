@@ -65,7 +65,17 @@ export const AIAssistant = () => {
 
       if (error) throw error;
 
-      const providers = data.map(item => item.provider);
+      const providers = data
+        .map(item => item.provider)
+        .filter((provider): provider is AIProvider => 
+          provider === "gemini" || 
+          provider === "chatgpt" || 
+          provider === "huggingface" || 
+          provider === "anthropic" || 
+          provider === "mistral" || 
+          provider === "cohere"
+        );
+
       setAvailableProviders(providers);
 
       if (providers.length > 0 && !providers.includes(provider)) {

@@ -62,14 +62,17 @@ export function APIKeySettings() {
         return;
       }
 
+      const settingsData = {
+        key: `api_key_${provider}`,
+        user_id: session.user.id,
+        provider: provider as AIProvider,
+        api_key: keys[provider],
+        value: { enabled: true },
+      };
+
       const { error } = await supabase
         .from('ai_settings')
-        .upsert({
-          user_id: session.user.id,
-          provider: provider as AIProvider,
-          api_key: keys[provider],
-          is_active: true
-        });
+        .upsert(settingsData);
 
       if (error) throw error;
 

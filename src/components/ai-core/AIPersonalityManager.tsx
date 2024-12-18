@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { useAIPersonalityStore } from '@/stores/aiPersonality';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export const AIPersonalityManager = () => {
   const { toast } = useToast();

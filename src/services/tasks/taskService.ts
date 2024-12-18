@@ -3,7 +3,11 @@ import { v4 as uuidv4 } from "uuid";
 import type { AITask } from "@/types/database/ai";
 
 export const createTask = async (config: Partial<AITask>): Promise<AITask> => {
-  const taskData: Partial<AITask> = {
+  if (!config.prompt || !config.type || !config.provider) {
+    throw new Error('Missing required task fields');
+  }
+
+  const taskData = {
     task_id: uuidv4(),
     type: config.type,
     prompt: config.prompt,
