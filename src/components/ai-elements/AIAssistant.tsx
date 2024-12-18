@@ -7,10 +7,11 @@ import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AIOptionsTab } from './AIOptionsTab';
 import { AIChatTab } from './AIChatTab';
+import type { Message } from '@/types/ai';
 import type { TypingStatus, RealtimePayload } from '@/types/realtime';
 
 export const AIAssistant = () => {
-  const { initializeWorker, messages, error } = useMessageQueue();
+  const { initializeWorker, messages: queuedMessages, error } = useMessageQueue();
   const { toast } = useToast();
   const isVisible = useAIStore((state) => state.isVisible);
   const isOnline = useOnlineStatus();
@@ -18,6 +19,14 @@ export const AIAssistant = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const pendingMessages = React.useRef<any[]>([]);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
+
+  // Convert QueuedMessages to Messages
+  const messages: Message[] = queuedMessages.map(qm => ({
+    id: qm.id,
+    content: qm.content,
+    role: 'assistant',
+    timestamp: qm.timestamp
+  }));
 
   // Initialize message worker and real-time subscriptions
   useEffect(() => {

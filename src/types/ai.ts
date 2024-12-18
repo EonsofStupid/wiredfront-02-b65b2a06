@@ -20,6 +20,12 @@ export interface Message {
   timestamp: number;
 }
 
+export interface CommandResult {
+  success: boolean;
+  message: string;
+  data?: any;
+}
+
 export interface AIInputFormProps {
   input: string;
   mode: AIMode;
@@ -27,4 +33,9 @@ export interface AIInputFormProps {
   isOffline: boolean;
   onInputChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
+}
+
+export interface AIResponseProps {
+  response: string;
+  className?: string;
 }

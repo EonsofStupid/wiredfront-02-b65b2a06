@@ -2,27 +2,28 @@ import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX } from "lucide-react";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { cn } from "@/lib/utils";
+import type { Message } from "@/types/ai";
 
 interface AIResponseProps {
-  response: string;
+  message: Message;
   className?: string;
 }
 
-export const AIResponse = ({ response, className }: AIResponseProps) => {
+export const AIResponse = ({ message, className }: AIResponseProps) => {
   const { speak, isLoading, isSpeaking } = useTextToSpeech();
 
-  if (!response) return null;
+  if (!message.content) return null;
 
   return (
     <div className={cn("space-y-4", className)}>
       <div className="flex items-start justify-between gap-4">
         <div className="prose prose-invert flex-1">
-          <p>{response}</p>
+          <p>{message.content}</p>
         </div>
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => speak(response)}
+          onClick={() => speak(message.content)}
           disabled={isLoading}
           className="flex-shrink-0"
         >

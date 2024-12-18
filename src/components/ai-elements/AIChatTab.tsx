@@ -30,8 +30,8 @@ export const AIChatTab = ({
     <div className="flex flex-col h-full">
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {messages.map((message, index) => (
-            <AIResponse key={index} message={message} />
+          {messages.map((message) => (
+            <AIResponse key={message.id} message={message} />
           ))}
           {typingUsers.length > 0 && (
             <div className="text-sm text-muted-foreground">
