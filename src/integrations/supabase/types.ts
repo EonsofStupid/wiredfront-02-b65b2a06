@@ -45,6 +45,36 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_memory: {
+        Row: {
+          context: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          metadata: Json | null
+          relevance_score: number | null
+          user_id: string
+        }
+        Insert: {
+          context: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          relevance_score?: number | null
+          user_id: string
+        }
+        Update: {
+          context?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          relevance_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_model_configs: {
         Row: {
           created_at: string | null
@@ -82,6 +112,39 @@ export type Database = {
           model_name?: string
           model_type?: string
           training_status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_personalities: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          traits: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          traits?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          traits?: Json | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -262,6 +325,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ai_training_items: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          is_validated: boolean | null
+          metadata: Json | null
+          tags: Json | null
+          training_data: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          is_validated?: boolean | null
+          metadata?: Json | null
+          tags?: Json | null
+          training_data: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          is_validated?: boolean | null
+          metadata?: Json | null
+          tags?: Json | null
+          training_data?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_work_items: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          output: string | null
+          priority: number | null
+          status: Database["public"]["Enums"]["chat_status"] | null
+          task: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          output?: string | null
+          priority?: number | null
+          status?: Database["public"]["Enums"]["chat_status"] | null
+          task: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          output?: string | null
+          priority?: number | null
+          status?: Database["public"]["Enums"]["chat_status"] | null
+          task?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       component_themes: {
         Row: {
@@ -766,7 +904,9 @@ export type Database = {
         | "anthropic"
         | "mistral"
         | "cohere"
+      chat_status: "pending" | "processing" | "completed" | "failed"
       log_level: "info" | "warning" | "error"
+      personality_trait: "friendly" | "professional" | "casual" | "technical"
       quote_type: "idiot" | "dope"
       setup_status: "not_started" | "in_progress" | "completed"
       task_type: "code" | "analysis" | "automation" | "data"
