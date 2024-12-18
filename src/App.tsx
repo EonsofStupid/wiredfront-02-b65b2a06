@@ -12,6 +12,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLayoutStore } from "@/stores";
+import { LivePreview } from "@/components/preview/LivePreview";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -74,6 +75,7 @@ function App() {
           <Route path="files" element={<FileManager />} />
         </Route>
       </Routes>
+      <LivePreview />
       <Toaster />
     </Router>
   );

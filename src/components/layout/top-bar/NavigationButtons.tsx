@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { File, Bot, Image, Upload } from "lucide-react";
+import { File, Bot, Image, Upload, Monitor } from "lucide-react";
 import { useAIStore } from "@/stores";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { usePreviewStore } from "@/stores/preview";
 
 export const NavigationButtons = () => {
   const { toast } = useToast();
   const toggleAI = useAIStore((state) => state.toggleAIAssistant);
+  const togglePreview = usePreviewStore((state) => state.togglePreview);
   
   const [fileInputRef] = useState(() => document.createElement('input'));
   fileInputRef.type = 'file';
@@ -74,6 +76,14 @@ export const NavigationButtons = () => {
         className="nav-button"
       >
         <Bot className="h-4 w-4" />
+      </Button>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={togglePreview}
+        className="nav-button"
+      >
+        <Monitor className="h-4 w-4" />
       </Button>
       <Link to="/media">
         <Button variant="ghost" size="icon" className="nav-button">
