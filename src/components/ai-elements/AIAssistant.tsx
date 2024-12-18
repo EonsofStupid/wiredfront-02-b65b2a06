@@ -11,6 +11,7 @@ import { AICore } from '../ai-core/AICore';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { AIOptionsTab } from './AIOptionsTab';
 
 export const AIAssistant = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -120,7 +121,7 @@ export const AIAssistant = () => {
             <TabsContent value="settings" className="mt-0 p-4">
               <div className="glass-card p-4 space-y-4">
                 <h3 className="text-lg font-semibold">AI Settings</h3>
-            <AIOptionsTab />
+                <AIOptionsTab />
               </div>
             </TabsContent>
           </Tabs>
