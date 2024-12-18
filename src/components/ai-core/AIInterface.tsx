@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { CyberNebula } from "./CyberNebula";
 import { AITaskPanel } from "./AITaskPanel";
-import { AIPersonalityConfig } from "./AIPersonalityConfig";
+import { AIPersonalityManager } from "./AIPersonalityManager";
 import { AIPermissions } from "./AIPermissions";
 import { ProcessingRings } from "../ai-elements/ProcessingRings";
 import { DataStream } from "../ai-elements/DataStream";
@@ -25,7 +25,7 @@ export const AIInterface = () => {
           <DataStream />
           <div className="container mx-auto h-full p-6 flex flex-col">
             <AITaskPanel onClose={() => setIsExpanded(false)} />
-            <AIPersonalityConfig />
+            <AIPersonalityManager />
             <AIPermissions />
           </div>
         </motion.div>

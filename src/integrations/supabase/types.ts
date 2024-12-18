@@ -9,356 +9,162 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      ai_custom_prompts: {
-        Row: {
-          category: string
-          created_at: string | null
-          id: string
-          is_active: boolean | null
-          metadata: Json | null
-          name: string
-          prompt: string
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          category: string
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          metadata?: Json | null
-          name: string
-          prompt: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          category?: string
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          metadata?: Json | null
-          name?: string
-          prompt?: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       ai_memory: {
         Row: {
-          context: string
+          context_key: string
+          context_value: Json
           created_at: string | null
           expires_at: string | null
           id: string
-          metadata: Json | null
-          relevance_score: number | null
-          user_id: string
+          personality_id: string
         }
         Insert: {
-          context: string
+          context_key: string
+          context_value?: Json
           created_at?: string | null
           expires_at?: string | null
           id?: string
-          metadata?: Json | null
-          relevance_score?: number | null
-          user_id: string
+          personality_id: string
         }
         Update: {
-          context?: string
+          context_key?: string
+          context_value?: Json
           created_at?: string | null
           expires_at?: string | null
           id?: string
-          metadata?: Json | null
-          relevance_score?: number | null
-          user_id?: string
+          personality_id?: string
         }
-        Relationships: []
-      }
-      ai_model_configs: {
-        Row: {
-          created_at: string | null
-          id: string
-          is_active: boolean | null
-          last_trained_at: string | null
-          local_model_path: string | null
-          model_config: Json | null
-          model_name: string
-          model_type: string
-          training_status: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          last_trained_at?: string | null
-          local_model_path?: string | null
-          model_config?: Json | null
-          model_name: string
-          model_type: string
-          training_status?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          last_trained_at?: string | null
-          local_model_path?: string | null
-          model_config?: Json | null
-          model_name?: string
-          model_type?: string
-          training_status?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ai_memory_personality_id_fkey"
+            columns: ["personality_id"]
+            isOneToOne: false
+            referencedRelation: "ai_personalities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_personalities: {
         Row: {
+          changed_by: string | null
           created_at: string | null
           description: string | null
           id: string
           is_active: boolean | null
           name: string
-          traits: Json | null
           updated_at: string | null
-          user_id: string | null
         }
         Insert: {
+          changed_by?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
           name: string
-          traits?: Json | null
           updated_at?: string | null
-          user_id?: string | null
         }
         Update: {
+          changed_by?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
           name?: string
-          traits?: Json | null
           updated_at?: string | null
-          user_id?: string | null
         }
         Relationships: []
       }
-      ai_settings: {
+      ai_personality_history: {
         Row: {
-          api_key: string | null
-          created_at: string | null
+          changed_at: string | null
+          changed_by: string
+          changes: Json
           id: string
-          is_active: boolean
-          max_tokens: number | null
-          metadata: Json | null
-          model_name: string | null
-          provider: Database["public"]["Enums"]["ai_provider"]
-          temperature: number | null
-          updated_at: string | null
-          user_id: string
-          visual_effects: Json | null
+          personality_id: string
         }
         Insert: {
-          api_key?: string | null
-          created_at?: string | null
+          changed_at?: string | null
+          changed_by: string
+          changes?: Json
           id?: string
-          is_active?: boolean
-          max_tokens?: number | null
-          metadata?: Json | null
-          model_name?: string | null
-          provider?: Database["public"]["Enums"]["ai_provider"]
-          temperature?: number | null
-          updated_at?: string | null
-          user_id: string
-          visual_effects?: Json | null
+          personality_id: string
         }
         Update: {
-          api_key?: string | null
-          created_at?: string | null
+          changed_at?: string | null
+          changed_by?: string
+          changes?: Json
           id?: string
-          is_active?: boolean
-          max_tokens?: number | null
-          metadata?: Json | null
-          model_name?: string | null
-          provider?: Database["public"]["Enums"]["ai_provider"]
-          temperature?: number | null
-          updated_at?: string | null
-          user_id?: string
-          visual_effects?: Json | null
-        }
-        Relationships: []
-      }
-      ai_tasks: {
-        Row: {
-          completed_at: string | null
-          created_at: string | null
-          error_message: string | null
-          id: string
-          metadata: Json | null
-          priority: number | null
-          prompt: string
-          provider: Database["public"]["Enums"]["ai_provider"]
-          result: string | null
-          retry_count: number | null
-          scheduled_for: string | null
-          status: string
-          task_id: string
-          type: Database["public"]["Enums"]["task_type"]
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string | null
-          error_message?: string | null
-          id?: string
-          metadata?: Json | null
-          priority?: number | null
-          prompt: string
-          provider: Database["public"]["Enums"]["ai_provider"]
-          result?: string | null
-          retry_count?: number | null
-          scheduled_for?: string | null
-          status: string
-          task_id: string
-          type: Database["public"]["Enums"]["task_type"]
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string | null
-          error_message?: string | null
-          id?: string
-          metadata?: Json | null
-          priority?: number | null
-          prompt?: string
-          provider?: Database["public"]["Enums"]["ai_provider"]
-          result?: string | null
-          retry_count?: number | null
-          scheduled_for?: string | null
-          status?: string
-          task_id?: string
-          type?: Database["public"]["Enums"]["task_type"]
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      ai_training_data: {
-        Row: {
-          category: string
-          content: string
-          created_at: string | null
-          id: string
-          metadata: Json | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          category: string
-          content: string
-          created_at?: string | null
-          id?: string
-          metadata?: Json | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          category?: string
-          content?: string
-          created_at?: string | null
-          id?: string
-          metadata?: Json | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      ai_training_datasets: {
-        Row: {
-          content: string
-          created_at: string | null
-          dataset_type: string
-          id: string
-          metadata: Json | null
-          model_config_id: string | null
-          processed: boolean | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          dataset_type: string
-          id?: string
-          metadata?: Json | null
-          model_config_id?: string | null
-          processed?: boolean | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          dataset_type?: string
-          id?: string
-          metadata?: Json | null
-          model_config_id?: string | null
-          processed?: boolean | null
-          updated_at?: string | null
-          user_id?: string | null
+          personality_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "ai_training_datasets_model_config_id_fkey"
-            columns: ["model_config_id"]
+            foreignKeyName: "ai_personality_history_personality_id_fkey"
+            columns: ["personality_id"]
             isOneToOne: false
-            referencedRelation: "ai_model_configs"
+            referencedRelation: "ai_personalities"
             referencedColumns: ["id"]
           },
         ]
       }
-      ai_training_items: {
+      ai_personality_traits: {
         Row: {
-          category: string
           created_at: string | null
           id: string
-          is_validated: boolean | null
-          metadata: Json | null
-          tags: Json | null
-          training_data: string
+          personality_id: string
+          trait_key: string
+          trait_value: Json
           updated_at: string | null
-          user_id: string | null
         }
         Insert: {
-          category: string
           created_at?: string | null
           id?: string
-          is_validated?: boolean | null
-          metadata?: Json | null
-          tags?: Json | null
-          training_data: string
+          personality_id: string
+          trait_key: string
+          trait_value?: Json
           updated_at?: string | null
-          user_id?: string | null
         }
         Update: {
-          category?: string
           created_at?: string | null
           id?: string
-          is_validated?: boolean | null
-          metadata?: Json | null
-          tags?: Json | null
-          training_data?: string
+          personality_id?: string
+          trait_key?: string
+          trait_value?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_personality_traits_personality_id_fkey"
+            columns: ["personality_id"]
+            isOneToOne: false
+            referencedRelation: "ai_personalities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          key: string
+          updated_at: string | null
+          user_id: string | null
+          value: Json
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          key: string
           updated_at?: string | null
           user_id?: string | null
+          value?: Json
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          key?: string
+          updated_at?: string | null
+          user_id?: string | null
+          value?: Json
         }
         Relationships: []
       }
