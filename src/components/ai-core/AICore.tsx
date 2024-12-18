@@ -10,6 +10,7 @@ import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from "
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useMessageBuffer } from "@/services/messageBuffer";
 
 const MemoizedPreview = memo(({ url }: { url: string }) => (
   <iframe
@@ -24,12 +25,14 @@ export const AICore = () => {
   const [visualEffects, setVisualEffects] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const initializeWorker = useMessageBuffer((state) => state.initializeWorker);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   // Configure DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // 8px movement threshold before drag starts
+        distance: 8,
       },
     })
   );
@@ -60,7 +63,44 @@ export const AICore = () => {
 
   useEffect(() => {
     fetchVisualEffects();
-  }, [fetchVisualEffects]);
+    initializeWorker();
+
+    // Set up real-time message subscription
+    const channel = supabase
+      .channel('ai_messages')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'ai_messages'
+        },
+        (payload) => {
+          console.log('Real-time message update:', payload);
+          // Handle message updates through the message buffer
+          if (payload.eventType === 'INSERT') {
+            useMessageBuffer.getState().addMessage({
+              id: payload.new.id,
+              content: payload.new.content,
+              timestamp: new Date(payload.new.created_at).getTime()
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    // Online/offline detection
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [fetchVisualEffects, initializeWorker]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -111,7 +151,10 @@ export const AICore = () => {
           >
             <div className="container mx-auto h-full p-6 flex flex-col md:flex-row gap-4" style={getEffectStyles()}>
               <div className="w-full flex flex-col">
-                <AITaskPanel onClose={() => setIsExpanded(false)} />
+                <AITaskPanel 
+                  onClose={() => setIsExpanded(false)} 
+                  isOnline={isOnline}
+                />
                 <AIPersonalityConfig />
                 <AIPermissions />
                 <Button 
