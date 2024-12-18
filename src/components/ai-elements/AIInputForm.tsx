@@ -1,9 +1,11 @@
 import { Bot, Code, FileText, Loader, WifiOff, Mic } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { AIMode } from "@/types/ai";
 import type { Command } from "@/utils/ai/commandHandler";
 import { useTypingStatus } from "@/hooks/use-typing-status";
 import { useUser } from "@supabase/auth-helpers-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 interface AIInputFormProps {
   input: string;
@@ -26,7 +28,7 @@ export const AIInputForm = ({
 }: AIInputFormProps) => {
   const user = useUser();
   const { updateTypingStatus } = useTypingStatus(
-    'ai-chat', // You might want to make this dynamic based on your chat system
+    'ai-chat',
     user?.id || ''
   );
 
@@ -53,8 +55,8 @@ export const AIInputForm = ({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="relative">
-        <textarea
-          className="ai-assistant__textarea"
+        <Textarea
+          className="min-h-[100px] p-4 resize-none bg-background/95 backdrop-blur-sm border border-border rounded-lg"
           value={input}
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder={
@@ -78,9 +80,9 @@ export const AIInputForm = ({
         )}
       </div>
       <div className="flex gap-2">
-        <button 
+        <Button 
           type="submit" 
-          className={`ai-assistant__button flex-1 ${isOffline ? 'opacity-70' : ''}`}
+          className="flex-1 bg-primary hover:bg-primary/90"
           disabled={isProcessing || (isOffline && mode !== "chat")}
         >
           {isProcessing ? (
@@ -102,7 +104,7 @@ export const AIInputForm = ({
               </span>
             </>
           )}
-        </button>
+        </Button>
       </div>
     </form>
   );

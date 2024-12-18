@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMessageQueue } from '@/stores/messageQueue';
 import { useAIStore } from '@/stores/ai';
@@ -8,6 +8,7 @@ import { AIResponse } from './AIResponse';
 import { AIInputForm } from './AIInputForm';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { Loader2, WifiOff } from 'lucide-react';
+import type { AIMode } from '@/types/ai';
 
 export const AIAssistant = () => {
   const { initializeWorker, messages, error } = useMessageQueue();
@@ -15,6 +16,9 @@ export const AIAssistant = () => {
   const isVisible = useAIStore((state) => state.isVisible);
   const parentRef = useRef<HTMLDivElement>(null);
   const isOnline = useOnlineStatus();
+  const [input, setInput] = useState('');
+  const [mode, setMode] = useState<AIMode>('chat');
+  const [isProcessing, setIsProcessing] = useState(false);
   const pendingMessages = useRef<any[]>([]);
 
   // Initialize message worker
@@ -56,7 +60,7 @@ export const AIAssistant = () => {
     setupPresence();
   }, []);
 
-  // Virtual list implementation
+  // Virtual list implementation with reverse scroll
   const rowVirtualizer = useVirtualizer({
     count: messages.length,
     getScrollElement: () => parentRef.current,
@@ -76,9 +80,9 @@ export const AIAssistant = () => {
       });
 
       const timer = setTimeout(() => {
-        // Retry logic here
         pendingMessages.current.forEach(msg => {
           // Attempt to resend messages
+          handleSubmit(msg);
         });
       }, retryDelay);
 
@@ -86,13 +90,43 @@ export const AIAssistant = () => {
     }
   }, [error, toast]);
 
-  // Offline message handling
-  const handleOfflineMessage = (message: any) => {
-    pendingMessages.current.push(message);
-    toast({
-      title: "Offline Mode",
-      description: "Message will be sent when connection is restored",
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    setIsProcessing(true);
+    try {
+      if (!isOnline) {
+        pendingMessages.current.push(input);
+        toast({
+          title: "Offline Mode",
+          description: "Message will be sent when connection is restored",
+        });
+        return;
+      }
+
+      const { error: dbError } = await supabase
+        .from('ai_tasks')
+        .insert({
+          task_id: crypto.randomUUID(),
+          type: mode,
+          prompt: input,
+          provider: 'assistant',
+          status: 'pending'
+        });
+
+      if (dbError) throw dbError;
+
+      setInput('');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (!isVisible) return null;
@@ -112,11 +146,7 @@ export const AIAssistant = () => {
       {/* Virtualized Message List */}
       <div 
         ref={parentRef}
-        className="flex-1 overflow-auto"
-        style={{
-          height: `400px`,
-          width: `100%`,
-        }}
+        className="flex-1 overflow-auto flex flex-col-reverse"
       >
         <div
           style={{
@@ -147,8 +177,12 @@ export const AIAssistant = () => {
       {/* Input Form */}
       <div className="p-4 border-t border-border">
         <AIInputForm 
-          onSubmit={isOnline ? undefined : handleOfflineMessage}
+          input={input}
+          mode={mode}
+          isProcessing={isProcessing}
           isOffline={!isOnline}
+          onInputChange={setInput}
+          onSubmit={handleSubmit}
         />
       </div>
     </div>
