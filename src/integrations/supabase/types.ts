@@ -788,6 +788,30 @@ export type Database = {
         }
         Relationships: []
       }
+      typing_status: {
+        Row: {
+          chat_id: string
+          id: number
+          is_typing: boolean | null
+          last_updated: string | null
+          user_id: string
+        }
+        Insert: {
+          chat_id: string
+          id?: number
+          is_typing?: boolean | null
+          last_updated?: string | null
+          user_id: string
+        }
+        Update: {
+          chat_id?: string
+          id?: number
+          is_typing?: boolean | null
+          last_updated?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_visual_preferences: {
         Row: {
           created_at: string | null
