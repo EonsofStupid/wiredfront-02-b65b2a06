@@ -14,8 +14,8 @@ import { AudioControls } from './audio/AudioControls';
 import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Message } from '@/types/ai';
-import type { TypingStatus } from '@/types/realtime';
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import type { TypingStatus } from '@/types/realtime';
 
 export const AIAssistant = () => {
   const { initializeWorker, messages: queuedMessages, error } = useMessageQueue();
@@ -48,30 +48,27 @@ export const AIAssistant = () => {
   useEffect(() => {
     initializeWorker();
 
-    const channel = supabase.channel('ai-assistant')
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        console.log('Presence state:', state);
-      })
-      .subscribe();
-
-    const typingChannel = supabase
-      .channel('typing-status')
+    // Set up realtime presence channel
+    const presenceChannel = supabase.channel('ai-assistant-presence');
+    
+    // Set up typing status channel
+    const typingChannel = supabase.channel('typing-status')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'typing_status'
+          table: 'typing_status',
+          filter: `chat_id=eq.${supabase.auth.session()?.user.id}`
         },
         (payload: RealtimePostgresChangesPayload<TypingStatus>) => {
-          if (payload.new) {
+          if (payload.new && 'user_id' in payload.new) {
+            const { user_id, is_typing } = payload.new;
             setTypingUsers(current => {
-              const userId = payload.new.user_id;
-              if (payload.new.is_typing && !current.includes(userId)) {
-                return [...current, userId];
-              } else if (!payload.new.is_typing) {
-                return current.filter(id => id !== userId);
+              if (is_typing && !current.includes(user_id)) {
+                return [...current, user_id];
+              } else if (!is_typing) {
+                return current.filter(id => id !== user_id);
               }
               return current;
             });
@@ -80,11 +77,39 @@ export const AIAssistant = () => {
       )
       .subscribe();
 
+    // Set up Discord logs channel
+    const logsChannel = supabase.channel('discord-logs')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'discord_bot_logs'
+        },
+        (payload) => {
+          console.log('New Discord log:', payload);
+          toast({
+            title: "New Discord Log",
+            description: payload.new.message,
+          });
+        }
+      )
+      .subscribe();
+
+    // Subscribe to presence channel
+    presenceChannel
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        console.log('Presence state:', state);
+      })
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(presenceChannel);
       supabase.removeChannel(typingChannel);
+      supabase.removeChannel(logsChannel);
     };
-  }, [initializeWorker]);
+  }, [initializeWorker, toast]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     setIsDragging(false);
