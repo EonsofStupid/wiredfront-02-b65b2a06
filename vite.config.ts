@@ -5,20 +5,24 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: true, // Listen on all addresses
     port: 8080,
     watch: {
       usePolling: true,
     },
     hmr: {
-      overlay: true,
-      clientPort: 8080
+      clientPort: 443, // Use 443 for secure WebSocket connections
+      host: process.env.VITE_HMR_HOST || undefined,
+      protocol: 'wss', // Force WSS protocol
+      timeout: 120000, // Increase timeout
+      overlay: true
     },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        ws: true // Enable WebSocket proxy
       }
     }
   },
@@ -34,7 +38,11 @@ export default defineConfig(({ mode }) => ({
   preview: {
     port: 8081,
     strictPort: true,
-    open: true,
+    host: true,
+    hmr: {
+      clientPort: 443,
+      protocol: 'wss'
+    }
   },
   build: {
     sourcemap: true,
