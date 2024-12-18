@@ -1,22 +1,38 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { CyberNebula } from "./CyberNebula";
 import { AITaskPanel } from "./AITaskPanel";
 import { AIPersonalityConfig } from "./AIPersonalityConfig";
 import { useAIStore } from "@/stores/ai";
 import { AIPermissions } from "./AIPermissions";
 import { supabase } from "@/integrations/supabase/client";
+import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import { useToast } from "@/components/ui/use-toast";
+
+const MemoizedPreview = memo(({ url }: { url: string }) => (
+  <iframe
+    src={url}
+    className="w-full h-[calc(100%-2rem)] border-0"
+    title="Live Preview"
+  />
+));
 
 export const AICore = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [visualEffects, setVisualEffects] = useState<any>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('http://localhost:8081');
+  const { toast } = useToast();
 
-  useEffect(() => {
-    fetchVisualEffects();
-  }, []);
+  // Configure DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement threshold before drag starts
+      },
+    })
+  );
 
-  const fetchVisualEffects = async () => {
+  const fetchVisualEffects = useCallback(async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
@@ -25,18 +41,33 @@ export const AICore = () => {
         .from('ai_settings')
         .select('visual_effects')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       if (data?.visual_effects) {
         setVisualEffects(data.visual_effects);
       }
-    } catch (error) {
-      console.error('Error fetching visual effects:', error);
+    } catch (error: any) {
+      toast({
+        title: "Error fetching visual effects",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    fetchVisualEffects();
+  }, [fetchVisualEffects]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      // Handle position updates if needed
     }
   };
 
-  const getEffectStyles = () => {
+  const getEffectStyles = useCallback(() => {
     if (!visualEffects) return {};
 
     const styles: any = {
@@ -55,17 +86,13 @@ export const AICore = () => {
     }
 
     return styles;
-  };
-
-  const handleNebulaClick = () => {
-    setIsExpanded(!isExpanded);
-  };
+  }, [visualEffects]);
 
   return (
-    <>
-      <AnimatePresence>
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <AnimatePresence mode="wait">
         {!isExpanded && (
-          <CyberNebula onExpand={handleNebulaClick} />
+          <CyberNebula onExpand={() => setIsExpanded(true)} />
         )}
 
         {isExpanded && (
@@ -73,6 +100,7 @@ export const AICore = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className="fixed inset-0 z-50 bg-dark/80 backdrop-blur-sm"
           >
             <div className="container mx-auto h-full p-6 flex flex-col md:flex-row gap-4" style={getEffectStyles()}>
@@ -96,16 +124,12 @@ export const AICore = () => {
                     className="ml-4 bg-transparent text-sm text-gray-300 focus:outline-none"
                   />
                 </div>
-                <iframe
-                  src={previewUrl}
-                  className="w-full h-[calc(100%-2rem)] border-0"
-                  title="Live Preview"
-                />
+                <MemoizedPreview url={previewUrl} />
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </DndContext>
   );
 };
