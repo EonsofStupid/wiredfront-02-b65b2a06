@@ -9,7 +9,6 @@ export const AIAssistant = () => {
   const { initializeWorker, messages, error } = useMessageQueue();
   const { toast } = useToast();
   const isVisible = useAIStore((state) => state.isVisible);
-  const currentUser = supabase.auth.getUser();
 
   // Initialize message worker
   useEffect(() => {
@@ -18,32 +17,37 @@ export const AIAssistant = () => {
 
   // Handle real-time presence and typing status
   useEffect(() => {
-    if (!currentUser) return;
+    const setupPresence = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const channel = supabase.channel('ai-assistant')
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        console.log('Presence state:', state);
-      })
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('Join:', key, newPresences);
-      })
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        console.log('Leave:', key, leftPresences);
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track({
-            user_id: currentUser.id,
-            online_at: new Date().toISOString(),
-          });
-        }
-      });
+      const channel = supabase.channel('ai-assistant')
+        .on('presence', { event: 'sync' }, () => {
+          const state = channel.presenceState();
+          console.log('Presence state:', state);
+        })
+        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+          console.log('Join:', key, newPresences);
+        })
+        .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+          console.log('Leave:', key, leftPresences);
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await channel.track({
+              user_id: user.id,
+              online_at: new Date().toISOString(),
+            });
+          }
+        });
 
-    return () => {
-      supabase.removeChannel(channel);
+      return () => {
+        supabase.removeChannel(channel);
+      };
     };
-  }, [currentUser]);
+
+    setupPresence();
+  }, []);
 
   // Error handling
   useEffect(() => {
