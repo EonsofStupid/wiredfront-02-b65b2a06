@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const AICore = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [visualEffects, setVisualEffects] = useState<any>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('http://localhost:8081');
 
   useEffect(() => {
     fetchVisualEffects();
@@ -74,10 +75,33 @@ export const AICore = () => {
             exit={{ opacity: 0, scale: 0.9 }}
             className="fixed inset-0 z-50 bg-dark/80 backdrop-blur-sm"
           >
-            <div className="container mx-auto h-full p-6 flex flex-col" style={getEffectStyles()}>
-              <AITaskPanel onClose={() => setIsExpanded(false)} />
-              <AIPersonalityConfig />
-              <AIPermissions />
+            <div className="container mx-auto h-full p-6 flex flex-col md:flex-row gap-4" style={getEffectStyles()}>
+              <div className="w-full md:w-1/2 flex flex-col">
+                <AITaskPanel onClose={() => setIsExpanded(false)} />
+                <AIPersonalityConfig />
+                <AIPermissions />
+              </div>
+              
+              <div className="w-full md:w-1/2 bg-dark rounded-lg overflow-hidden shadow-xl">
+                <div className="w-full h-8 bg-gray-800 flex items-center px-4">
+                  <div className="flex space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                  </div>
+                  <input 
+                    type="text" 
+                    value={previewUrl}
+                    onChange={(e) => setPreviewUrl(e.target.value)}
+                    className="ml-4 bg-transparent text-sm text-gray-300 focus:outline-none"
+                  />
+                </div>
+                <iframe
+                  src={previewUrl}
+                  className="w-full h-[calc(100%-2rem)] border-0"
+                  title="Live Preview"
+                />
+              </div>
             </div>
           </motion.div>
         )}
