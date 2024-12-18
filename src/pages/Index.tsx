@@ -5,7 +5,6 @@ import { AnimatedCubes } from "@/components/background/AnimatedCubes";
 import { DataStream } from "@/components/ai-elements/DataStream";
 import { HeroSection } from "@/components/index/HeroSection";
 import { AICore } from "@/components/ai-core/AICore";
-import { AIAssistant } from "@/components/ai-elements/AIAssistant";
 import { features } from "@/data/features";
 import { useEffect } from "react";
 import { useMessageBuffer } from "@/services/messageBuffer";
@@ -25,9 +24,6 @@ const Index = () => {
       <GalaxyBackground />
       <DataStream />
       <AnimatedCubes />
-      
-      {/* AI Assistant - Restored */}
-      <AIAssistant />
       
       {/* Content */}
       <div className="relative z-10">

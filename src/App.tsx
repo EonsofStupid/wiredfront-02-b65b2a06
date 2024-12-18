@@ -14,6 +14,7 @@ import { useLayoutStore } from "@/stores";
 import { LivePreview } from "@/components/preview/LivePreview";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AIAssistant } from "@/components/ai-elements/AIAssistant";
 
 // Initialize store outside of component to avoid recreation
 const initializeStore = () => {
@@ -84,6 +85,7 @@ function App() {
               </Route>
             </Routes>
             <LivePreview />
+            <AIAssistant />
             <Toaster />
           </Router>
         </SettingsProvider>
