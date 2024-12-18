@@ -182,28 +182,40 @@ export type Database = {
       }
       ai_settings: {
         Row: {
+          api_key: string | null
           created_at: string | null
           id: string
           key: string
+          metadata: Json | null
+          provider: string | null
           updated_at: string | null
           user_id: string | null
           value: Json
+          visual_effects: Json | null
         }
         Insert: {
+          api_key?: string | null
           created_at?: string | null
           id?: string
           key: string
+          metadata?: Json | null
+          provider?: string | null
           updated_at?: string | null
           user_id?: string | null
           value?: Json
+          visual_effects?: Json | null
         }
         Update: {
+          api_key?: string | null
           created_at?: string | null
           id?: string
           key?: string
+          metadata?: Json | null
+          provider?: string | null
           updated_at?: string | null
           user_id?: string | null
           value?: Json
+          visual_effects?: Json | null
         }
         Relationships: []
       }
@@ -250,6 +262,33 @@ export type Database = {
           status?: string | null
           task_id?: string
           type?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_training_data: {
+        Row: {
+          category: string
+          content: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string | null
+          id?: string
           updated_at?: string | null
           user_id?: string | null
         }
