@@ -5,16 +5,16 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: true, // Listen on all addresses
+    host: '0.0.0.0',
     port: 8080,
     watch: {
       usePolling: true,
     },
     hmr: {
-      clientPort: 443, // Use 443 for secure WebSocket connections
+      clientPort: 443,
       host: process.env.VITE_HMR_HOST || undefined,
-      protocol: 'wss', // Force WSS protocol
-      timeout: 120000, // Increase timeout
+      protocol: 'wss',
+      timeout: 120000,
       overlay: true
     },
     proxy: {
@@ -22,7 +22,11 @@ export default defineConfig(({ mode }) => ({
         target: 'http://localhost:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
-        ws: true // Enable WebSocket proxy
+        ws: true
+      },
+      '/ws': {
+        target: 'ws://localhost:3000',
+        ws: true
       }
     }
   },
@@ -43,19 +47,5 @@ export default defineConfig(({ mode }) => ({
       clientPort: 443,
       protocol: 'wss'
     }
-  },
-  build: {
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
-        }
-      }
-    }
-  },
-  optimizeDeps: {
-    include: ['@radix-ui/react-dialog', '@radix-ui/react-slot']
   }
 }));
