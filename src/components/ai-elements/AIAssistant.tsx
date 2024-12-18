@@ -9,6 +9,7 @@ import { AIInputForm } from './AIInputForm';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { Loader2, WifiOff } from 'lucide-react';
 import type { AIMode } from '@/types/ai';
+import type { TypingStatus, RealtimePayload } from '@/types/realtime';
 
 export const AIAssistant = () => {
   const { initializeWorker, messages, error } = useMessageQueue();
@@ -60,7 +61,7 @@ export const AIAssistant = () => {
           schema: 'public',
           table: 'typing_status'
         },
-        (payload) => {
+        (payload: RealtimePayload<TypingStatus>) => {
           if (payload.new) {
             setTypingUsers(current => {
               const userId = payload.new.user_id;
