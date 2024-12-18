@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { TestingEnvironment } from "@/types/environment";
+import { v4 as uuidv4 } from 'uuid';
 
 export interface EnvironmentStatus {
   isComplete: boolean;
@@ -12,7 +12,6 @@ export interface EnvironmentStatus {
 
 export const checkDevEnvironment = async (userId: string): Promise<EnvironmentStatus> => {
   try {
-    // Check existing environment configuration
     const { data: envData, error } = await supabase
       .from('testing_environments')
       .select('*')
@@ -86,16 +85,23 @@ export const setupDevEnvironment = async (
     const { error: taskError } = await supabase
       .from('ai_tasks')
       .insert({
+        task_id: uuidv4(),
         prompt: 'Setup development environment',
         type: 'automation',
         provider: 'gemini',
         status: 'processing',
         priority: 1,
-        metadata: {
+        metadata: JSON.stringify({
           environment: 'react',
           components: ['typescript', 'vite', 'tailwind', 'shadcn'],
-          previousStatus: currentStatus,
-        },
+          previousStatus: {
+            typescript: currentStatus.typescript,
+            vite: currentStatus.vite,
+            tailwind: currentStatus.tailwind,
+            shadcn: currentStatus.shadcn,
+            livePreview: currentStatus.livePreview,
+          }
+        }),
         user_id: userId,
       });
 

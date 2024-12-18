@@ -2,6 +2,7 @@ import { NavigateFunction } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { AICommand, CommandResult } from "@/types/ai";
 import { checkDevEnvironment, setupDevEnvironment } from "./devEnvironment";
+import { v4 as uuidv4 } from 'uuid';
 
 export type CommandContext = {
   navigate: NavigateFunction;
@@ -45,6 +46,7 @@ const handleTaskCreation = async (input: string, userId?: string): Promise<Comma
   const { data, error } = await supabase
     .from('ai_tasks')
     .insert({
+      task_id: uuidv4(),
       prompt: taskDescription,
       type: 'automation',
       provider: 'gemini',
