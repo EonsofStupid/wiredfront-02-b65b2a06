@@ -5,9 +5,11 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Volume2, MessageSquare, Settings, Cpu } from "lucide-react";
 import { AIOptionsTab } from './AIOptionsTab';
 import { AIChatTab } from './AIChatTab';
 import { AICore } from '@/components/ai-core/AICore';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import type { Message } from '@/types/ai';
 import type { TypingStatus, RealtimePayload } from '@/types/realtime';
 
@@ -128,16 +130,31 @@ export const AIAssistant = () => {
     }
   };
 
+  const { speak, isLoading: isSpeaking } = useTextToSpeech();
+
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-20 right-4 w-96 h-[600px] bg-background/95 backdrop-blur-lg rounded-lg border border-border shadow-lg flex flex-col z-50">
+    <div className="fixed bottom-20 right-4 w-96 h-[600px] bg-background/95 backdrop-blur-lg rounded-lg border border-border shadow-lg flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:border-primary/20">
       <Tabs defaultValue="chat" className="flex-1 flex flex-col">
-        <div className="border-b border-border">
+        <div className="border-b border-border bg-gradient-to-r from-background/50 to-background/80">
           <TabsList className="w-full">
-            <TabsTrigger value="chat" className="flex-1">Chat</TabsTrigger>
-            <TabsTrigger value="options" className="flex-1">AI Options</TabsTrigger>
-            <TabsTrigger value="core" className="flex-1">AI Core</TabsTrigger>
+            <TabsTrigger value="chat" className="flex-1 gap-2">
+              <MessageSquare className="w-4 h-4" />
+              Chat
+            </TabsTrigger>
+            <TabsTrigger value="audio" className="flex-1 gap-2">
+              <Volume2 className="w-4 h-4" />
+              Audio
+            </TabsTrigger>
+            <TabsTrigger value="options" className="flex-1 gap-2">
+              <Settings className="w-4 h-4" />
+              Options
+            </TabsTrigger>
+            <TabsTrigger value="core" className="flex-1 gap-2">
+              <Cpu className="w-4 h-4" />
+              Core
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -151,6 +168,24 @@ export const AIAssistant = () => {
             onInputChange={setInput}
             onSubmit={handleSubmit}
           />
+        </TabsContent>
+
+        <TabsContent value="audio" className="mt-0 p-4 space-y-4">
+          <div className="glass-card p-4 space-y-4 rounded-lg border border-border/50">
+            <h3 className="text-lg font-semibold">Text to Speech</h3>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">
+                {isSpeaking ? 'Speaking...' : 'Ready to speak'}
+              </span>
+              <button
+                onClick={() => speak(messages[messages.length - 1]?.content || '')}
+                disabled={isSpeaking || !messages.length}
+                className="px-4 py-2 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50"
+              >
+                {isSpeaking ? 'Speaking...' : 'Speak Last Message'}
+              </button>
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="options" className="mt-0">

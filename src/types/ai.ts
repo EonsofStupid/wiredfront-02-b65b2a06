@@ -4,7 +4,7 @@ export type AIMode = "chat" | "code" | "file";
 export type AIProvider = "gemini" | "chatgpt" | "huggingface" | "anthropic" | "mistral" | "cohere";
 
 export interface AIProviderConfig {
-  id: string;
+  id: AIProvider;
   name: string;
   description: string;
   isEnabled: boolean;

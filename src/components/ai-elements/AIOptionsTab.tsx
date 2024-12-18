@@ -7,6 +7,7 @@ import { AI_PROVIDERS } from "@/config/aiProviders";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import type { AIProvider } from "@/types/ai";
 
 export const AIOptionsTab = () => {
   const { toast } = useToast();
@@ -15,7 +16,7 @@ export const AIOptionsTab = () => {
   const currentProvider = useAIStore((state) => state.currentProvider);
   const setProvider = useAIStore((state) => state.setProvider);
 
-  const handleProviderToggle = async (providerId: string) => {
+  const handleProviderToggle = async (providerId: AIProvider) => {
     try {
       const { data: settings } = await supabase
         .from('ai_settings')
@@ -77,7 +78,7 @@ export const AIOptionsTab = () => {
               <div 
                 key={id}
                 className="glass-card p-4 space-y-2 hover:bg-accent/5 transition-colors cursor-pointer"
-                onClick={() => handleProviderToggle(id)}
+                onClick={() => handleProviderToggle(id as AIProvider)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -86,7 +87,7 @@ export const AIOptionsTab = () => {
                   </div>
                   <Switch 
                     checked={currentProvider === id}
-                    onCheckedChange={() => handleProviderToggle(id)}
+                    onCheckedChange={() => handleProviderToggle(id as AIProvider)}
                   />
                 </div>
                 <p className="text-sm text-muted-foreground">
