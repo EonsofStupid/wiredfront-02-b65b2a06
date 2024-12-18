@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import type { AIProvider } from "@/types/ai";
 
 export function APIKeySettings() {
@@ -84,6 +84,13 @@ export function APIKeySettings() {
         description: error.message
       });
     }
+  };
+
+  const toggleShowKey = (provider: string) => {
+    setShowKeys(prev => ({
+      ...prev,
+      [provider]: !prev[provider]
+    }));
   };
 
   if (isLoading) {
