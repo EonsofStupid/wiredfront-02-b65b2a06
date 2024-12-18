@@ -14,10 +14,11 @@ import { cn } from '@/lib/utils';
 import { AIOptionsTab } from './AIOptionsTab';
 
 export const AIAssistant = () => {
-  const [position, setPosition] = useState({ x: window.innerWidth - 450, y: 100 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const isVisible = useAIStore((state) => state.isVisible);
   const { messages, initializeWorker } = useMessageQueue();
   const { toast } = useToast();
+  const [size, setSize] = useState({ width: 400, height: 600 });
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: 'ai-assistant',
@@ -26,6 +27,7 @@ export const AIAssistant = () => {
   useEffect(() => {
     initializeWorker();
 
+    // Initialize Supabase presence channel
     const channel = supabase.channel('ai-assistant')
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
@@ -42,23 +44,17 @@ export const AIAssistant = () => {
 
   const style = transform ? {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    left: `${position.x}px`,
-    top: `${position.y}px`
-  } : {
-    left: `${position.x}px`,
-    top: `${position.y}px`
-  };
+  } : undefined;
 
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={cn(
-        "fixed bg-background/95 backdrop-blur-lg rounded-lg",
+        "fixed bottom-20 right-4 bg-background/95 backdrop-blur-lg rounded-lg",
         "border border-border shadow-lg flex flex-col z-50 overflow-hidden",
         "glass-card hover:shadow-xl hover:border-primary/20",
-        "transition-all duration-300 ease-in-out",
-        "w-[400px] h-[600px]"
+        "transition-all duration-300 ease-in-out"
       )}
     >
       <div
@@ -67,15 +63,15 @@ export const AIAssistant = () => {
         className="h-8 w-full bg-muted/50 cursor-move flex items-center px-4"
       >
         <div className="flex space-x-2">
-          <div className="w-3 h-3 rounded-full bg-red-500" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500" />
-          <div className="w-3 h-3 rounded-full bg-green-500" />
+          <div className="w-3 h-3 rounded-full bg-neon-pink" />
+          <div className="w-3 h-3 rounded-full bg-neon-blue" />
+          <div className="w-3 h-3 rounded-full bg-neon-violet" />
         </div>
       </div>
 
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={100}>
-          <Tabs defaultValue="chat" className="w-full h-full">
+          <Tabs defaultValue="chat" className="w-[400px] h-[600px]">
             <TabsList className="w-full">
               <TabsTrigger value="chat" className="flex-1 gap-2">
                 <MessageSquare className="w-4 h-4" />
@@ -95,7 +91,7 @@ export const AIAssistant = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="chat" className="mt-0 h-[calc(100%-40px)]">
+            <TabsContent value="chat" className="mt-0 h-full">
               <AITaskPanel 
                 onClose={() => {}}
                 typingUsers={[]}
