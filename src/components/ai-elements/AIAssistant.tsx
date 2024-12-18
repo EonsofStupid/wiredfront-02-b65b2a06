@@ -20,45 +20,67 @@ export const AIAssistant = () => {
   const [mode, setMode] = useState<AIMode>('chat');
   const [isProcessing, setIsProcessing] = useState(false);
   const pendingMessages = useRef<any[]>([]);
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
-  // Initialize message worker
+  // Initialize message worker and real-time subscriptions
   useEffect(() => {
     initializeWorker();
-  }, [initializeWorker]);
 
-  // Handle real-time presence and typing status
-  useEffect(() => {
-    const setupPresence = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const channel = supabase.channel('ai-assistant')
-        .on('presence', { event: 'sync' }, () => {
-          const state = channel.presenceState();
-          console.log('Presence state:', state);
-        })
-        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-          console.log('Join:', key, newPresences);
-        })
-        .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-          console.log('Leave:', key, leftPresences);
-        })
-        .subscribe(async (status) => {
-          if (status === 'SUBSCRIBED') {
+    // Set up real-time presence channel
+    const channel = supabase.channel('ai-assistant')
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        console.log('Presence state:', state);
+      })
+      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        console.log('Join:', key, newPresences);
+      })
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+        console.log('Leave:', key, leftPresences);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
             await channel.track({
               user_id: user.id,
               online_at: new Date().toISOString(),
             });
           }
-        });
+        }
+      });
 
-      return () => {
-        supabase.removeChannel(channel);
-      };
+    // Listen for typing status changes
+    const typingChannel = supabase
+      .channel('typing-status')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'typing_status'
+        },
+        (payload) => {
+          if (payload.new) {
+            setTypingUsers(current => {
+              const userId = payload.new.user_id;
+              if (payload.new.is_typing && !current.includes(userId)) {
+                return [...current, userId];
+              } else if (!payload.new.is_typing) {
+                return current.filter(id => id !== userId);
+              }
+              return current;
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+      supabase.removeChannel(typingChannel);
     };
-
-    setupPresence();
-  }, []);
+  }, [initializeWorker]);
 
   const rowVirtualizer = useVirtualizer({
     count: messages.length,
@@ -139,6 +161,12 @@ export const AIAssistant = () => {
           </div>
         )}
       </div>
+
+      {typingUsers.length > 0 && (
+        <div className="px-4 py-2 text-sm text-muted-foreground">
+          {typingUsers.length} user(s) typing...
+        </div>
+      )}
 
       <div 
         ref={parentRef}
