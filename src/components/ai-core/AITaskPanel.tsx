@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { X, Search, FileText, Settings, Terminal, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { handleCommand, getSuggestions } from "@/utils/ai/commandHandler";
@@ -21,12 +21,10 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
 
-  // Handle input changes and typing status
   const handleInputChange = (value: string) => {
     setInput(value);
     onTypingChange?.(value.length > 0);
     
-    // Update command suggestions
     const newSuggestions = getSuggestions(value);
     setSuggestions(newSuggestions);
   };
@@ -35,7 +33,6 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
     e.preventDefault();
     if (!input.trim()) return;
 
-    // First check if it's a command
     if (handleCommand(input, navigate)) {
       setInput("");
       return;
@@ -43,7 +40,6 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
 
     setIsProcessing(true);
     try {
-      // Store the interaction in the database
       const { error: dbError } = await supabase
         .from('ai_tasks')
         .insert({
@@ -61,7 +57,6 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
         description: "Generating response...",
       });
 
-      // Process the request
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       toast({
@@ -82,24 +77,7 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="glass-card p-6 space-y-6"
-    >
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold gradient-text">AI Assistant</h2>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="h-6 w-6" />
-        </Button>
-      </div>
-
-      {typingUsers.length > 0 && (
-        <div className="text-sm text-gray-400">
-          {typingUsers.length} user(s) typing...
-        </div>
-      )}
-
+    <div className="h-full flex flex-col p-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -146,7 +124,7 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
         )}
       </form>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <TaskCard
           icon={FileText}
           title="File Management"
@@ -163,7 +141,7 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
           description="Configure preview behavior"
         />
       </div>
-    </motion.div>
+    </div>
   );
 };
 

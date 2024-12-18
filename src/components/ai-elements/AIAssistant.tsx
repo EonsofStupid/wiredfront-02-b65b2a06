@@ -1,53 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { useMessageQueue } from '@/stores/messageQueue';
+import { useDraggable } from '@dnd-kit/core';
+import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Volume2, MessageSquare, Settings, Cpu } from "lucide-react";
 import { useAIStore } from '@/stores/ai';
+import { useMessageQueue } from '@/stores/messageQueue';
+import { AITaskPanel } from '../ai-core/AITaskPanel';
+import { AudioControls } from './audio/AudioControls';
+import { AICore } from '../ai-core/AICore';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useOnlineStatus } from '@/hooks/useOnlineStatus';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Volume2, MessageSquare, Settings, Cpu, Mic, MicOff } from "lucide-react";
-import { AIOptionsTab } from './AIOptionsTab';
-import { AIChatTab } from './AIChatTab';
-import { AICore } from '@/components/ai-core/AICore';
-import { ChatInput } from './chat/ChatInput';
-import { AudioControls } from './audio/AudioControls';
-import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
-import { motion, AnimatePresence } from 'framer-motion';
-import type { Message } from '@/types/ai';
-import type { TypingStatus } from '@/types/realtime';
-import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import { cn } from '@/lib/utils';
 
 export const AIAssistant = () => {
-  const { initializeWorker, messages: queuedMessages, error } = useMessageQueue();
-  const { toast } = useToast();
-  const isVisible = useAIStore((state) => state.isVisible);
-  const isOnline = useOnlineStatus();
-  const [input, setInput] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
+  const isVisible = useAIStore((state) => state.isVisible);
+  const { messages, initializeWorker } = useMessageQueue();
+  const { toast } = useToast();
+  const [size, setSize] = useState({ width: 400, height: 600 });
 
-  // Configure DnD sensors
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  );
-
-  // Convert QueuedMessages to Messages
-  const messages: Message[] = queuedMessages.map(qm => ({
-    id: qm.id,
-    content: qm.content,
-    role: 'assistant',
-    timestamp: qm.timestamp
-  }));
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: 'ai-assistant',
+  });
 
   useEffect(() => {
     initializeWorker();
 
+    // Initialize Supabase presence channel
     const channel = supabase.channel('ai-assistant')
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
@@ -55,71 +34,43 @@ export const AIAssistant = () => {
       })
       .subscribe();
 
-    const typingChannel = supabase
-      .channel('typing-status')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'typing_status'
-        },
-        (payload: RealtimePostgresChangesPayload<TypingStatus>) => {
-          if (payload.new) {
-            setTypingUsers(current => {
-              const userId = payload.new.user_id;
-              if (payload.new.is_typing && !current.includes(userId)) {
-                return [...current, userId];
-              } else if (!payload.new.is_typing) {
-                return current.filter(id => id !== userId);
-              }
-              return current;
-            });
-          }
-        }
-      )
-      .subscribe();
-
     return () => {
       supabase.removeChannel(channel);
-      supabase.removeChannel(typingChannel);
     };
   }, [initializeWorker]);
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    setIsDragging(false);
-    const { delta } = event;
-    setPosition(current => ({
-      x: current.x + delta.x,
-      y: current.y + delta.y,
-    }));
-  };
-
   if (!isVisible) return null;
 
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  } : undefined;
+
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ 
-          opacity: 1, 
-          scale: 1,
-          x: position.x,
-          y: position.y,
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className={`fixed bottom-20 right-4 w-96 h-[600px] bg-background/95 backdrop-blur-lg rounded-lg border border-border shadow-lg flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:border-primary/20 ${
-          isDragging ? 'cursor-grabbing neon-glow' : 'cursor-grab'
-        }`}
-        drag
-        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-        dragElastic={0.1}
-        dragMomentum={false}
-        onDragStart={() => setIsDragging(true)}
-        onDragEnd={() => setIsDragging(false)}
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "fixed bottom-20 right-4 bg-background/95 backdrop-blur-lg rounded-lg",
+        "border border-border shadow-lg flex flex-col z-50 overflow-hidden",
+        "glass-card hover:shadow-xl hover:border-primary/20",
+        "transition-all duration-300 ease-in-out"
+      )}
+    >
+      <div
+        {...attributes}
+        {...listeners}
+        className="h-8 w-full bg-muted/50 cursor-move flex items-center px-4"
       >
-        <Tabs defaultValue="chat" className="flex-1 flex flex-col">
-          <div className="border-b border-border bg-gradient-to-r from-background/50 to-background/80">
+        <div className="flex space-x-2">
+          <div className="w-3 h-3 rounded-full bg-neon-pink" />
+          <div className="w-3 h-3 rounded-full bg-neon-blue" />
+          <div className="w-3 h-3 rounded-full bg-neon-violet" />
+        </div>
+      </div>
+
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel defaultSize={100}>
+          <Tabs defaultValue="chat" className="w-[400px] h-[600px]">
             <TabsList className="w-full">
               <TabsTrigger value="chat" className="flex-1 gap-2">
                 <MessageSquare className="w-4 h-4" />
@@ -129,60 +80,52 @@ export const AIAssistant = () => {
                 <Volume2 className="w-4 h-4" />
                 Audio
               </TabsTrigger>
-              <TabsTrigger value="options" className="flex-1 gap-2">
-                <Settings className="w-4 h-4" />
-                Options
-              </TabsTrigger>
               <TabsTrigger value="core" className="flex-1 gap-2">
                 <Cpu className="w-4 h-4" />
                 Core
               </TabsTrigger>
+              <TabsTrigger value="settings" className="flex-1 gap-2">
+                <Settings className="w-4 h-4" />
+                Settings
+              </TabsTrigger>
             </TabsList>
-          </div>
 
-          <TabsContent value="chat" className="flex-1 flex flex-col mt-0">
-            <AIChatTab
-              messages={messages}
-              input={input}
-              isProcessing={isProcessing}
-              isOnline={isOnline}
-              typingUsers={typingUsers}
-              onInputChange={setInput}
-              onSubmit={(e) => {
-                e.preventDefault();
-                // Handle chat submission
-              }}
-            />
-          </TabsContent>
-
-          <TabsContent value="audio" className="mt-0 p-4 space-y-4">
-            <div className="glass-card p-4 space-y-4 rounded-lg border border-border/50">
-              <h3 className="text-lg font-semibold">Voice Controls</h3>
-              <AudioControls
-                onTranscript={(text) => setInput(text)}
-                currentMessage={input}
+            <TabsContent value="chat" className="mt-0 h-full">
+              <AITaskPanel 
+                onClose={() => {}}
+                typingUsers={[]}
+                onTypingChange={() => {}}
               />
-              <ChatInput
-                input={input}
-                isProcessing={isProcessing}
-                onInputChange={setInput}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  // Handle audio submission
-                }}
-              />
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="options" className="mt-0">
+            <TabsContent value="audio" className="mt-0 p-4">
+              <div className="glass-card p-4 space-y-4">
+                <h3 className="text-lg font-semibold">Voice Controls</h3>
+                <AudioControls
+                  onTranscript={(text) => {
+                    toast({
+                      title: "Transcript received",
+                      description: text,
+                    });
+                  }}
+                  currentMessage=""
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="core" className="mt-0">
+              <AICore />
+            </TabsContent>
+
+            <TabsContent value="settings" className="mt-0 p-4">
+              <div className="glass-card p-4 space-y-4">
+                <h3 className="text-lg font-semibold">AI Settings</h3>
             <AIOptionsTab />
-          </TabsContent>
-
-          <TabsContent value="core" className="mt-0 flex-1">
-            <AICore />
-          </TabsContent>
-        </Tabs>
-      </motion.div>
-    </DndContext>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
   );
 };
