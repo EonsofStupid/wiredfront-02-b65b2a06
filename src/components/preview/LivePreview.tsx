@@ -1,11 +1,51 @@
-import { Monitor, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Monitor, X, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { usePreviewStore } from "@/stores/preview";
 import { Input } from "@/components/ui/input";
+import { usePreviewStore } from "@/stores/preview";
 import { motion } from "framer-motion";
+import { useToast } from "@/components/ui/use-toast";
 
 export const LivePreview = () => {
-  const { isPreviewOpen, previewUrl, togglePreview, setPreviewUrl } = usePreviewStore();
+  const { isPreviewOpen, togglePreview } = usePreviewStore();
+  const { toast } = useToast();
+  const [previewUrl, setPreviewUrl] = useState("http://localhost:8081");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Initialize preview server
+    const initPreview = async () => {
+      try {
+        const response = await fetch("/api/preview/init", {
+          method: "POST"
+        });
+        
+        if (!response.ok) throw new Error("Failed to initialize preview server");
+        
+        const { url } = await response.json();
+        setPreviewUrl(url);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Preview server error:", error);
+        toast({
+          title: "Preview Error",
+          description: "Failed to start preview server. Please try again.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    if (isPreviewOpen) {
+      initPreview();
+    }
+
+    return () => {
+      // Cleanup preview server
+      if (isPreviewOpen) {
+        fetch("/api/preview/cleanup", { method: "POST" }).catch(console.error);
+      }
+    };
+  }, [isPreviewOpen, toast]);
 
   if (!isPreviewOpen) return null;
 
@@ -31,17 +71,34 @@ export const LivePreview = () => {
                   className="w-[300px]"
                   placeholder="Enter preview URL..."
                 />
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => {
+                    const iframe = document.getElementById('preview-iframe') as HTMLIFrameElement;
+                    if (iframe) iframe.src = iframe.src;
+                  }}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="icon" onClick={togglePreview}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
             <div className="aspect-video w-full">
-              <iframe
-                src={previewUrl}
-                className="h-full w-full border-0"
-                title="Live Preview"
-              />
+              {isLoading ? (
+                <div className="flex h-full items-center justify-center">
+                  <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <iframe
+                  id="preview-iframe"
+                  src={previewUrl}
+                  className="h-full w-full border-0"
+                  title="Live Preview"
+                />
+              )}
             </div>
           </div>
         </div>
