@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
+import type { CommandResult } from "@/types/ai";
 
 export interface EnvironmentStatus {
   isComplete: boolean;
@@ -56,7 +57,7 @@ export const checkDevEnvironment = async (userId: string): Promise<EnvironmentSt
 export const setupDevEnvironment = async (
   userId: string,
   currentStatus: EnvironmentStatus
-): Promise<{ success: boolean; message: string }> => {
+): Promise<CommandResult> => {
   try {
     const dockerConfig = {
       typescript: true,
@@ -68,7 +69,6 @@ export const setupDevEnvironment = async (
       nodeVersion: '20.x',
     };
 
-    // Create or update the testing environment
     const { error } = await supabase
       .from('testing_environments')
       .upsert({
@@ -81,7 +81,6 @@ export const setupDevEnvironment = async (
 
     if (error) throw error;
 
-    // Create a task to track the setup progress
     const { error: taskError } = await supabase
       .from('ai_tasks')
       .insert({
@@ -115,4 +114,69 @@ export const setupDevEnvironment = async (
     console.error('Error setting up dev environment:', error);
     throw error;
   }
+};
+
+export const handleDevEnvironment = async (
+  input: string,
+  userId?: string
+): Promise<CommandResult> => {
+  if (!userId) {
+    return {
+      success: false,
+      message: "You need to be logged in to manage development environments.",
+    };
+  }
+
+  try {
+    // First, check if we need to evaluate or setup the environment
+    const isCheckOnly = input.includes("check");
+    
+    // Get current environment status
+    const envStatus = await checkDevEnvironment(userId);
+    
+    if (isCheckOnly) {
+      return {
+        success: true,
+        message: generateEnvironmentStatusMessage(envStatus),
+      };
+    }
+
+    // If environment is incomplete or setup is explicitly requested, proceed with setup
+    if (!envStatus.isComplete) {
+      return setupDevEnvironment(userId, envStatus);
+    }
+
+    return {
+      success: true,
+      message: "Your development environment is already set up and ready to go!",
+    };
+  } catch (error) {
+    console.error('Error managing dev environment:', error);
+    return {
+      success: false,
+      message: "Failed to manage the development environment. Please try again.",
+    };
+  }
+};
+
+const generateEnvironmentStatusMessage = (status: EnvironmentStatus): string => {
+  const messages = [];
+  messages.push("Here's your current development environment status:");
+  
+  if (status.typescript) messages.push("✅ TypeScript is configured");
+  else messages.push("❌ TypeScript needs to be configured");
+  
+  if (status.vite) messages.push("✅ Vite is set up");
+  else messages.push("❌ Vite needs to be installed");
+  
+  if (status.tailwind) messages.push("✅ Tailwind CSS is installed");
+  else messages.push("❌ Tailwind CSS needs to be configured");
+  
+  if (status.shadcn) messages.push("✅ shadcn/ui is available");
+  else messages.push("❌ shadcn/ui needs to be installed");
+  
+  if (status.livePreview) messages.push("✅ Live preview is working");
+  else messages.push("❌ Live preview needs to be configured");
+  
+  return messages.join("\n");
 };
