@@ -7,11 +7,11 @@ import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Profile from "@/pages/Profile";
 import Index from "@/pages/Index";
+import DevPreview from "@/pages/DevPreview";
 import { FileManager } from "@/components/file/FileManager";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { useLayoutStore } from "@/stores";
-import { LivePreview } from "@/components/preview/LivePreview";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
@@ -64,6 +64,7 @@ function App() {
                 path="/login" 
                 element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} 
               />
+              <Route path="/preview" element={<DevPreview />} />
               <Route
                 path="/"
                 element={
@@ -83,7 +84,6 @@ function App() {
                 <Route path="files" element={<FileManager />} />
               </Route>
             </Routes>
-            <LivePreview />
             <Toaster />
           </Router>
         </SettingsProvider>

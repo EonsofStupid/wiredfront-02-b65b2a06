@@ -8,6 +8,8 @@ import { AIPermissions } from "./AIPermissions";
 import { supabase } from "@/integrations/supabase/client";
 import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const MemoizedPreview = memo(({ url }: { url: string }) => (
   <iframe
@@ -20,8 +22,8 @@ const MemoizedPreview = memo(({ url }: { url: string }) => (
 export const AICore = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [visualEffects, setVisualEffects] = useState<any>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>('http://localhost:8081');
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Configure DnD sensors
   const sensors = useSensors(
@@ -88,6 +90,10 @@ export const AICore = () => {
     return styles;
   }, [visualEffects]);
 
+  const handlePreviewClick = () => {
+    window.open('/preview', '_blank');
+  };
+
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <AnimatePresence mode="wait">
@@ -104,27 +110,16 @@ export const AICore = () => {
             className="fixed inset-0 z-50 bg-dark/80 backdrop-blur-sm"
           >
             <div className="container mx-auto h-full p-6 flex flex-col md:flex-row gap-4" style={getEffectStyles()}>
-              <div className="w-full md:w-1/2 flex flex-col">
+              <div className="w-full flex flex-col">
                 <AITaskPanel onClose={() => setIsExpanded(false)} />
                 <AIPersonalityConfig />
                 <AIPermissions />
-              </div>
-              
-              <div className="w-full md:w-1/2 bg-dark rounded-lg overflow-hidden shadow-xl">
-                <div className="w-full h-8 bg-gray-800 flex items-center px-4">
-                  <div className="flex space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
-                  </div>
-                  <input 
-                    type="text" 
-                    value={previewUrl}
-                    onChange={(e) => setPreviewUrl(e.target.value)}
-                    className="ml-4 bg-transparent text-sm text-gray-300 focus:outline-none"
-                  />
-                </div>
-                <MemoizedPreview url={previewUrl} />
+                <Button 
+                  onClick={handlePreviewClick}
+                  className="mt-4 bg-purple-500 hover:bg-purple-600"
+                >
+                  Open Preview Panel
+                </Button>
               </div>
             </div>
           </motion.div>
