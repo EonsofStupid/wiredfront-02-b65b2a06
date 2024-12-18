@@ -1,6 +1,9 @@
 import { Bot, Code, FileText, Loader, WifiOff, Mic } from "lucide-react";
+import { useEffect } from "react";
 import type { AIMode } from "@/types/ai";
 import type { Command } from "@/utils/ai/commandHandler";
+import { useTypingStatus } from "@/hooks/use-typing-status";
+import { useUser } from "@supabase/auth-helpers-react";
 
 interface AIInputFormProps {
   input: string;
@@ -21,6 +24,12 @@ export const AIInputForm = ({
   onInputChange,
   onSubmit,
 }: AIInputFormProps) => {
+  const user = useUser();
+  const { updateTypingStatus } = useTypingStatus(
+    'ai-chat', // You might want to make this dynamic based on your chat system
+    user?.id || ''
+  );
+
   const getModeIcon = (currentMode: AIMode) => {
     switch (currentMode) {
       case "chat":
@@ -34,13 +43,20 @@ export const AIInputForm = ({
     }
   };
 
+  const handleInputChange = (value: string) => {
+    onInputChange(value);
+    if (user?.id) {
+      updateTypingStatus(value.length > 0);
+    }
+  };
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="relative">
         <textarea
           className="ai-assistant__textarea"
           value={input}
-          onChange={(e) => onInputChange(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder={
             isOffline
               ? "Working in offline mode. Limited functionality available..."
