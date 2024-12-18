@@ -36,6 +36,6 @@ export interface AIInputFormProps {
 }
 
 export interface AIResponseProps {
-  response: string;
+  message: Message;
   className?: string;
 }

@@ -7,6 +7,7 @@ import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AIOptionsTab } from './AIOptionsTab';
 import { AIChatTab } from './AIChatTab';
+import { AICore } from '@/components/ai-core/AICore';
 import type { Message } from '@/types/ai';
 import type { TypingStatus, RealtimePayload } from '@/types/realtime';
 
@@ -136,6 +137,7 @@ export const AIAssistant = () => {
           <TabsList className="w-full">
             <TabsTrigger value="chat" className="flex-1">Chat</TabsTrigger>
             <TabsTrigger value="options" className="flex-1">AI Options</TabsTrigger>
+            <TabsTrigger value="core" className="flex-1">AI Core</TabsTrigger>
           </TabsList>
         </div>
 
@@ -153,6 +155,10 @@ export const AIAssistant = () => {
 
         <TabsContent value="options" className="mt-0">
           <AIOptionsTab />
+        </TabsContent>
+
+        <TabsContent value="core" className="mt-0 flex-1">
+          <AICore />
         </TabsContent>
       </Tabs>
     </div>

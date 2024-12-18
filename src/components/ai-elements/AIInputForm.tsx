@@ -1,7 +1,6 @@
 import { Bot, Code, FileText, Loader, WifiOff, Send } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import type { AIMode } from "@/types/ai";
-import type { Command } from "@/utils/ai/commandHandler";
 import { useTypingStatus } from "@/hooks/use-typing-status";
 import { useUser } from "@supabase/auth-helpers-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,6 @@ interface AIInputFormProps {
   mode: AIMode;
   isProcessing: boolean;
   isOffline: boolean;
-  suggestions?: Command[];
   onInputChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
@@ -23,7 +21,6 @@ export const AIInputForm = ({
   mode,
   isProcessing,
   isOffline,
-  suggestions = [],
   onInputChange,
   onSubmit,
 }: AIInputFormProps) => {
@@ -56,7 +53,7 @@ export const AIInputForm = ({
     // Adjust textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
     }
   };
 
@@ -108,27 +105,13 @@ export const AIInputForm = ({
         >
           {isProcessing ? (
             <Loader className="w-4 h-4 animate-spin" />
+          ) : isOffline ? (
+            <WifiOff className="w-4 h-4" />
           ) : (
             <Send className="w-4 h-4" />
           )}
         </Button>
       </div>
-
-      {suggestions.length > 0 && input && (
-        <div className="absolute bottom-full left-0 w-full mb-2 bg-background/95 backdrop-blur-sm rounded-md border border-border p-2 space-y-1 z-50">
-          {suggestions.map((suggestion, index) => (
-            <div
-              key={index}
-              className="text-sm text-muted-foreground hover:text-foreground cursor-pointer p-1 rounded hover:bg-accent"
-              onClick={() => {
-                handleInputChange(suggestion.trigger[0]);
-              }}
-            >
-              {suggestion.description}
-            </div>
-          ))}
-        </div>
-      )}
     </form>
   );
 };
