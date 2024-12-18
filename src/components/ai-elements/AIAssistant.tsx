@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { processAICommand } from "@/utils/ai/commandProcessor";
 import { generateAIResponse } from "@/utils/ai/aiProviders";
-import { handleCommand, getSuggestions } from "@/utils/ai/commandHandler";
 import { AIHeader } from "./AIHeader";
 import { AIModeSelector } from "./AIModeSelector";
 import { AIProviderSelector } from "./AIProviderSelector";
@@ -13,7 +13,6 @@ import { AIResponse } from "./AIResponse";
 import { AICommandSuggestions } from "./AICommandSuggestions";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import type { AIMode, AIProvider } from "@/types/ai";
-import type { Command } from "@/utils/ai/commandHandler";
 
 export const AIAssistant = () => {
   const navigate = useNavigate();
@@ -28,7 +27,6 @@ export const AIAssistant = () => {
   const [provider, setProvider] = useState<AIProvider>("gemini");
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [availableProviders, setAvailableProviders] = useState<AIProvider[]>([]);
-  const [suggestions, setSuggestions] = useState<Command[]>([]);
   const constraintsRef = useRef(null);
   const { toast } = useToast();
 
@@ -54,11 +52,6 @@ export const AIAssistant = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const newSuggestions = getSuggestions(input);
-    setSuggestions(newSuggestions);
-  }, [input]);
-
   const fetchAvailableProviders = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -68,8 +61,7 @@ export const AIAssistant = () => {
         .from('ai_settings')
         .select('provider')
         .eq('user_id', session.user.id)
-        .eq('is_active', true)
-        .not('api_key', 'is', null);
+        .eq('is_active', true);
 
       if (error) throw error;
 
@@ -84,40 +76,38 @@ export const AIAssistant = () => {
     }
   };
 
-  const handleDragStart = () => setIsDragging(true);
-  const handleDragEnd = (_e: any, info: any) => {
-    setIsDragging(false);
-    setPosition({ x: position.x + info.offset.x, y: position.y + info.offset.y });
-  };
-
   const handleSubmit = async (e: React.FormEvent, voiceInput?: string) => {
     e.preventDefault();
     const currentInput = voiceInput || input;
     if (!currentInput.trim()) return;
 
-    // First, check if it's a command
-    const isCommand = handleCommand(currentInput, navigate);
-    if (isCommand) {
-      setInput("");
-      return;
-    }
-
     setIsProcessing(true);
     try {
-      if (isOffline) {
-        const offlineResponse = "I'm currently in offline mode. I'll use my local knowledge to assist you.";
-        setResponse(offlineResponse);
-        return;
-      }
-
-      const result = await generateAIResponse(provider, currentInput);
-      setResponse(result);
-      toast({
-        title: "AI Response Generated",
-        description: "Response generated successfully",
+      // First, try to process as a command
+      const { data: { user } } = await supabase.auth.getUser();
+      const commandResult = await processAICommand(currentInput, {
+        navigate,
+        userId: user?.id
       });
+
+      if (commandResult.success) {
+        setResponse(commandResult.message);
+        toast({
+          title: "Command Executed",
+          description: commandResult.message,
+        });
+      } else {
+        // If not a command, generate AI response
+        if (isOffline) {
+          setResponse("I'm currently in offline mode. I'll use my local knowledge to assist you.");
+          return;
+        }
+
+        const result = await generateAIResponse(provider, currentInput);
+        setResponse(result);
+      }
     } catch (error) {
-      console.error('Error generating response:', error);
+      console.error('Error processing input:', error);
       toast({
         title: "Processing Error",
         description: "Failed to process your request. " + (isOffline ? "Working in offline mode." : ""),
@@ -137,8 +127,14 @@ export const AIAssistant = () => {
           dragMomentum={false}
           dragConstraints={constraintsRef}
           dragElastic={0.1}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={(_, info) => {
+            setIsDragging(false);
+            setPosition({ 
+              x: position.x + info.offset.x, 
+              y: position.y + info.offset.y 
+            });
+          }}
           animate={{
             x: position.x,
             y: position.y,
@@ -180,7 +176,6 @@ export const AIAssistant = () => {
                 onInputChange={setInput}
                 onSubmit={handleSubmit}
                 isOffline={isOffline}
-                suggestions={suggestions}
               />
               <AIResponse response={response} />
             </div>
