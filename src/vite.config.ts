@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => ({
     },
     hmr: {
       overlay: true,
-      clientPort: 8080
+      clientPort: 8080,
+      host: 'localhost'
     },
     proxy: {
       '/api': {
@@ -34,7 +35,7 @@ export default defineConfig(({ mode }) => ({
   preview: {
     port: 8081,
     strictPort: true,
-    open: true,
+    host: 'localhost',
   },
   build: {
     sourcemap: true,

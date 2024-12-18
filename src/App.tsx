@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLayoutStore } from "@/stores";
 import { LivePreview } from "@/components/preview/LivePreview";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -51,36 +52,38 @@ function App() {
   }
 
   return (
-    <SettingsProvider>
-      <Router>
-        <Routes>
-          <Route 
-            path="/login" 
-            element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} 
-          />
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <SidebarProvider>
-                  <MobileAwareLayout />
-                </SidebarProvider>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          >
-            <Route index element={<Index />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="files" element={<FileManager />} />
-          </Route>
-        </Routes>
-        <LivePreview />
-        <Toaster />
-      </Router>
-    </SettingsProvider>
+    <ThemeProvider>
+      <SettingsProvider>
+        <Router>
+          <Routes>
+            <Route 
+              path="/login" 
+              element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} 
+            />
+            <Route
+              path="/"
+              element={
+                isAuthenticated ? (
+                  <SidebarProvider>
+                    <MobileAwareLayout />
+                  </SidebarProvider>
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            >
+              <Route index element={<Index />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="files" element={<FileManager />} />
+            </Route>
+          </Routes>
+          <LivePreview />
+          <Toaster />
+        </Router>
+      </SettingsProvider>
+    </ThemeProvider>
   );
 }
 
