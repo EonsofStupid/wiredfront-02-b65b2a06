@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { MessageQueueState, QueuedMessage } from '../utils/messageQueue/types';
+import { QueuedMessage, MessageQueueState } from '../utils/messageQueue/types';
 
 let worker: Worker | null = null;
 

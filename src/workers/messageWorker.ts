@@ -13,7 +13,6 @@ const processQueue = async () => {
   const batch = messageQueue.splice(0, BATCH_SIZE);
   
   try {
-    // Process messages in parallel with rate limiting
     await Promise.all(
       batch.map(async (message) => {
         try {
@@ -54,12 +53,12 @@ const processQueue = async () => {
 };
 
 self.addEventListener('message', (event: MessageEvent<MessageWorkerAction>) => {
-  const { type, payload } = event.data;
+  const { type } = event.data;
   
   switch (type) {
     case 'ENQUEUE_MESSAGE':
       messageQueue.push({
-        ...payload,
+        ...event.data.payload,
         status: 'pending'
       });
       processQueue();
