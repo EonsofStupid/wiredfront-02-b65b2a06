@@ -3,6 +3,7 @@ import type { AIProvider } from '@/types/ai';
 
 interface AIState {
   isEnabled: boolean;
+  isVisible: boolean;  // Added this property
   currentProvider: AIProvider;
   isProcessing: boolean;
   lastResponse: string | null;
@@ -15,6 +16,7 @@ interface AIState {
 
 export const useAIStore = create<AIState>((set) => ({
   isEnabled: true,
+  isVisible: true,  // Added initial value
   currentProvider: 'gemini',
   isProcessing: false,
   lastResponse: null,
@@ -22,5 +24,5 @@ export const useAIStore = create<AIState>((set) => ({
   setProvider: (provider) => set({ currentProvider: provider }),
   setProcessing: (processing) => set({ isProcessing: processing }),
   setLastResponse: (response) => set({ lastResponse: response }),
-  toggleAIAssistant: () => set((state) => ({ isEnabled: !state.isEnabled })),
+  toggleAIAssistant: () => set((state) => ({ isVisible: !state.isVisible })),
 }));
