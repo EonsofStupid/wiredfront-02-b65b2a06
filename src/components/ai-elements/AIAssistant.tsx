@@ -60,7 +60,6 @@ export const AIAssistant = () => {
     setupPresence();
   }, []);
 
-  // Virtual list implementation with reverse scroll
   const rowVirtualizer = useVirtualizer({
     count: messages.length,
     getScrollElement: () => parentRef.current,
@@ -68,7 +67,6 @@ export const AIAssistant = () => {
     overscan: 5,
   });
 
-  // Error handling with retry mechanism
   useEffect(() => {
     if (error) {
       const retryDelay = Math.min(1000 * Math.pow(2, pendingMessages.current.length), 30000);
@@ -81,7 +79,6 @@ export const AIAssistant = () => {
 
       const timer = setTimeout(() => {
         pendingMessages.current.forEach(msg => {
-          // Attempt to resend messages
           handleSubmit(msg);
         });
       }, retryDelay);
@@ -132,7 +129,7 @@ export const AIAssistant = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-20 right-4 w-96 h-[600px] bg-background/95 backdrop-blur-lg rounded-lg border border-border shadow-lg flex flex-col">
+    <div className="fixed bottom-20 right-4 w-96 h-[600px] bg-background/95 backdrop-blur-lg rounded-lg border border-border shadow-lg flex flex-col z-50">
       <div className="p-4 border-b border-border flex items-center justify-between">
         <h2 className="text-lg font-semibold">AI Assistant</h2>
         {!isOnline && (
@@ -143,7 +140,6 @@ export const AIAssistant = () => {
         )}
       </div>
 
-      {/* Virtualized Message List */}
       <div 
         ref={parentRef}
         className="flex-1 overflow-auto flex flex-col-reverse"
@@ -174,7 +170,6 @@ export const AIAssistant = () => {
         </div>
       </div>
 
-      {/* Input Form */}
       <div className="p-4 border-t border-border">
         <AIInputForm 
           input={input}
