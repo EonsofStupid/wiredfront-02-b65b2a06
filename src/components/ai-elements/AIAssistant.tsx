@@ -27,7 +27,6 @@ export const AIAssistant = () => {
   useEffect(() => {
     initializeWorker();
 
-    // Initialize Supabase presence channel
     const channel = supabase.channel('ai-assistant')
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
@@ -91,7 +90,7 @@ export const AIAssistant = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="chat" className="mt-0 h-full">
+            <TabsContent value="chat" className="mt-0 h-[calc(100%-3rem)]">
               <AITaskPanel 
                 onClose={() => {}}
                 typingUsers={[]}
