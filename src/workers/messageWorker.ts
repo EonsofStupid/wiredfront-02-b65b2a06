@@ -1,72 +1,38 @@
-import { QueuedMessage, MessageWorkerAction } from '../utils/messageQueue/types';
-
-const messageQueue: QueuedMessage[] = [];
+const messageQueue: any[] = [];
 let isProcessing = false;
-const MAX_RETRIES = 3;
-const BATCH_SIZE = 10;
-const PROCESS_INTERVAL = 1000;
 
-const processQueue = async () => {
+// Process messages in batches
+const processMessageQueue = async () => {
   if (isProcessing || messageQueue.length === 0) return;
   
   isProcessing = true;
-  const batch = messageQueue.splice(0, BATCH_SIZE);
+  const batch = messageQueue.splice(0, 50); // Process 50 messages at a time
   
   try {
-    await Promise.all(
-      batch.map(async (message) => {
-        try {
-          message.status = 'processing';
-          // Simulate processing time (replace with actual processing logic)
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          self.postMessage({
-            type: 'PROCESS_COMPLETE',
-            payload: { id: message.id }
-          });
-        } catch (error) {
-          const retries = (message.retries || 0) + 1;
-          
-          if (retries < MAX_RETRIES) {
-            message.retries = retries;
-            messageQueue.unshift({ ...message, status: 'pending' });
-          } else {
-            self.postMessage({
-              type: 'PROCESS_ERROR',
-              payload: { 
-                id: message.id, 
-                error: error instanceof Error ? error.message : 'Unknown error'
-              }
-            });
-          }
-        }
-      })
-    );
+    // Process the batch and post back to main thread
+    self.postMessage({ type: 'BATCH_PROCESSED', payload: batch });
   } catch (error) {
-    console.error('Batch processing error:', error);
+    self.postMessage({ type: 'ERROR', payload: error });
   } finally {
     isProcessing = false;
     if (messageQueue.length > 0) {
-      setTimeout(processQueue, PROCESS_INTERVAL);
+      processMessageQueue();
     }
   }
 };
 
-self.addEventListener('message', (event: MessageEvent<MessageWorkerAction>) => {
-  const { type } = event.data;
+// Listen for messages from the main thread
+self.addEventListener('message', (event) => {
+  const { type, payload } = event.data;
   
   switch (type) {
-    case 'ENQUEUE_MESSAGE':
-      messageQueue.push({
-        ...event.data.payload,
-        status: 'pending'
-      });
-      processQueue();
+    case 'ADD_MESSAGE':
+      messageQueue.push(payload);
+      processMessageQueue();
       break;
       
     case 'CLEAR_QUEUE':
       messageQueue.length = 0;
-      isProcessing = false;
       break;
       
     default:

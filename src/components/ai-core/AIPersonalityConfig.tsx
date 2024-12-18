@@ -22,19 +22,6 @@ interface PersonalitySettings {
   technicalDetail: number;
 }
 
-type AISettingsValue = {
-  personality: {
-    friendliness: number;
-    assertiveness: number;
-    technicalDetail: number;
-  };
-  memoryTypes: Array<{
-    id: string;
-    label: string;
-    enabled: boolean;
-  }>;
-}
-
 export const AIPersonalityConfig = () => {
   const { toast } = useToast();
   const [personality, setPersonality] = useState<PersonalitySettings>({
@@ -69,17 +56,12 @@ export const AIPersonalityConfig = () => {
       if (error) throw error;
 
       if (data?.value) {
-        const settings = data.value as AISettingsValue;
+        const settings = data.value as { personality: PersonalitySettings; memoryTypes: MemoryType[] };
         if (settings.personality) {
           setPersonality(settings.personality);
         }
         if (settings.memoryTypes) {
-          // Map the stored memory types back to our interface with icons
-          const updatedMemoryTypes = memoryTypes.map(type => ({
-            ...type,
-            enabled: settings.memoryTypes.find(m => m.id === type.id)?.enabled ?? type.enabled
-          }));
-          setMemoryTypes(updatedMemoryTypes);
+          setMemoryTypes(settings.memoryTypes);
         }
       }
     } catch (error) {
@@ -99,33 +81,28 @@ export const AIPersonalityConfig = () => {
         return;
       }
 
-      // Prepare the value object with the correct shape for JSON storage
-      const settingsValue: AISettingsValue = {
-        personality: {
-          friendliness: personality.friendliness,
-          assertiveness: personality.assertiveness,
-          technicalDetail: personality.technicalDetail,
+      const settingsData = {
+        key: 'personality_settings',
+        user_id: session.user.id,
+        value: {
+          personality: personality as Json,
+          memoryTypes: memoryTypes as Json,
         },
-        memoryTypes: memoryTypes.map(({ id, label, enabled }) => ({
-          id,
-          label,
-          enabled,
-        })),
+        metadata: {
+          lastUpdated: new Date().toISOString(),
+          version: '1.0'
+        }
       };
 
       const { error } = await supabase
         .from('ai_settings')
-        .upsert({
-          key: 'personality_settings',
-          user_id: session.user.id,
-          value: settingsValue as Json,
-          metadata: {
-            lastUpdated: new Date().toISOString(),
-            version: '1.0'
-          } as Json,
-        });
+        .upsert(settingsData);
 
       if (error) throw error;
+
+      // Save to local storage for offline access
+      localStorage.setItem('ai_personality', JSON.stringify(personality));
+      localStorage.setItem('ai_memory_types', JSON.stringify(memoryTypes));
 
       toast({
         title: "Settings saved",

@@ -23,24 +23,6 @@
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
-/* Neon glow effect during drag */
-.neon-glow {
-  box-shadow: 0 0 15px theme('colors.neon.blue'),
-              0 0 30px theme('colors.neon.pink');
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 0 15px theme('colors.neon.blue'),
-                0 0 30px theme('colors.neon.pink');
-  }
-  50% {
-    box-shadow: 0 0 25px theme('colors.neon.blue'),
-                0 0 50px theme('colors.neon.pink');
-  }
-}
-
 /* Custom Scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
@@ -90,4 +72,9 @@
          hover:scale-[1.02] hover:shadow-lg hover:shadow-neon-blue/20
          active:scale-[0.98]
          disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Modifiers */
+.ai-assistant--minimized {
+  @apply h-auto;
 }

@@ -14,8 +14,6 @@ import { useLayoutStore } from "@/stores";
 import { LivePreview } from "@/components/preview/LivePreview";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { AIAssistant } from "@/components/ai-elements/AIAssistant";
-import { useAIStore } from "@/stores/ai";
 
 // Initialize store outside of component to avoid recreation
 const initializeStore = () => {
@@ -24,8 +22,6 @@ const initializeStore = () => {
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const toggleAIAssistant = useAIStore((state) => state.toggleAIAssistant);
-  const isAIVisible = useAIStore((state) => state.isVisible);
 
   useEffect(() => {
     // Check initial auth state
@@ -44,15 +40,10 @@ function App() {
       }
     });
 
-    // Ensure AI Assistant is visible by default
-    if (!isAIVisible) {
-      toggleAIAssistant();
-    }
-
     return () => {
       subscription.unsubscribe();
     };
-  }, [toggleAIAssistant, isAIVisible]);
+  }, []);
 
   // Show loading state while checking auth
   if (isAuthenticated === null) {
@@ -93,7 +84,6 @@ function App() {
               </Route>
             </Routes>
             <LivePreview />
-            <AIAssistant />
             <Toaster />
           </Router>
         </SettingsProvider>

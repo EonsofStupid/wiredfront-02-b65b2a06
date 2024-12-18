@@ -4,80 +4,62 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { useNavigate } from "react-router-dom";
-import { handleCommand, getSuggestions } from "@/utils/ai/commandHandler";
-import { supabase } from "@/integrations/supabase/client";
 
 interface AITaskPanelProps {
   onClose: () => void;
-  typingUsers?: string[];
-  onTypingChange?: (isTyping: boolean) => void;
 }
 
-export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITaskPanelProps) => {
+export const AITaskPanel = ({ onClose }: AITaskPanelProps) => {
   const [input, setInput] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const [suggestions, setSuggestions] = useState([]);
-
-  const handleInputChange = (value: string) => {
-    setInput(value);
-    onTypingChange?.(value.length > 0);
-    
-    const newSuggestions = getSuggestions(value);
-    setSuggestions(newSuggestions);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    if (handleCommand(input, navigate)) {
-      setInput("");
-      return;
-    }
-
     setIsProcessing(true);
     try {
-      const { error: dbError } = await supabase
-        .from('ai_tasks')
-        .insert({
-          task_id: crypto.randomUUID(),
-          type: 'chat',
-          prompt: input,
-          provider: 'assistant',
-          status: 'pending'
-        });
-
-      if (dbError) throw dbError;
-
+      // Here we'll integrate with the AI service to process the input
+      // and generate/update code based on the user's request
+      
       toast({
         title: "Processing request",
-        description: "Generating response...",
+        description: "Generating code preview...",
       });
 
+      // Simulated delay for demo purposes
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       toast({
-        title: "Response ready",
+        title: "Preview ready",
         description: "Check the preview panel to see the changes",
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: "Failed to process your request",
         variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
       setInput("");
-      onTypingChange?.(false);
     }
   };
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="glass-card p-6 space-y-6"
+    >
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold gradient-text">AI Assistant</h2>
+        <Button variant="ghost" size="icon" onClick={onClose}>
+          <X className="h-6 w-6" />
+        </Button>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -85,7 +67,7 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
             className="pl-10 pr-20"
             placeholder="What would you like me to help you with?"
             value={input}
-            onChange={(e) => handleInputChange(e.target.value)}
+            onChange={(e) => setInput(e.target.value)}
           />
           <Button 
             type="submit"
@@ -105,26 +87,9 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
             )}
           </Button>
         </div>
-
-        {suggestions.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-background/95 backdrop-blur-sm rounded-md border border-border">
-            {suggestions.map((suggestion, index) => (
-              <div
-                key={index}
-                className="p-2 hover:bg-accent cursor-pointer"
-                onClick={() => {
-                  setInput(suggestion.trigger[0]);
-                  handleCommand(suggestion.trigger[0], navigate);
-                }}
-              >
-                {suggestion.description}
-              </div>
-            ))}
-          </div>
-        )}
       </form>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <TaskCard
           icon={FileText}
           title="File Management"
@@ -141,7 +106,7 @@ export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITas
           description="Configure preview behavior"
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

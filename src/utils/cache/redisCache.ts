@@ -11,36 +11,8 @@ export const initializeRedis = async () => {
   try {
     await redisClient.connect();
     console.log('Redis client connected');
-    
-    // Initialize PubSub system
-    const subscriber = redisClient.duplicate();
-    await subscriber.connect();
-    
-    // Subscribe to backup channel for real-time features
-    await subscriber.subscribe('realtime-backup', (message) => {
-      try {
-        const data = JSON.parse(message);
-        handleRealtimeBackup(data);
-      } catch (error) {
-        console.error('Error processing backup message:', error);
-      }
-    });
-    
   } catch (error) {
     console.error('Redis connection error:', error);
-  }
-};
-
-const handleRealtimeBackup = async (data: any) => {
-  // Handle backup data if Supabase real-time fails
-  if (data.type === 'typing_status') {
-    try {
-      await supabase
-        .from('typing_status')
-        .upsert(data.payload);
-    } catch (error) {
-      console.error('Error processing backup typing status:', error);
-    }
   }
 };
 
