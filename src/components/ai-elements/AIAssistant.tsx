@@ -14,6 +14,7 @@ import { AudioControls } from './audio/AudioControls';
 import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Message } from '@/types/ai';
+import type { TypingStatus } from '@/types/realtime';
 
 export const AIAssistant = () => {
   const { initializeWorker, messages: queuedMessages, error } = useMessageQueue();
@@ -62,7 +63,7 @@ export const AIAssistant = () => {
           schema: 'public',
           table: 'typing_status'
         },
-        (payload) => {
+        (payload: { new: TypingStatus }) => {
           if (payload.new) {
             setTypingUsers(current => {
               const userId = payload.new.user_id;
