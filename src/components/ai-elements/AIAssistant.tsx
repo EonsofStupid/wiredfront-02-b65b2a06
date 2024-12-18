@@ -1,26 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import React, { useEffect, useState } from 'react';
 import { useMessageQueue } from '@/stores/messageQueue';
 import { useAIStore } from '@/stores/ai';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { AIResponse } from './AIResponse';
-import { AIInputForm } from './AIInputForm';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
-import { Loader2, WifiOff } from 'lucide-react';
-import type { AIMode } from '@/types/ai';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AIOptionsTab } from './AIOptionsTab';
+import { AIChatTab } from './AIChatTab';
 import type { TypingStatus, RealtimePayload } from '@/types/realtime';
 
 export const AIAssistant = () => {
   const { initializeWorker, messages, error } = useMessageQueue();
   const { toast } = useToast();
   const isVisible = useAIStore((state) => state.isVisible);
-  const parentRef = useRef<HTMLDivElement>(null);
   const isOnline = useOnlineStatus();
   const [input, setInput] = useState('');
-  const [mode, setMode] = useState<AIMode>('chat');
   const [isProcessing, setIsProcessing] = useState(false);
-  const pendingMessages = useRef<any[]>([]);
+  const pendingMessages = React.useRef<any[]>([]);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
   // Initialize message worker and real-time subscriptions
@@ -83,33 +79,6 @@ export const AIAssistant = () => {
     };
   }, [initializeWorker]);
 
-  const rowVirtualizer = useVirtualizer({
-    count: messages.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 50,
-    overscan: 5,
-  });
-
-  useEffect(() => {
-    if (error) {
-      const retryDelay = Math.min(1000 * Math.pow(2, pendingMessages.current.length), 30000);
-      
-      toast({
-        title: "Connection Error",
-        description: `Retrying in ${retryDelay / 1000} seconds...`,
-        variant: "destructive",
-      });
-
-      const timer = setTimeout(() => {
-        pendingMessages.current.forEach(msg => {
-          handleSubmit(msg);
-        });
-      }, retryDelay);
-
-      return () => clearTimeout(timer);
-    }
-  }, [error, toast]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -129,7 +98,7 @@ export const AIAssistant = () => {
         .from('ai_tasks')
         .insert({
           task_id: crypto.randomUUID(),
-          type: mode,
+          type: 'chat',
           prompt: input,
           provider: 'assistant',
           status: 'pending'
@@ -153,62 +122,30 @@ export const AIAssistant = () => {
 
   return (
     <div className="fixed bottom-20 right-4 w-96 h-[600px] bg-background/95 backdrop-blur-lg rounded-lg border border-border shadow-lg flex flex-col z-50">
-      <div className="p-4 border-b border-border flex items-center justify-between">
-        <h2 className="text-lg font-semibold">AI Assistant</h2>
-        {!isOnline && (
-          <div className="flex items-center gap-2 text-yellow-500">
-            <WifiOff className="w-4 h-4" />
-            <span className="text-sm">Offline Mode</span>
-          </div>
-        )}
-      </div>
-
-      {typingUsers.length > 0 && (
-        <div className="px-4 py-2 text-sm text-muted-foreground">
-          {typingUsers.length} user(s) typing...
+      <Tabs defaultValue="chat" className="flex-1 flex flex-col">
+        <div className="border-b border-border">
+          <TabsList className="w-full">
+            <TabsTrigger value="chat" className="flex-1">Chat</TabsTrigger>
+            <TabsTrigger value="options" className="flex-1">AI Options</TabsTrigger>
+          </TabsList>
         </div>
-      )}
 
-      <div 
-        ref={parentRef}
-        className="flex-1 overflow-auto flex flex-col-reverse"
-      >
-        <div
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            width: '100%',
-            position: 'relative',
-          }}
-        >
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-            <div
-              key={virtualRow.index}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
-              className="p-4"
-            >
-              <AIResponse response={messages[virtualRow.index].content} />
-            </div>
-          ))}
-        </div>
-      </div>
+        <TabsContent value="chat" className="flex-1 flex flex-col mt-0">
+          <AIChatTab
+            messages={messages}
+            input={input}
+            isProcessing={isProcessing}
+            isOnline={isOnline}
+            typingUsers={typingUsers}
+            onInputChange={setInput}
+            onSubmit={handleSubmit}
+          />
+        </TabsContent>
 
-      <div className="p-4 border-t border-border">
-        <AIInputForm 
-          input={input}
-          mode={mode}
-          isProcessing={isProcessing}
-          isOffline={!isOnline}
-          onInputChange={setInput}
-          onSubmit={handleSubmit}
-        />
-      </div>
+        <TabsContent value="options" className="mt-0">
+          <AIOptionsTab />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
