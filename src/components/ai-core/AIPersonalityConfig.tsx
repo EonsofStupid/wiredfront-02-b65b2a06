@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Brain, Code, User, Users } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/types/database/json";
 
 interface MemoryType {
   id: string;
@@ -19,11 +20,6 @@ interface PersonalitySettings {
   friendliness: number;
   assertiveness: number;
   technicalDetail: number;
-}
-
-interface AISettingsMetadata {
-  personality?: PersonalitySettings;
-  memoryTypes?: MemoryType[];
 }
 
 export const AIPersonalityConfig = () => {
@@ -52,19 +48,21 @@ export const AIPersonalityConfig = () => {
 
       const { data, error } = await supabase
         .from('ai_settings')
-        .select('metadata')
+        .select('value')
         .eq('user_id', session.user.id)
+        .eq('key', 'personality_settings')
         .single();
 
       if (error) throw error;
 
-      const metadata = data?.metadata as AISettingsMetadata;
-      
-      if (metadata?.personality) {
-        setPersonality(metadata.personality);
-      }
-      if (metadata?.memoryTypes) {
-        setMemoryTypes(metadata.memoryTypes);
+      if (data?.value) {
+        const settings = data.value as { personality: PersonalitySettings; memoryTypes: MemoryType[] };
+        if (settings.personality) {
+          setPersonality(settings.personality);
+        }
+        if (settings.memoryTypes) {
+          setMemoryTypes(settings.memoryTypes);
+        }
       }
     } catch (error) {
       console.error('Error loading AI settings:', error);
@@ -87,8 +85,8 @@ export const AIPersonalityConfig = () => {
         key: 'personality_settings',
         user_id: session.user.id,
         value: {
-          personality,
-          memoryTypes,
+          personality: personality as Json,
+          memoryTypes: memoryTypes as Json,
         },
         metadata: {
           lastUpdated: new Date().toISOString(),

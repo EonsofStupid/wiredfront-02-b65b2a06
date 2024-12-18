@@ -61,7 +61,7 @@ export const AIAssistant = () => {
         .from('ai_settings')
         .select('provider')
         .eq('user_id', session.user.id)
-        .eq('is_active', true);
+        .not('api_key', 'is', null);
 
       if (error) throw error;
 
