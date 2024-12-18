@@ -2,48 +2,82 @@ import { motion } from "framer-motion";
 import { X, Search, FileText, Settings, Terminal, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { handleCommand, getSuggestions } from "@/utils/ai/commandHandler";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AITaskPanelProps {
   onClose: () => void;
+  typingUsers?: string[];
+  onTypingChange?: (isTyping: boolean) => void;
 }
 
-export const AITaskPanel = ({ onClose }: AITaskPanelProps) => {
+export const AITaskPanel = ({ onClose, typingUsers = [], onTypingChange }: AITaskPanelProps) => {
   const [input, setInput] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [suggestions, setSuggestions] = useState([]);
+
+  // Handle input changes and typing status
+  const handleInputChange = (value: string) => {
+    setInput(value);
+    onTypingChange?.(value.length > 0);
+    
+    // Update command suggestions
+    const newSuggestions = getSuggestions(value);
+    setSuggestions(newSuggestions);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
+    // First check if it's a command
+    if (handleCommand(input, navigate)) {
+      setInput("");
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      // Here we'll integrate with the AI service to process the input
-      // and generate/update code based on the user's request
-      
+      // Store the interaction in the database
+      const { error: dbError } = await supabase
+        .from('ai_tasks')
+        .insert({
+          task_id: crypto.randomUUID(),
+          type: 'chat',
+          prompt: input,
+          provider: 'assistant',
+          status: 'pending'
+        });
+
+      if (dbError) throw dbError;
+
       toast({
         title: "Processing request",
-        description: "Generating code preview...",
+        description: "Generating response...",
       });
 
-      // Simulated delay for demo purposes
+      // Process the request
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       toast({
-        title: "Preview ready",
+        title: "Response ready",
         description: "Check the preview panel to see the changes",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to process your request",
+        description: error.message,
         variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
       setInput("");
+      onTypingChange?.(false);
     }
   };
 
@@ -60,6 +94,12 @@ export const AITaskPanel = ({ onClose }: AITaskPanelProps) => {
         </Button>
       </div>
 
+      {typingUsers.length > 0 && (
+        <div className="text-sm text-gray-400">
+          {typingUsers.length} user(s) typing...
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -67,7 +107,7 @@ export const AITaskPanel = ({ onClose }: AITaskPanelProps) => {
             className="pl-10 pr-20"
             placeholder="What would you like me to help you with?"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => handleInputChange(e.target.value)}
           />
           <Button 
             type="submit"
@@ -87,6 +127,23 @@ export const AITaskPanel = ({ onClose }: AITaskPanelProps) => {
             )}
           </Button>
         </div>
+
+        {suggestions.length > 0 && (
+          <div className="absolute z-10 w-full mt-1 bg-background/95 backdrop-blur-sm rounded-md border border-border">
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                className="p-2 hover:bg-accent cursor-pointer"
+                onClick={() => {
+                  setInput(suggestion.trigger[0]);
+                  handleCommand(suggestion.trigger[0], navigate);
+                }}
+              >
+                {suggestion.description}
+              </div>
+            ))}
+          </div>
+        )}
       </form>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
