@@ -6,8 +6,17 @@ import { DataStream } from "@/components/ai-elements/DataStream";
 import { HeroSection } from "@/components/index/HeroSection";
 import { AICore } from "@/components/ai-core/AICore";
 import { features } from "@/data/features";
+import { useEffect } from "react";
+import { useMessageBuffer } from "@/services/messageBuffer";
 
 const Index = () => {
+  const initializeWorker = useMessageBuffer((state) => state.initializeWorker);
+
+  useEffect(() => {
+    // Initialize the message worker when the component mounts
+    initializeWorker();
+  }, [initializeWorker]);
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Background layers */}
