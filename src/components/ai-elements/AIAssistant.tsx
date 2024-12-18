@@ -10,13 +10,10 @@ import { AICore } from '@/components/ai-core/AICore';
 import { AIChat } from './chat/AIChat';
 import { AIAudioControls } from './audio/AIAudioControls';
 import { AIOptions } from './options/AIOptions';
-import type { Message } from '@/types/ai';
-import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
-import type { TypingStatus } from '@/types/realtime';
+import { toast } from '@/components/ui/use-toast';
 
 export const AIAssistant = () => {
-  const { initializeWorker, messages: queuedMessages, error } = useMessageQueue();
-  const { toast } = useToast();
+  const { initializeWorker, messages: queuedMessages } = useMessageQueue();
   const isVisible = useAIStore((state) => state.isVisible);
   const isOnline = useOnlineStatus();
   const [input, setInput] = useState('');
@@ -52,9 +49,9 @@ export const AIAssistant = () => {
               table: 'typing_status',
               filter: `chat_id=eq.${session.user.id}`
             },
-            (payload: RealtimePostgresChangesPayload<TypingStatus>) => {
+            (payload) => {
               if (payload.new && 'user_id' in payload.new) {
-                const { user_id, is_typing } = payload.new;
+                const { user_id, is_typing } = payload.new as any;
                 setTypingUsers(current => {
                   if (is_typing && !current.includes(user_id)) {
                     return [...current, user_id];
@@ -64,25 +61,6 @@ export const AIAssistant = () => {
                   return current;
                 });
               }
-            }
-          )
-          .subscribe();
-
-        // Set up Discord logs channel
-        const logsChannel = supabase.channel('discord-logs')
-          .on(
-            'postgres_changes',
-            {
-              event: 'INSERT',
-              schema: 'public',
-              table: 'discord_bot_logs'
-            },
-            (payload) => {
-              console.log('New Discord log:', payload);
-              toast({
-                title: "New Discord Log",
-                description: payload.new.message,
-              });
             }
           )
           .subscribe();
@@ -98,15 +76,19 @@ export const AIAssistant = () => {
         return () => {
           supabase.removeChannel(presenceChannel);
           supabase.removeChannel(typingChannel);
-          supabase.removeChannel(logsChannel);
         };
       } catch (error) {
         console.error('Error setting up realtime channels:', error);
+        toast({
+          title: "Error",
+          description: "Failed to initialize AI Assistant channels",
+          variant: "destructive"
+        });
       }
     };
 
     setupRealtimeChannels();
-  }, [initializeWorker, toast]);
+  }, []);
 
   const handleDragEnd = (event: DragEndEvent) => {
     setIsDragging(false);
@@ -138,7 +120,32 @@ export const AIAssistant = () => {
         onDragStart={() => setIsDragging(true)}
         onDragEnd={() => setIsDragging(false)}
       >
-        <AICore />
+        <div className="flex-1 overflow-hidden">
+          <AICore />
+        </div>
+        
+        <div className="p-4 border-t border-border">
+          <AIChat 
+            messages={queuedMessages}
+            onSendMessage={(message) => {
+              console.log('Sending message:', message);
+              // Implement message sending logic
+            }}
+          />
+          <div className="flex justify-between items-center mt-4">
+            <AIAudioControls 
+              onStartRecording={() => console.log('Start recording')}
+              onStopRecording={() => console.log('Stop recording')}
+            />
+            <AIOptions 
+              enabled={isVisible}
+              onToggle={(enabled) => {
+                console.log('AI toggled:', enabled);
+                // Implement toggle logic
+              }}
+            />
+          </div>
+        </div>
       </motion.div>
     </DndContext>
   );
