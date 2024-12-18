@@ -15,9 +15,20 @@ interface MemoryType {
   enabled: boolean;
 }
 
+interface PersonalitySettings {
+  friendliness: number;
+  assertiveness: number;
+  technicalDetail: number;
+}
+
+interface AISettingsMetadata {
+  personality?: PersonalitySettings;
+  memoryTypes?: MemoryType[];
+}
+
 export const AIPersonalityConfig = () => {
   const { toast } = useToast();
-  const [personality, setPersonality] = useState({
+  const [personality, setPersonality] = useState<PersonalitySettings>({
     friendliness: 50,
     assertiveness: 30,
     technicalDetail: 70,
@@ -47,11 +58,13 @@ export const AIPersonalityConfig = () => {
 
       if (error) throw error;
 
-      if (data?.metadata?.personality) {
-        setPersonality(data.metadata.personality);
+      const metadata = data?.metadata as AISettingsMetadata;
+      
+      if (metadata?.personality) {
+        setPersonality(metadata.personality);
       }
-      if (data?.metadata?.memoryTypes) {
-        setMemoryTypes(data.metadata.memoryTypes);
+      if (metadata?.memoryTypes) {
+        setMemoryTypes(metadata.memoryTypes);
       }
     } catch (error) {
       console.error('Error loading AI settings:', error);
@@ -70,14 +83,16 @@ export const AIPersonalityConfig = () => {
         return;
       }
 
+      const metadata: AISettingsMetadata = {
+        personality,
+        memoryTypes,
+      };
+
       const { error } = await supabase
         .from('ai_settings')
         .upsert({
           user_id: session.user.id,
-          metadata: {
-            personality,
-            memoryTypes,
-          }
+          metadata: metadata as any // Type assertion needed due to Supabase's Json type limitations
         });
 
       if (error) throw error;
