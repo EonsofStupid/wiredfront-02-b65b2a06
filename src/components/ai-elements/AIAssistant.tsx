@@ -4,16 +4,22 @@ import { useAIStore } from '@/stores/ai';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Volume2, MessageSquare, Settings, Cpu, Mic, MicOff } from "lucide-react";
+import { AIOptionsTab } from './AIOptionsTab';
+import { AIChatTab } from './AIChatTab';
+import { AICore } from '@/components/ai-core/AICore';
+import { ChatInput } from './chat/ChatInput';
+import { AudioControls } from './audio/AudioControls';
 import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AICore } from '@/components/ai-core/AICore';
-import { AIChat } from './chat/AIChat';
-import { AIAudioControls } from './audio/AIAudioControls';
-import { AIOptions } from './options/AIOptions';
-import { toast } from '@/components/ui/use-toast';
+import type { Message } from '@/types/ai';
+import type { TypingStatus } from '@/types/realtime';
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 export const AIAssistant = () => {
-  const { initializeWorker, messages: queuedMessages } = useMessageQueue();
+  const { initializeWorker, messages: queuedMessages, error } = useMessageQueue();
+  const { toast } = useToast();
   const isVisible = useAIStore((state) => state.isVisible);
   const isOnline = useOnlineStatus();
   const [input, setInput] = useState('');
@@ -22,73 +28,63 @@ export const AIAssistant = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
 
+  // Configure DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      activationConstraint: {
+        distance: 8,
+      },
     })
   );
+
+  // Convert QueuedMessages to Messages
+  const messages: Message[] = queuedMessages.map(qm => ({
+    id: qm.id,
+    content: qm.content,
+    role: 'assistant',
+    timestamp: qm.timestamp
+  }));
 
   useEffect(() => {
     initializeWorker();
 
-    const setupRealtimeChannels = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
+    const channel = supabase.channel('ai-assistant')
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        console.log('Presence state:', state);
+      })
+      .subscribe();
 
-        // Set up realtime presence channel
-        const presenceChannel = supabase.channel('ai-assistant-presence');
-        
-        // Set up typing status channel
-        const typingChannel = supabase.channel('typing-status')
-          .on(
-            'postgres_changes',
-            {
-              event: '*',
-              schema: 'public',
-              table: 'typing_status',
-              filter: `chat_id=eq.${session.user.id}`
-            },
-            (payload) => {
-              if (payload.new && 'user_id' in payload.new) {
-                const { user_id, is_typing } = payload.new as any;
-                setTypingUsers(current => {
-                  if (is_typing && !current.includes(user_id)) {
-                    return [...current, user_id];
-                  } else if (!is_typing) {
-                    return current.filter(id => id !== user_id);
-                  }
-                  return current;
-                });
+    const typingChannel = supabase
+      .channel('typing-status')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'typing_status'
+        },
+        (payload: RealtimePostgresChangesPayload<TypingStatus>) => {
+          if (payload.new) {
+            setTypingUsers(current => {
+              const userId = payload.new.user_id;
+              if (payload.new.is_typing && !current.includes(userId)) {
+                return [...current, userId];
+              } else if (!payload.new.is_typing) {
+                return current.filter(id => id !== userId);
               }
-            }
-          )
-          .subscribe();
+              return current;
+            });
+          }
+        }
+      )
+      .subscribe();
 
-        // Subscribe to presence channel
-        presenceChannel
-          .on('presence', { event: 'sync' }, () => {
-            const state = presenceChannel.presenceState();
-            console.log('Presence state:', state);
-          })
-          .subscribe();
-
-        return () => {
-          supabase.removeChannel(presenceChannel);
-          supabase.removeChannel(typingChannel);
-        };
-      } catch (error) {
-        console.error('Error setting up realtime channels:', error);
-        toast({
-          title: "Error",
-          description: "Failed to initialize AI Assistant channels",
-          variant: "destructive"
-        });
-      }
+    return () => {
+      supabase.removeChannel(channel);
+      supabase.removeChannel(typingChannel);
     };
-
-    setupRealtimeChannels();
-  }, []);
+  }, [initializeWorker]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     setIsDragging(false);
@@ -112,7 +108,9 @@ export const AIAssistant = () => {
           y: position.y,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="fixed bottom-20 right-4 w-96 h-[600px] bg-background/95 backdrop-blur-lg rounded-lg border border-border shadow-lg flex flex-col z-50 overflow-hidden"
+        className={`fixed bottom-20 right-4 w-96 h-[600px] bg-background/95 backdrop-blur-lg rounded-lg border border-border shadow-lg flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:border-primary/20 ${
+          isDragging ? 'cursor-grabbing neon-glow' : 'cursor-grab'
+        }`}
         drag
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
         dragElastic={0.1}
@@ -120,32 +118,70 @@ export const AIAssistant = () => {
         onDragStart={() => setIsDragging(true)}
         onDragEnd={() => setIsDragging(false)}
       >
-        <div className="flex-1 overflow-hidden">
-          <AICore />
-        </div>
-        
-        <div className="p-4 border-t border-border">
-          <AIChat 
-            messages={queuedMessages}
-            onSendMessage={(message) => {
-              console.log('Sending message:', message);
-              // Implement message sending logic
-            }}
-          />
-          <div className="flex justify-between items-center mt-4">
-            <AIAudioControls 
-              onStartRecording={() => console.log('Start recording')}
-              onStopRecording={() => console.log('Stop recording')}
-            />
-            <AIOptions 
-              enabled={isVisible}
-              onToggle={(enabled) => {
-                console.log('AI toggled:', enabled);
-                // Implement toggle logic
+        <Tabs defaultValue="chat" className="flex-1 flex flex-col">
+          <div className="border-b border-border bg-gradient-to-r from-background/50 to-background/80">
+            <TabsList className="w-full">
+              <TabsTrigger value="chat" className="flex-1 gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Chat
+              </TabsTrigger>
+              <TabsTrigger value="audio" className="flex-1 gap-2">
+                <Volume2 className="w-4 h-4" />
+                Audio
+              </TabsTrigger>
+              <TabsTrigger value="options" className="flex-1 gap-2">
+                <Settings className="w-4 h-4" />
+                Options
+              </TabsTrigger>
+              <TabsTrigger value="core" className="flex-1 gap-2">
+                <Cpu className="w-4 h-4" />
+                Core
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="chat" className="flex-1 flex flex-col mt-0">
+            <AIChatTab
+              messages={messages}
+              input={input}
+              isProcessing={isProcessing}
+              isOnline={isOnline}
+              typingUsers={typingUsers}
+              onInputChange={setInput}
+              onSubmit={(e) => {
+                e.preventDefault();
+                // Handle chat submission
               }}
             />
-          </div>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="audio" className="mt-0 p-4 space-y-4">
+            <div className="glass-card p-4 space-y-4 rounded-lg border border-border/50">
+              <h3 className="text-lg font-semibold">Voice Controls</h3>
+              <AudioControls
+                onTranscript={(text) => setInput(text)}
+                currentMessage={input}
+              />
+              <ChatInput
+                input={input}
+                isProcessing={isProcessing}
+                onInputChange={setInput}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  // Handle audio submission
+                }}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="options" className="mt-0">
+            <AIOptionsTab />
+          </TabsContent>
+
+          <TabsContent value="core" className="mt-0 flex-1">
+            <AICore />
+          </TabsContent>
+        </Tabs>
       </motion.div>
     </DndContext>
   );

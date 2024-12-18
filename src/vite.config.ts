@@ -5,28 +5,21 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: true,
+    host: "::",
     port: 8080,
     watch: {
       usePolling: true,
     },
     hmr: {
-      clientPort: 443,
-      host: process.env.VITE_HMR_HOST || undefined,
-      protocol: 'wss',
-      timeout: 120000,
-      overlay: true
+      overlay: true,
+      clientPort: 8080,
+      host: 'localhost'
     },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-        ws: true
-      },
-      '/ws': {
-        target: 'ws://localhost:3000',
-        ws: true
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   },
@@ -42,11 +35,7 @@ export default defineConfig(({ mode }) => ({
   preview: {
     port: 8081,
     strictPort: true,
-    host: true,
-    hmr: {
-      clientPort: 443,
-      protocol: 'wss'
-    }
+    host: 'localhost',
   },
   build: {
     sourcemap: true,
