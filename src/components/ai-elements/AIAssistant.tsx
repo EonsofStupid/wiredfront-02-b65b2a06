@@ -9,7 +9,7 @@ import { Volume2, MessageSquare, Settings, Cpu } from "lucide-react";
 import { AIOptionsTab } from './AIOptionsTab';
 import { AIChatTab } from './AIChatTab';
 import { AICore } from '@/components/ai-core/AICore';
-import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { ChatInput } from './chat/ChatInput';
 import type { Message } from '@/types/ai';
 import type { TypingStatus, RealtimePayload } from '@/types/realtime';
 
@@ -20,7 +20,6 @@ export const AIAssistant = () => {
   const isOnline = useOnlineStatus();
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const pendingMessages = React.useRef<any[]>([]);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
   // Convert QueuedMessages to Messages
@@ -31,35 +30,16 @@ export const AIAssistant = () => {
     timestamp: qm.timestamp
   }));
 
-  // Initialize message worker and real-time subscriptions
   useEffect(() => {
     initializeWorker();
 
-    // Set up real-time presence channel
     const channel = supabase.channel('ai-assistant')
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
         console.log('Presence state:', state);
       })
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('Join:', key, newPresences);
-      })
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        console.log('Leave:', key, leftPresences);
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            await channel.track({
-              user_id: user.id,
-              online_at: new Date().toISOString(),
-            });
-          }
-        }
-      });
+      .subscribe();
 
-    // Listen for typing status changes
     const typingChannel = supabase
       .channel('typing-status')
       .on(
@@ -98,7 +78,6 @@ export const AIAssistant = () => {
     setIsProcessing(true);
     try {
       if (!isOnline) {
-        pendingMessages.current.push(input);
         toast({
           title: "Offline Mode",
           description: "Message will be sent when connection is restored",
@@ -129,8 +108,6 @@ export const AIAssistant = () => {
       setIsProcessing(false);
     }
   };
-
-  const { speak, isLoading: isSpeaking } = useTextToSpeech();
 
   if (!isVisible) return null;
 
@@ -172,19 +149,13 @@ export const AIAssistant = () => {
 
         <TabsContent value="audio" className="mt-0 p-4 space-y-4">
           <div className="glass-card p-4 space-y-4 rounded-lg border border-border/50">
-            <h3 className="text-lg font-semibold">Text to Speech</h3>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
-                {isSpeaking ? 'Speaking...' : 'Ready to speak'}
-              </span>
-              <button
-                onClick={() => speak(messages[messages.length - 1]?.content || '')}
-                disabled={isSpeaking || !messages.length}
-                className="px-4 py-2 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50"
-              >
-                {isSpeaking ? 'Speaking...' : 'Speak Last Message'}
-              </button>
-            </div>
+            <h3 className="text-lg font-semibold">Voice Controls</h3>
+            <ChatInput
+              input={input}
+              isProcessing={isProcessing}
+              onInputChange={setInput}
+              onSubmit={handleSubmit}
+            />
           </div>
         </TabsContent>
 
