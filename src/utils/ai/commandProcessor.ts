@@ -8,6 +8,127 @@ export type CommandContext = {
   userId?: string;
 };
 
+const handleNavigationCommand = (input: string, navigate: NavigateFunction): CommandResult => {
+  const path = input.toLowerCase().replace(/go to|navigate to/g, '').trim();
+  const routes = {
+    'home': '/',
+    'dashboard': '/dashboard',
+    'settings': '/settings',
+    'profile': '/profile',
+  };
+
+  const targetPath = routes[path as keyof typeof routes];
+  if (targetPath) {
+    navigate(targetPath);
+    return {
+      success: true,
+      message: `Navigating to ${path}...`,
+    };
+  }
+
+  return {
+    success: false,
+    message: "I couldn't find that page. Try 'go to dashboard' or 'go to settings'.",
+  };
+};
+
+const handleTaskCreation = async (input: string, userId?: string): Promise<CommandResult> => {
+  if (!userId) {
+    return {
+      success: false,
+      message: "You need to be logged in to create tasks.",
+    };
+  }
+
+  const taskDescription = input.replace(/create task|new task/gi, '').trim();
+  
+  const { data, error } = await supabase
+    .from('ai_tasks')
+    .insert({
+      prompt: taskDescription,
+      type: 'automation',
+      provider: 'gemini',
+      status: 'pending',
+      user_id: userId,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return {
+      success: false,
+      message: "Failed to create the task. Please try again.",
+    };
+  }
+
+  return {
+    success: true,
+    message: `Task created: ${taskDescription}`,
+    data: data,
+  };
+};
+
+const handleFileOperation = async (input: string, userId?: string): Promise<CommandResult> => {
+  if (!userId) {
+    return {
+      success: false,
+      message: "You need to be logged in to perform file operations.",
+    };
+  }
+
+  const isCreate = input.includes('create file');
+  const operation = isCreate ? 'create' : 'edit';
+  const filePath = input.replace(/(create|edit) file/gi, '').trim();
+
+  const { data, error } = await supabase
+    .from('file_operations')
+    .insert({
+      file_path: filePath,
+      operation_type: operation,
+      user_id: userId,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return {
+      success: false,
+      message: "Failed to process file operation. Please try again.",
+    };
+  }
+
+  return {
+    success: true,
+    message: `File operation started: ${operation} ${filePath}`,
+    data: data,
+  };
+};
+
+const handleSettingsCommand = async (
+  input: string,
+  context: CommandContext
+): Promise<CommandResult> => {
+  if (!context.userId) {
+    return {
+      success: false,
+      message: "You need to be logged in to manage settings.",
+    };
+  }
+
+  if (input.includes('settings')) {
+    context.navigate('/settings');
+    return {
+      success: true,
+      message: "Opening settings page...",
+    };
+  }
+
+  return {
+    success: false,
+    message: "I'm not sure what settings you want to manage. Try being more specific.",
+  };
+};
+
 export const processAICommand = async (
   input: string,
   context: CommandContext

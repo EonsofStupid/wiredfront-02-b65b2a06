@@ -86,10 +86,9 @@ export const setupDevEnvironment = async (
     const { error: taskError } = await supabase
       .from('ai_tasks')
       .insert({
-        task_id: crypto.randomUUID(),
-        type: 'environment_setup',
         prompt: 'Setup development environment',
-        provider: 'system',
+        type: 'automation',
+        provider: 'gemini',
         status: 'processing',
         priority: 1,
         metadata: {
@@ -97,6 +96,7 @@ export const setupDevEnvironment = async (
           components: ['typescript', 'vite', 'tailwind', 'shadcn'],
           previousStatus: currentStatus,
         },
+        user_id: userId,
       });
 
     if (taskError) throw taskError;
