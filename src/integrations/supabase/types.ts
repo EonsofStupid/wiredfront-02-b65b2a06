@@ -505,6 +505,75 @@ export type Database = {
         }
         Relationships: []
       }
+      file_operations: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          file_path: string
+          id: string
+          metadata: Json | null
+          operation_type: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          file_path: string
+          id?: string
+          metadata?: Json | null
+          operation_type: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          file_path?: string
+          id?: string
+          metadata?: Json | null
+          operation_type?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      github_integration: {
+        Row: {
+          auth_token: string | null
+          auto_sync: boolean | null
+          branch_name: string | null
+          created_at: string | null
+          id: string
+          repository_url: string | null
+          sync_frequency: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          auth_token?: string | null
+          auto_sync?: boolean | null
+          branch_name?: string | null
+          created_at?: string | null
+          id?: string
+          repository_url?: string | null
+          sync_frequency?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          auth_token?: string | null
+          auto_sync?: boolean | null
+          branch_name?: string | null
+          created_at?: string | null
+          id?: string
+          repository_url?: string | null
+          sync_frequency?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       layout_preferences: {
         Row: {
           bottom_bar_visible: boolean | null
@@ -613,6 +682,39 @@ export type Database = {
           setup_status?: Database["public"]["Enums"]["setup_status"] | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      testing_environments: {
+        Row: {
+          created_at: string | null
+          docker_config: Json | null
+          environment_name: string
+          framework: string
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          docker_config?: Json | null
+          environment_name: string
+          framework: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          docker_config?: Json | null
+          environment_name?: string
+          framework?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

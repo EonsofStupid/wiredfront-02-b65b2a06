@@ -1,6 +1,7 @@
 import { NavigateFunction } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { AICommand, CommandResult } from "@/types/ai";
+import { checkDevEnvironment, setupDevEnvironment } from "./devEnvironment";
 
 export type CommandContext = {
   navigate: NavigateFunction;
@@ -14,6 +15,13 @@ export const processAICommand = async (
   // Normalize input
   const normalizedInput = input.toLowerCase().trim();
   
+  // Check for development environment commands
+  if (normalizedInput.includes("check environment") || 
+      normalizedInput.includes("setup environment") ||
+      normalizedInput.includes("dev environment")) {
+    return handleDevEnvironment(normalizedInput, context.userId);
+  }
+
   // Check for navigation commands
   if (normalizedInput.includes("go to") || normalizedInput.includes("navigate to")) {
     return handleNavigationCommand(normalizedInput, context.navigate);
@@ -40,110 +48,71 @@ export const processAICommand = async (
   };
 };
 
-const handleNavigationCommand = async (
-  input: string,
-  navigate: NavigateFunction
-): Promise<CommandResult> => {
-  const routes = {
-    "dashboard": "/dashboard",
-    "settings": "/settings",
-    "files": "/files",
-    "profile": "/profile",
-    "home": "/"
-  };
-
-  for (const [key, path] of Object.entries(routes)) {
-    if (input.includes(key)) {
-      navigate(path);
-      return {
-        success: true,
-        message: `Navigating to ${key}`,
-      };
-    }
-  }
-
-  return {
-    success: false,
-    message: "I couldn't determine where to navigate to. Please specify a valid page.",
-  };
-};
-
-const handleTaskCreation = async (
+const handleDevEnvironment = async (
   input: string,
   userId?: string
 ): Promise<CommandResult> => {
   if (!userId) {
     return {
       success: false,
-      message: "You need to be logged in to create tasks.",
+      message: "You need to be logged in to manage development environments.",
     };
   }
 
   try {
-    const { error } = await supabase
-      .from('ai_tasks')
-      .insert({
-        task_id: crypto.randomUUID(),
-        type: 'automation',
-        prompt: input,
-        provider: 'gemini',
-        status: 'pending',
-        user_id: userId
-      });
+    // First, check if we need to evaluate or setup the environment
+    const isCheckOnly = input.includes("check");
+    
+    // Get current environment status
+    const envStatus = await checkDevEnvironment(userId);
+    
+    if (isCheckOnly) {
+      return {
+        success: true,
+        message: generateEnvironmentStatusMessage(envStatus),
+      };
+    }
 
-    if (error) throw error;
+    // If environment is incomplete or setup is explicitly requested, proceed with setup
+    if (!envStatus.isComplete) {
+      const setupResult = await setupDevEnvironment(userId, envStatus);
+      return {
+        success: true,
+        message: `I've started setting up your development environment:\n${setupResult.message}`,
+      };
+    }
 
     return {
       success: true,
-      message: "Task created successfully. I'll start working on it right away.",
+      message: "Your development environment is already set up and ready to go!",
     };
   } catch (error) {
-    console.error('Error creating task:', error);
+    console.error('Error managing dev environment:', error);
     return {
       success: false,
-      message: "Failed to create the task. Please try again.",
+      message: "Failed to manage the development environment. Please try again.",
     };
   }
 };
 
-const handleFileOperation = async (
-  input: string,
-  userId?: string
-): Promise<CommandResult> => {
-  if (!userId) {
-    return {
-      success: false,
-      message: "You need to be logged in to perform file operations.",
-    };
-  }
-
-  // Implementation for file operations will go here
-  return {
-    success: true,
-    message: "File operation command received. This feature is coming soon.",
-  };
-};
-
-const handleSettingsCommand = async (
-  input: string,
-  context: CommandContext
-): Promise<CommandResult> => {
-  if (input.includes("ai") || input.includes("assistant")) {
-    context.navigate("/settings");
-    setTimeout(() => {
-      const aiTab = document.querySelector('[value="ai"]');
-      if (aiTab instanceof HTMLElement) {
-        aiTab.click();
-      }
-    }, 100);
-    return {
-      success: true,
-      message: "Opening AI settings...",
-    };
-  }
-
-  return {
-    success: false,
-    message: "Please specify which settings you'd like to configure.",
-  };
+const generateEnvironmentStatusMessage = (status: any) => {
+  const messages = [];
+  messages.push("Here's your current development environment status:");
+  
+  if (status.typescript) messages.push("✅ TypeScript is configured");
+  else messages.push("❌ TypeScript needs to be configured");
+  
+  if (status.vite) messages.push("✅ Vite is set up");
+  else messages.push("❌ Vite needs to be installed");
+  
+  if (status.tailwind) messages.push("✅ Tailwind CSS is installed");
+  else messages.push("❌ Tailwind CSS needs to be configured");
+  
+  if (status.shadcn) messages.push("✅ shadcn/ui is available");
+  else messages.push("❌ shadcn/ui needs to be installed");
+  
+  if (status.livePreview) messages.push("✅ Live preview is working");
+  else messages.push("❌ Live preview needs to be configured");
+  
+  return messages.join("\n");
 };
