@@ -10,6 +10,10 @@ export default defineConfig(({ mode }) => ({
     watch: {
       usePolling: true,
     },
+    hmr: {
+      overlay: true,
+      clientPort: 8080
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
@@ -26,6 +30,11 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  preview: {
+    port: 8081,
+    strictPort: true,
+    open: true,
   },
   build: {
     sourcemap: true,
