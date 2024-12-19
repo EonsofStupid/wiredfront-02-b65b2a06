@@ -2,15 +2,16 @@ import React, { useEffect, useState, StrictMode } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { MobileAwareLayout } from "@/components/layout/MobileAppLayout";
+import Dashboard from "@/pages/Dashboard";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Profile from "@/pages/Profile";
 import Index from "@/pages/Index";
-import DevPreview from "@/pages/DevPreview";
 import { FileManager } from "@/components/file/FileManager";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { useLayoutStore } from "@/stores";
+import { LivePreview } from "@/components/preview/LivePreview";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
@@ -61,9 +62,8 @@ function App() {
             <Routes>
               <Route 
                 path="/login" 
-                element={isAuthenticated ? <Navigate to="/files" /> : <Login />} 
+                element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} 
               />
-              <Route path="/preview" element={<DevPreview />} />
               <Route
                 path="/"
                 element={
@@ -76,12 +76,14 @@ function App() {
                   )
                 }
               >
-                <Route index element={<Navigate to="/files" />} />
-                <Route path="settings/*" element={<Settings />} />
+                <Route index element={<Index />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="files" element={<FileManager />} />
               </Route>
             </Routes>
+            <LivePreview />
             <Toaster />
           </Router>
         </SettingsProvider>

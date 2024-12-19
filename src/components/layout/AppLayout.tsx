@@ -46,9 +46,9 @@ export const AppLayout = () => {
             </ResizablePanel>
             {sidebarOpen && <ResizableHandle />}
             <ResizablePanel>
-              <div className="content-wrapper">
+              <main className="h-full overflow-auto p-4">
                 <Outlet />
-              </div>
+              </main>
             </ResizablePanel>
             {rightSidebarOpen && <ResizableHandle />}
             {rightSidebarOpen && (

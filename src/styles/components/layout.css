@@ -25,19 +25,13 @@
   }
 
   .status-bar {
-    @apply fixed bottom-0 left-0 right-0 h-8 z-30;
-    width: 100vw;
+    @apply fixed bottom-0 left-0 right-0 h-8 z-30 w-full;
   }
 
   /* Main content area */
   .main-content {
-    @apply flex-1 overflow-hidden relative mt-16 mb-8;
+    @apply flex-1 overflow-auto relative mt-16 mb-8;
     height: calc(100vh - theme('spacing.16') - theme('spacing.8'));
-  }
-
-  .content-wrapper {
-    @apply h-full overflow-auto;
-    padding-bottom: theme('spacing.8'); /* Ensure content doesn't get cut off by status bar */
   }
 
   /* Button effects - consistent across all bars */

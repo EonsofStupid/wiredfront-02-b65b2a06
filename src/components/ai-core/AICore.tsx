@@ -8,9 +8,6 @@ import { AIPermissions } from "./AIPermissions";
 import { supabase } from "@/integrations/supabase/client";
 import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { useMessageBuffer } from "@/services/messageBuffer";
 
 const MemoizedPreview = memo(({ url }: { url: string }) => (
   <iframe
@@ -23,16 +20,14 @@ const MemoizedPreview = memo(({ url }: { url: string }) => (
 export const AICore = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [visualEffects, setVisualEffects] = useState<any>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('http://localhost:8081');
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const initializeWorker = useMessageBuffer((state) => state.initializeWorker);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   // Configure DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 8, // 8px movement threshold before drag starts
       },
     })
   );
@@ -63,44 +58,7 @@ export const AICore = () => {
 
   useEffect(() => {
     fetchVisualEffects();
-    initializeWorker();
-
-    // Set up real-time message subscription
-    const channel = supabase
-      .channel('ai_messages')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'ai_messages'
-        },
-        (payload) => {
-          console.log('Real-time message update:', payload);
-          // Handle message updates through the message buffer
-          if (payload.eventType === 'INSERT') {
-            useMessageBuffer.getState().addMessage({
-              id: payload.new.id,
-              content: payload.new.content,
-              timestamp: new Date(payload.new.created_at).getTime()
-            });
-          }
-        }
-      )
-      .subscribe();
-
-    // Online/offline detection
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      supabase.removeChannel(channel);
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [fetchVisualEffects, initializeWorker]);
+  }, [fetchVisualEffects]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -130,10 +88,6 @@ export const AICore = () => {
     return styles;
   }, [visualEffects]);
 
-  const handlePreviewClick = () => {
-    window.open('/preview', '_blank');
-  };
-
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <AnimatePresence mode="wait">
@@ -150,19 +104,27 @@ export const AICore = () => {
             className="fixed inset-0 z-50 bg-dark/80 backdrop-blur-sm"
           >
             <div className="container mx-auto h-full p-6 flex flex-col md:flex-row gap-4" style={getEffectStyles()}>
-              <div className="w-full flex flex-col">
-                <AITaskPanel 
-                  onClose={() => setIsExpanded(false)} 
-                  isOnline={isOnline}
-                />
+              <div className="w-full md:w-1/2 flex flex-col">
+                <AITaskPanel onClose={() => setIsExpanded(false)} />
                 <AIPersonalityConfig />
                 <AIPermissions />
-                <Button 
-                  onClick={handlePreviewClick}
-                  className="mt-4 bg-purple-500 hover:bg-purple-600"
-                >
-                  Open Preview Panel
-                </Button>
+              </div>
+              
+              <div className="w-full md:w-1/2 bg-dark rounded-lg overflow-hidden shadow-xl">
+                <div className="w-full h-8 bg-gray-800 flex items-center px-4">
+                  <div className="flex space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                  </div>
+                  <input 
+                    type="text" 
+                    value={previewUrl}
+                    onChange={(e) => setPreviewUrl(e.target.value)}
+                    className="ml-4 bg-transparent text-sm text-gray-300 focus:outline-none"
+                  />
+                </div>
+                <MemoizedPreview url={previewUrl} />
               </div>
             </div>
           </motion.div>
