@@ -30,7 +30,7 @@ export const AIAssistant = () => {
   
   const { position, setPosition, isDragging, setDragging } = useInterfaceStore();
 
-  // Configure DnD sensors with proper constraints
+  // Configure DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -152,11 +152,6 @@ export const AIAssistant = () => {
     "Show documentation"
   ];
 
-  const handleSuggestionSelect = (suggestion: string) => {
-    setInput(suggestion);
-    handleSubmit(new Event('submit') as any, suggestion);
-  };
-
   return (
     <DndContext 
       sensors={sensors}
@@ -219,7 +214,10 @@ export const AIAssistant = () => {
                 <AIResponse response={response} />
                 <AICommandSuggestions 
                   suggestions={suggestions}
-                  onSelect={handleSuggestionSelect}
+                  onSelect={(suggestion) => {
+                    setInput(suggestion);
+                    handleSubmit(new Event('submit') as any, suggestion);
+                  }}
                 />
               </div>
             )}

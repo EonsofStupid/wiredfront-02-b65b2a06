@@ -5,13 +5,12 @@ interface InterfaceState {
   position: Position;
   isDragging: boolean;
   isProcessing: boolean;
-}
-
-export const useInterfaceStore = create<InterfaceState & {
   setPosition: (position: Position) => void;
   setDragging: (dragging: boolean) => void;
   setProcessing: (processing: boolean) => void;
-}>((set) => ({
+}
+
+export const useInterfaceStore = create<InterfaceState>((set) => ({
   position: { x: 20, y: 20 },
   isDragging: false,
   isProcessing: false,
