@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import type { Json } from '@/integrations/supabase/types';
+import type { AIProvider } from '@/types/ai';
 
 export interface Position {
   x: number;
@@ -20,11 +21,11 @@ export interface MemoryType {
 }
 
 export interface AIConfigData {
-  [key: string]: Json | undefined;
-  personality?: PersonalitySettings;
-  memoryTypes?: MemoryType[];
+  personality?: Json;
+  memoryTypes?: Json[];
   apiKey?: string;
-  position?: Position;
+  position?: Json;
+  [key: string]: Json | undefined;
 }
 
 export interface PersonalityState {
@@ -59,5 +60,3 @@ export interface AIPersonalityTrait {
   created_at: string;
   updated_at: string;
 }
-
-export type AIProvider = 'gemini' | 'chatgpt' | 'huggingface' | 'anthropic' | 'mistral' | 'cohere';

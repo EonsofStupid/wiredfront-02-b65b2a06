@@ -1,4 +1,4 @@
-export { useAIStore } from './ai';
+export { useAIStore } from './ai-store';
 export { useInterfaceStore } from './interface';
 export { useProviderStore } from './provider';
 export { usePersonalityStore } from './personality';

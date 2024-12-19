@@ -70,8 +70,8 @@ export const AIPersonalityConfig = () => {
       }
 
       const configData: AIConfigData = {
-        personality,
-        memoryTypes
+        personality: personality as unknown as Json,
+        memoryTypes: memoryTypes as unknown as Json[],
       };
 
       const { error } = await supabase

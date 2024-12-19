@@ -14,7 +14,6 @@ export const useInterfaceStore = create<InterfaceState>((set) => ({
   position: { x: 20, y: 20 },
   isDragging: false,
   isProcessing: false,
-  
   setPosition: (position) => set({ position }),
   setDragging: (dragging) => set({ isDragging: dragging }),
   setProcessing: (processing) => set({ isProcessing: processing }),
