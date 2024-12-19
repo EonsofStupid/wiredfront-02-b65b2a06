@@ -1,30 +1,34 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
-import type { InterfaceState, Position, AIConfigData } from '@/types/ai/state';
+import type { InterfaceState, Position } from '@/types/ai/state';
+import type { Json } from '@/integrations/supabase/types';
 
 export const useInterfaceStore = create<InterfaceState & {
-  setExpanded: (expanded: boolean) => void;
   setPosition: (position: Position) => void;
   setDragging: (dragging: boolean) => void;
   setProcessing: (processing: boolean) => void;
   savePreferences: () => Promise<void>;
 }>((set, get) => ({
-  isExpanded: false,
   position: { x: 20, y: 20 },
   isDragging: false,
   isProcessing: false,
 
-  setExpanded: (expanded) => set({ isExpanded: expanded }),
-  setPosition: (position) => set({ position }),
+  setPosition: (position) => {
+    set({ position });
+    get().savePreferences();
+  },
+  
   setDragging: (dragging) => set({ isDragging: dragging }),
   setProcessing: (processing) => set({ isProcessing: processing }),
 
   savePreferences: async () => {
-    const { position, isExpanded } = get();
     try {
-      const configData: AIConfigData = {
-        position,
-        isExpanded
+      const { position } = get();
+      const configData = {
+        position: {
+          x: position.x,
+          y: position.y
+        }
       };
 
       const { error } = await supabase

@@ -38,7 +38,6 @@ export interface PersonalityState {
 }
 
 export interface InterfaceState {
-  isExpanded: boolean;
   position: Position;
   isDragging: boolean;
   isProcessing: boolean;
@@ -53,10 +52,4 @@ export interface ProviderState {
 
 export interface AIConfigData {
   [key: string]: Json | undefined;
-  personality?: PersonalitySettings;
-  memoryTypes?: MemoryType[];
-  position?: Position;
-  isExpanded?: boolean;
-  apiKey?: string;
-  provider?: AIProvider;
 }

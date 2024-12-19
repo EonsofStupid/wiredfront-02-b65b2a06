@@ -12,23 +12,33 @@ import { AIInputForm } from "./AIInputForm";
 import { AIResponse } from "./AIResponse";
 import { AICommandSuggestions } from "./AICommandSuggestions";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import { useInterfaceStore } from "@/stores/ai";
 import type { AIMode, AIProvider } from "@/types/ai";
 
 export const AIAssistant = () => {
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [input, setInput] = useState("");
   const [response, setResponse] = useState("");
   const [mode, setMode] = useState<AIMode>("chat");
   const [provider, setProvider] = useState<AIProvider>("gemini");
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [availableProviders, setAvailableProviders] = useState<AIProvider[]>([]);
-  const constraintsRef = useRef(null);
   const { toast } = useToast();
+  
+  const { position, setPosition, isDragging, setDragging } = useInterfaceStore();
+
+  // Configure DnD sensors with proper constraints
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+        tolerance: 5,
+      },
+    })
+  );
 
   const handleTranscript = (transcript: string) => {
     setInput(transcript);
@@ -93,7 +103,6 @@ export const AIAssistant = () => {
 
     setIsProcessing(true);
     try {
-      // First, try to process as a command
       const { data: { user } } = await supabase.auth.getUser();
       const commandResult = await processAICommand(currentInput, {
         navigate,
@@ -107,7 +116,6 @@ export const AIAssistant = () => {
           description: commandResult.message,
         });
       } else {
-        // If not a command, generate AI response
         if (isOffline) {
           setResponse("I'm currently in offline mode. I'll use my local knowledge to assist you.");
           return;
@@ -129,69 +137,81 @@ export const AIAssistant = () => {
     }
   };
 
-  return (
-    <div ref={constraintsRef} className="fixed inset-0 pointer-events-none z-[100]">
-      <AnimatePresence>
-        <motion.div
-          drag
-          dragMomentum={false}
-          dragConstraints={constraintsRef}
-          dragElastic={0.1}
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={(_, info) => {
-            setIsDragging(false);
-            setPosition({ 
-              x: position.x + info.offset.x, 
-              y: position.y + info.offset.y 
-            });
-          }}
-          animate={{
-            x: position.x,
-            y: position.y,
-            scale: isDragging ? 1.02 : 1,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 30
-          }}
-          className={`fixed bottom-8 right-8 w-[450px] pointer-events-auto
-            glass-card neon-border shadow-xl overflow-hidden rounded-lg
-            transition-all duration-300 ${isMinimized ? 'h-auto' : 'h-[600px]'}
-            ${isDragging ? 'ai-assistant--dragging' : ''}
-            ${isOffline ? 'opacity-90' : ''}`}
-        >
-          <div className="ai-assistant__handle" />
-          <AIHeader
-            isMinimized={isMinimized}
-            onMinimize={() => setIsMinimized(!isMinimized)}
-            onClose={() => setIsOpen(false)}
-            isOffline={isOffline}
-            isListening={isListening}
-            onVoiceToggle={toggleVoiceInput}
-          />
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { delta } = event;
+    setPosition({
+      x: position.x + delta.x,
+      y: position.y + delta.y,
+    });
+    setDragging(false);
+  };
 
-          {!isMinimized && (
-            <div className="custom-scrollbar p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto">
-              <AIModeSelector mode={mode} onModeChange={setMode} />
-              <AIProviderSelector
-                provider={provider}
-                onProviderChange={setProvider}
-                availableProviders={availableProviders}
-              />
-              <AIInputForm
-                input={input}
-                mode={mode}
-                isProcessing={isProcessing}
-                onInputChange={setInput}
-                onSubmit={handleSubmit}
-                isOffline={isOffline}
-              />
-              <AIResponse response={response} />
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
-    </div>
+  return (
+    <DndContext 
+      sensors={sensors}
+      onDragStart={() => setDragging(true)}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="fixed inset-0 pointer-events-none z-[100]">
+        <AnimatePresence>
+          <motion.div
+            drag
+            dragMomentum={false}
+            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            dragElastic={0.1}
+            initial={false}
+            animate={{
+              x: position.x,
+              y: position.y,
+              scale: isDragging ? 1.02 : 1,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30
+            }}
+            className={`fixed w-[450px] pointer-events-auto
+              glass-card neon-border shadow-xl overflow-hidden rounded-lg
+              transition-all duration-300 ${isMinimized ? 'h-auto' : 'h-[600px]'}
+              ${isDragging ? 'cursor-grabbing opacity-90' : 'cursor-grab'}
+              ${isOffline ? 'opacity-90' : ''}`}
+            style={{
+              background: 'rgba(26, 26, 26, 0.8)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <AIHeader
+              isMinimized={isMinimized}
+              onMinimize={() => setIsMinimized(!isMinimized)}
+              onClose={() => {}}
+              isOffline={isOffline}
+              isListening={isListening}
+              onVoiceToggle={toggleVoiceInput}
+            />
+
+            {!isMinimized && (
+              <div className="custom-scrollbar p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto">
+                <AIModeSelector mode={mode} onModeChange={setMode} />
+                <AIProviderSelector
+                  provider={provider}
+                  onProviderChange={setProvider}
+                  availableProviders={availableProviders}
+                />
+                <AIInputForm
+                  input={input}
+                  mode={mode}
+                  isProcessing={isProcessing}
+                  onInputChange={setInput}
+                  onSubmit={handleSubmit}
+                  isOffline={isOffline}
+                />
+                <AIResponse response={response} />
+                <AICommandSuggestions />
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </DndContext>
   );
 };
