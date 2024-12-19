@@ -7,8 +7,21 @@ import { ThemedSection } from "@/components/themed/ThemedSection";
 import { GalaxyBackground } from "@/components/background/GalaxyBackground";
 import { AnimatedCubes } from "@/components/background/AnimatedCubes";
 import { DataStream } from "@/components/ai-elements/DataStream";
+import { useAIStore } from "@/stores";
+import { useNavigate } from "react-router-dom";
 
 export const HeroSection = () => {
+  const navigate = useNavigate();
+  const toggleAI = useAIStore((state) => state.toggleAIAssistant);
+
+  const handleLaunch = () => {
+    navigate("/");
+    // Slight delay to ensure navigation completes before toggling AI
+    setTimeout(() => {
+      toggleAI();
+    }, 100);
+  };
+
   return (
     <ThemedSection 
       themeName="hero"
@@ -44,14 +57,13 @@ export const HeroSection = () => {
         </div>
 
         <div className="hero-actions">
-          <Link to="/dashboard">
-            <Button 
-              className="hero-button hero-button-primary"
-            >
-              <Zap className="w-5 h-5 mr-2" />
-              Launch App
-            </Button>
-          </Link>
+          <Button 
+            onClick={handleLaunch}
+            className="hero-button hero-button-primary"
+          >
+            <Zap className="w-5 h-5 mr-2" />
+            Launch App
+          </Button>
           <HoverCard>
             <HoverCardTrigger>
               <Button 
