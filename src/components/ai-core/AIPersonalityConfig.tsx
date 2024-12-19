@@ -7,20 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Brain, Code, User, Users } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import type { Json } from "@/types/database/json";
-
-interface MemoryType {
-  id: string;
-  label: string;
-  icon: typeof Brain;
-  enabled: boolean;
-}
-
-interface PersonalitySettings {
-  friendliness: number;
-  assertiveness: number;
-  technicalDetail: number;
-}
+import type { PersonalitySettings, MemoryType, AIConfigData } from "@/types/ai/state";
 
 export const AIPersonalityConfig = () => {
   const { toast } = useToast();
@@ -47,21 +34,21 @@ export const AIPersonalityConfig = () => {
       if (!session) return;
 
       const { data, error } = await supabase
-        .from('ai_settings')
-        .select('value')
+        .from('ai_unified_config')
+        .select('config_data')
         .eq('user_id', session.user.id)
-        .eq('key', 'personality_settings')
+        .eq('config_type', 'personality')
         .single();
 
       if (error) throw error;
 
-      if (data?.value) {
-        const settings = data.value as { personality: PersonalitySettings; memoryTypes: MemoryType[] };
-        if (settings.personality) {
-          setPersonality(settings.personality);
+      if (data?.config_data) {
+        const configData = data.config_data as AIConfigData;
+        if (configData.personality) {
+          setPersonality(configData.personality);
         }
-        if (settings.memoryTypes) {
-          setMemoryTypes(settings.memoryTypes);
+        if (configData.memoryTypes) {
+          setMemoryTypes(configData.memoryTypes);
         }
       }
     } catch (error) {
@@ -81,28 +68,20 @@ export const AIPersonalityConfig = () => {
         return;
       }
 
-      const settingsData = {
-        key: 'personality_settings',
-        user_id: session.user.id,
-        value: {
-          personality: personality as Json,
-          memoryTypes: memoryTypes as Json,
-        },
-        metadata: {
-          lastUpdated: new Date().toISOString(),
-          version: '1.0'
-        }
+      const configData: AIConfigData = {
+        personality,
+        memoryTypes
       };
 
       const { error } = await supabase
-        .from('ai_settings')
-        .upsert(settingsData);
+        .from('ai_unified_config')
+        .upsert({
+          config_type: 'personality',
+          config_data: configData,
+          user_id: session.user.id
+        });
 
       if (error) throw error;
-
-      // Save to local storage for offline access
-      localStorage.setItem('ai_personality', JSON.stringify(personality));
-      localStorage.setItem('ai_memory_types', JSON.stringify(memoryTypes));
 
       toast({
         title: "Settings saved",

@@ -1,19 +1,14 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
+import type { PersonalityState, AIConfigData } from '@/types/ai/state';
 import type { AIPersonality, AIPersonalityTrait } from '@/types/ai/personality';
 
-interface PersonalityState {
-  currentPersonality: AIPersonality | null;
-  traits: AIPersonalityTrait[];
-  isLoading: boolean;
-  error: string | null;
+export const usePersonalityStore = create<PersonalityState & {
   setCurrentPersonality: (personality: AIPersonality | null) => void;
   fetchPersonality: (id: string) => Promise<void>;
   updatePersonality: (id: string, updates: Partial<AIPersonality>) => Promise<void>;
   fetchTraits: (personalityId: string) => Promise<void>;
-}
-
-export const usePersonalityStore = create<PersonalityState>((set) => ({
+}>((set) => ({
   currentPersonality: null,
   traits: [],
   isLoading: false,

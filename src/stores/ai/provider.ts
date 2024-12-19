@@ -1,18 +1,13 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
+import type { ProviderState, AIConfigData } from '@/types/ai/state';
 import type { AIProvider } from '@/types/ai';
 
-interface ProviderState {
-  currentProvider: AIProvider;
-  apiKey: string | null;
-  isConfigured: boolean;
-  error: string | null;
+export const useProviderStore = create<ProviderState & {
   setProvider: (provider: AIProvider) => void;
   setApiKey: (key: string) => Promise<void>;
   checkConfiguration: () => Promise<void>;
-}
-
-export const useProviderStore = create<ProviderState>((set) => ({
+}>((set) => ({
   currentProvider: 'gemini',
   apiKey: null,
   isConfigured: false,
@@ -22,11 +17,15 @@ export const useProviderStore = create<ProviderState>((set) => ({
 
   setApiKey: async (key) => {
     try {
+      const configData: AIConfigData = {
+        apiKey: key
+      };
+
       const { error } = await supabase
         .from('ai_unified_config')
         .upsert({
           config_type: 'provider',
-          config_data: { apiKey: key },
+          config_data: configData,
           user_id: (await supabase.auth.getUser()).data.user?.id
         });
 
@@ -47,10 +46,11 @@ export const useProviderStore = create<ProviderState>((set) => ({
 
       if (error) throw error;
       
-      const isConfigured = Boolean(data?.config_data?.apiKey);
+      const configData = data?.config_data as AIConfigData;
+      const isConfigured = Boolean(configData?.apiKey);
       set({ 
         isConfigured,
-        apiKey: data?.config_data?.apiKey || null 
+        apiKey: configData?.apiKey || null 
       });
     } catch (error: any) {
       set({ error: error.message });
