@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
-import type { PersonalityState, AIConfigData } from '@/types/ai/state';
+import type { PersonalityState } from '@/types/ai/state';
 import type { AIPersonality, AIPersonalityTrait } from '@/types/ai/personality';
+import type { Json } from '@/integrations/supabase/types';
 
 export const usePersonalityStore = create<PersonalityState & {
   setCurrentPersonality: (personality: AIPersonality | null) => void;

@@ -57,45 +57,45 @@ export const AIPersonalityConfig = () => {
     }
   };
 
-  const saveSettings = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to save settings",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      const configData: AIConfigData = {
-        personality: personality as unknown as Json,
-        memoryTypes: memoryTypes as unknown as Json[],
-      };
-
-      const { error } = await supabase
-        .from('ai_unified_config')
-        .upsert({
-          config_type: 'personality',
-          config_data: configData as Json,
-          user_id: session.user.id
-        });
-
-      if (error) throw error;
-
+const saveSettings = async () => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
       toast({
-        title: "Settings saved",
-        description: "AI personality settings have been updated"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error saving settings",
-        description: "Failed to save AI personality settings",
+        title: "Authentication required",
+        description: "Please sign in to save settings",
         variant: "destructive"
       });
+      return;
     }
-  };
+
+    const configData: AIConfigData = {
+      personality: JSON.parse(JSON.stringify(personality)),
+      memoryTypes: JSON.parse(JSON.stringify(memoryTypes))
+    };
+
+    const { error } = await supabase
+      .from('ai_unified_config')
+      .upsert({
+        config_type: 'personality',
+        config_data: configData,
+        user_id: session.user.id
+      });
+
+    if (error) throw error;
+
+    toast({
+      title: "Settings saved",
+      description: "AI personality settings have been updated"
+    });
+  } catch (error: any) {
+    toast({
+      title: "Error saving settings",
+      description: "Failed to save AI personality settings",
+      variant: "destructive"
+    });
+  }
+};
 
   const toggleMemoryType = (id: string) => {
     setMemoryTypes(prev => prev.map(type => 

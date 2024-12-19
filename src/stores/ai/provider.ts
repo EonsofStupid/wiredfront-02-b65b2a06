@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import type { ProviderState, AIConfigData } from '@/types/ai/state';
 import type { AIProvider } from '@/types/ai';
+import type { Json } from '@/integrations/supabase/types';
 
 export const useProviderStore = create<ProviderState & {
   setProvider: (provider: AIProvider) => void;
