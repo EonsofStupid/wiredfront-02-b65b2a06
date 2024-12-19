@@ -1,72 +1,46 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { Settings as SettingsIcon, Bell, Eye, Globe } from "lucide-react";
 import { GeneralSettings } from "@/components/settings/GeneralSettings";
-import { AISettings } from "@/components/settings/AISettings";
-import { ThemeManager } from "@/components/settings/ThemeManager";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { AccessibilitySettings } from "@/components/settings/AccessibilitySettings";
-import { APIKeySettings } from "@/components/settings/APIKeySettings";
-import { RouteSettings } from "@/components/settings/RouteSettings";
-import { DiscordBotSettings } from "@/components/settings/DiscordBotSettings";
-import { LogViewer } from "@/components/settings/LogViewer";
 
-const Settings = () => {
+export default function Settings() {
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold gradient-text">Settings</h1>
-      
-      <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid grid-cols-4 lg:grid-cols-9">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="themes">Themes</TabsTrigger>
-          <TabsTrigger value="ai">AI</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="accessibility">Accessibility</TabsTrigger>
-          <TabsTrigger value="api">API Keys</TabsTrigger>
-          <TabsTrigger value="routes">Routes</TabsTrigger>
-          <TabsTrigger value="discord">Discord</TabsTrigger>
-          <TabsTrigger value="logs">Logs</TabsTrigger>
+    <div className="container mx-auto py-8">
+      <div className="flex items-center gap-4 mb-8">
+        <SettingsIcon className="h-8 w-8" />
+        <h1 className="text-3xl font-bold">Settings</h1>
+      </div>
+
+      <Tabs defaultValue="general" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="general">
+            <Globe className="h-4 w-4 mr-2" />
+            General
+          </TabsTrigger>
+          <TabsTrigger value="notifications">
+            <Bell className="h-4 w-4 mr-2" />
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="accessibility">
+            <Eye className="h-4 w-4 mr-2" />
+            Accessibility
+          </TabsTrigger>
         </TabsList>
 
-        <div className="mt-6">
+        <Card className="p-6">
           <TabsContent value="general">
             <GeneralSettings />
           </TabsContent>
-          
-          <TabsContent value="themes">
-            <ThemeManager />
-          </TabsContent>
-          
-          <TabsContent value="ai">
-            <AISettings />
-          </TabsContent>
-          
           <TabsContent value="notifications">
             <NotificationSettings />
           </TabsContent>
-          
           <TabsContent value="accessibility">
             <AccessibilitySettings />
           </TabsContent>
-          
-          <TabsContent value="api">
-            <APIKeySettings />
-          </TabsContent>
-          
-          <TabsContent value="routes">
-            <RouteSettings />
-          </TabsContent>
-          
-          <TabsContent value="discord">
-            <DiscordBotSettings />
-          </TabsContent>
-
-          <TabsContent value="logs">
-            <LogViewer />
-          </TabsContent>
-        </div>
+        </Card>
       </Tabs>
     </div>
   );
-};
-
-export default Settings;
+}

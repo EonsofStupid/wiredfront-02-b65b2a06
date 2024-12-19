@@ -10,21 +10,15 @@ export function NotificationSettings() {
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold gradient-text mb-4">Notification Settings</h2>
-      <div className="glass-card p-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <Label htmlFor="notifications" className="text-lg font-medium">Enable Notifications</Label>
-            <p className="text-sm text-muted-foreground">
-              Receive notifications about important updates and events
-            </p>
-          </div>
+    <div className="settings-notifications">
+      <h2 className="settings-notifications__title text-lg font-semibold mb-4">Notification Settings</h2>
+      <div className="settings-notifications__form grid gap-4">
+        <div className="settings-notifications__form-group flex items-center justify-between">
+          <Label htmlFor="notifications">Enable Notifications</Label>
           <Switch
             id="notifications"
             checked={preferences.notifications}
             onCheckedChange={handleNotificationChange}
-            className="data-[state=checked]:bg-[#9b87f5]"
           />
         </div>
       </div>

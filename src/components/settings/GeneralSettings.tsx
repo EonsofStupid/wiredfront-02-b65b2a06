@@ -15,16 +15,16 @@ export function GeneralSettings() {
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold gradient-text mb-4">General Settings</h2>
-      <div className="grid gap-6">
-        <div className="glass-card p-4 space-y-2">
-          <Label htmlFor="theme" className="text-lg font-medium">Theme</Label>
+    <div className="settings-general">
+      <h2 className="settings-general__title text-lg font-semibold mb-4">General Settings</h2>
+      <div className="settings-general__form grid gap-4">
+        <div className="settings-general__form-group grid gap-2">
+          <Label htmlFor="theme">Theme</Label>
           <Select
             value={preferences.theme}
             onValueChange={handleThemeChange}
           >
-            <SelectTrigger id="theme" className="glass-input">
+            <SelectTrigger id="theme">
               <SelectValue placeholder="Select theme" />
             </SelectTrigger>
             <SelectContent>
@@ -35,13 +35,13 @@ export function GeneralSettings() {
           </Select>
         </div>
 
-        <div className="glass-card p-4 space-y-2">
-          <Label htmlFor="language" className="text-lg font-medium">Language</Label>
+        <div className="settings-general__form-group grid gap-2">
+          <Label htmlFor="language">Language</Label>
           <Select
             value={preferences.language}
             onValueChange={handleLanguageChange}
           >
-            <SelectTrigger id="language" className="glass-input">
+            <SelectTrigger id="language">
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
             <SelectContent>
