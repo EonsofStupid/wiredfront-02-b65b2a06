@@ -327,6 +327,36 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_unified_config: {
+        Row: {
+          config_data: Json
+          config_type: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          config_data?: Json
+          config_type: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          config_data?: Json
+          config_type?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_work_items: {
         Row: {
           completed_at: string | null
