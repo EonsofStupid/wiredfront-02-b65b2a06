@@ -2,7 +2,6 @@ import React, { useEffect, useState, StrictMode } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { MobileAwareLayout } from "@/components/layout/MobileAppLayout";
-import Dashboard from "@/pages/Dashboard";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Profile from "@/pages/Profile";
@@ -62,7 +61,7 @@ function App() {
             <Routes>
               <Route 
                 path="/login" 
-                element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} 
+                element={isAuthenticated ? <Navigate to="/" /> : <Login />} 
               />
               <Route
                 path="/"
@@ -77,7 +76,6 @@ function App() {
                 }
               >
                 <Route index element={<Index />} />
-                <Route path="dashboard" element={<Dashboard />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="files" element={<FileManager />} />
