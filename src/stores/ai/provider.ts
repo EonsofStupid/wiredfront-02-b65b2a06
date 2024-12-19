@@ -25,7 +25,7 @@ export const useProviderStore = create<ProviderState & {
         .from('ai_unified_config')
         .upsert({
           config_type: 'provider',
-          config_data: configData,
+          config_data: configData as Json,
           user_id: (await supabase.auth.getUser()).data.user?.id
         });
 
@@ -50,7 +50,7 @@ export const useProviderStore = create<ProviderState & {
       const isConfigured = Boolean(configData?.apiKey);
       set({ 
         isConfigured,
-        apiKey: configData?.apiKey || null 
+        apiKey: configData?.apiKey as string || null 
       });
     } catch (error: any) {
       set({ error: error.message });

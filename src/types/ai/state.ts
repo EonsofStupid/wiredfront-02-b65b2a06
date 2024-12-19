@@ -21,8 +21,18 @@ export interface MemoryType {
 }
 
 export interface PersonalityState {
-  currentPersonality: AIPersonality | null;
-  traits: AIPersonalityTrait[];
+  currentPersonality: {
+    id: string;
+    name: string;
+    description: string | null;
+    is_active: boolean;
+  } | null;
+  traits: Array<{
+    id: string;
+    personality_id: string;
+    trait_key: string;
+    trait_value: Json;
+  }>;
   isLoading: boolean;
   error: string | null;
 }
@@ -42,6 +52,7 @@ export interface ProviderState {
 }
 
 export interface AIConfigData {
+  [key: string]: Json | undefined;
   personality?: PersonalitySettings;
   memoryTypes?: MemoryType[];
   position?: Position;

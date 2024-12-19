@@ -1,6 +1,6 @@
-export { usePersonalityStore } from './personality';
-export { useInterfaceStore } from './interface';
 export { useProviderStore } from './provider';
+export { useInterfaceStore } from './interface';
+export { usePersonalityStore } from './personality';
 
 // Root selector hooks for common operations
 export const useAIReady = () => {

@@ -77,7 +77,7 @@ export const AIPersonalityConfig = () => {
         .from('ai_unified_config')
         .upsert({
           config_type: 'personality',
-          config_data: configData,
+          config_data: configData as Json,
           user_id: session.user.id
         });
 

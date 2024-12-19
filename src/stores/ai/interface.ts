@@ -31,7 +31,7 @@ export const useInterfaceStore = create<InterfaceState & {
         .from('ai_unified_config')
         .upsert({
           config_type: 'interface',
-          config_data: configData,
+          config_data: configData as Json,
           user_id: (await supabase.auth.getUser()).data.user?.id
         });
 
