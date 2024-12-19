@@ -146,6 +146,17 @@ export const AIAssistant = () => {
     setDragging(false);
   };
 
+  const suggestions = [
+    "Help me with code",
+    "Explain this feature",
+    "Show documentation"
+  ];
+
+  const handleSuggestionSelect = (suggestion: string) => {
+    setInput(suggestion);
+    handleSubmit(new Event('submit') as any, suggestion);
+  };
+
   return (
     <DndContext 
       sensors={sensors}
@@ -206,7 +217,10 @@ export const AIAssistant = () => {
                   isOffline={isOffline}
                 />
                 <AIResponse response={response} />
-                <AICommandSuggestions />
+                <AICommandSuggestions 
+                  suggestions={suggestions}
+                  onSelect={handleSuggestionSelect}
+                />
               </div>
             )}
           </motion.div>

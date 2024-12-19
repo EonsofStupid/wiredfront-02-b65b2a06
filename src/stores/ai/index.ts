@@ -1,5 +1,6 @@
-export { useProviderStore } from './provider';
+export { useAIStore } from './ai';
 export { useInterfaceStore } from './interface';
+export { useProviderStore } from './provider';
 export { usePersonalityStore } from './personality';
 
 // Root selector hooks for common operations

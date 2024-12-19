@@ -8,6 +8,7 @@ import { Brain, Code, User, Users } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { PersonalitySettings, MemoryType, AIConfigData } from "@/types/ai/state";
+import type { Json } from "@/integrations/supabase/types";
 
 export const AIPersonalityConfig = () => {
   const { toast } = useToast();
