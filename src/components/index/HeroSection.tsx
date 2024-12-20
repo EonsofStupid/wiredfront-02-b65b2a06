@@ -3,62 +3,83 @@ import { Sparkles, Zap, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+import { ThemedSection } from "@/components/themed/ThemedSection";
+import { GalaxyBackground } from "@/components/background/GalaxyBackground";
+import { AnimatedCubes } from "@/components/background/AnimatedCubes";
+import { DataStream } from "@/components/ai-elements/DataStream";
+import { useAIStore } from "@/stores";
+import { useNavigate } from "react-router-dom";
 
 export const HeroSection = () => {
+  const navigate = useNavigate();
+  const toggleAI = useAIStore((state) => state.toggleAIAssistant);
+
+  const handleLaunch = () => {
+    navigate("/");
+    // Slight delay to ensure navigation completes before toggling AI
+    setTimeout(() => {
+      toggleAI();
+    }, 100);
+  };
+
   return (
-    <section className="min-h-screen flex items-center justify-center px-4">
+    <ThemedSection 
+      themeName="hero"
+      className="hero-container"
+    >
+      <GalaxyBackground />
+      <AnimatedCubes />
+      <DataStream />
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-center z-10 max-w-4xl"
+        className="hero-content"
       >
-        <div className="machinery-card depth-layer-2 p-4 md:p-8 mb-8">
+        <div className="hero-card">
           <motion.div
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-6xl md:text-8xl font-bold mb-6 machinery-text-gradient">
+            <h1 className="hero-title">
               wiredFRONT
             </h1>
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="text-neon-blue animate-pulse" />
-              <span className="text-xl md:text-2xl font-semibold text-neon-pink">
-                AI-Powered Workspace
-              </span>
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles className="w-6 h-6 text-neon-blue animate-pulse" />
+              <span className="hero-subtitle">AI-Powered Workspace</span>
             </div>
-            <p className="text-lg md:text-xl max-w-2xl mx-auto text-neon-blue">
-              Transform your workflow with AI-driven file management
+            <p className="hero-description">
+              Transform your workflow with AI-driven file management, automation, and seamless integrations.
             </p>
           </motion.div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 justify-center">
-          <Link to="/dashboard">
-            <Button 
-              className="machinery-button machinery-primary text-base md:text-lg px-6 md:px-8 py-4 md:py-6 w-full md:w-auto"
-            >
-              <Zap className="text-neon-blue mr-2" />
-              Launch App
-            </Button>
-          </Link>
+        <div className="hero-actions">
+          <Button 
+            onClick={handleLaunch}
+            className="hero-button hero-button-primary"
+          >
+            <Zap className="w-5 h-5 mr-2" />
+            Launch App
+          </Button>
           <HoverCard>
             <HoverCardTrigger>
               <Button 
                 variant="outline"
-                className="machinery-button machinery-secondary text-base md:text-lg px-6 md:px-8 py-4 md:py-6 w-full md:w-auto"
+                className="hero-button hero-button-secondary"
               >
-                <Bot className="text-neon-pink mr-2" />
+                <Bot className="w-5 h-5 mr-2" />
                 Try AI Demo
               </Button>
             </HoverCardTrigger>
-            <HoverCardContent className="machinery-card">
+            <HoverCardContent className="glass-card">
               Experience the power of AI-driven workflow automation
             </HoverCardContent>
           </HoverCard>
         </div>
       </motion.div>
-    </section>
+    </ThemedSection>
   );
 };

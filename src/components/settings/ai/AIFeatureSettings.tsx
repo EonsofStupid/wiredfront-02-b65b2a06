@@ -18,12 +18,11 @@ export function AIFeatureSettings() {
     try {
       const { error } = await supabase
         .from('ai_settings')
-        .update({
-          metadata: {
-            features: features
-          }
-        })
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        .upsert({
+          key: 'features',
+          value: features,
+          user_id: (await supabase.auth.getUser()).data.user?.id
+        });
 
       if (error) throw error;
 

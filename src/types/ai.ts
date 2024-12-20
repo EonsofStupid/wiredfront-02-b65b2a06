@@ -31,3 +31,15 @@ export interface AISettingsData {
   created_at?: string | null;
   updated_at?: string | null;
 }
+
+export interface AICommand {
+  type: 'navigation' | 'task' | 'file' | 'settings';
+  action: string;
+  params?: Record<string, any>;
+}
+
+export interface CommandResult {
+  success: boolean;
+  message: string;
+  data?: any;
+}

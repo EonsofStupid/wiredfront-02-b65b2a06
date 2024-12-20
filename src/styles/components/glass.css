@@ -1,31 +1,180 @@
 @layer components {
   .glass-card {
-    @apply bg-dark-lighter/10 backdrop-blur-md border border-white/5;
-    @apply shadow-xl relative overflow-hidden;
-    @apply transition-all duration-300;
+    @apply bg-dark-lighter/30 backdrop-blur-md border border-white/10 rounded-xl shadow-xl;
+    position: relative;
+    overflow: hidden;
   }
-
+  
   .glass-card::before {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent;
-    @apply pointer-events-none rounded-xl;
-    mask-image: radial-gradient(circle at center, black, transparent 80%);
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom right,
+      theme('colors.neon.blue'),
+      transparent,
+      theme('colors.neon.pink')
+    );
+    opacity: 0.1;
+    pointer-events: none;
+  }
+  
+  .neon-glow {
+    @apply relative;
+  }
+  
+  .neon-glow::after {
+    @apply content-[''] absolute inset-0 rounded-xl;
+    box-shadow: 0 0 20px theme('colors.neon.blue'), 
+                0 0 40px theme('colors.neon.pink');
+    opacity: 0.5;
+    z-index: -1;
   }
 
-  .glass-interactive {
-    @apply glass-card hover:bg-dark-lighter/20;
-    @apply transform-gpu transition-all duration-300;
-    @apply hover:scale-[1.02] hover:shadow-lg;
-    @apply active:scale-[0.98];
+  .neon-border {
+    @apply relative rounded-xl overflow-hidden border border-white/10;
+    box-shadow: 0 0 10px theme('colors.neon.blue'),
+                0 0 20px theme('colors.neon.pink');
   }
 
-  .gradient-text {
-    @apply bg-clip-text text-transparent;
-    @apply bg-gradient-to-r from-neon-blue via-neon-pink to-neon-purple;
-    @apply animate-gradient-x;
+  .neon-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, 
+      theme('colors.neon.blue'), 
+      theme('colors.neon.pink'), 
+      theme('colors.neon.violet'),
+      theme('colors.neon.teal')
+    );
+    animation: rotate 4s linear infinite;
   }
 
-  .depth-layer-1 { @apply z-10; }
-  .depth-layer-2 { @apply z-20; }
-  .depth-layer-3 { @apply z-30; }
+  .animated-gradient-bg {
+    @apply fixed inset-0 -z-10;
+    background: linear-gradient(
+      45deg,
+      #34eba8,
+      #eb34c9,
+      #ebeb34,
+      #b0ff42,
+      #38ffca,
+      #38d7ff,
+      #eb38ff,
+      #e800aa,
+      #9900ff
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  .twinkling-stars {
+    @apply fixed inset-0 -z-20;
+    background-image: radial-gradient(
+      1px 1px at 20px 30px,
+      theme('colors.white') 50%,
+      transparent
+    ),
+    radial-gradient(
+      1px 1px at 40px 70px,
+      theme('colors.white') 50%,
+      transparent
+    ),
+    radial-gradient(
+      1px 1px at 50px 160px,
+      theme('colors.white') 50%,
+      transparent
+    ),
+    radial-gradient(
+      1px 1px at 90px 40px,
+      theme('colors.white') 50%,
+      transparent
+    );
+    background-size: 200px 200px;
+    animation: twinkle 2s ease-in-out infinite alternate;
+  }
+
+  .floating-squares {
+    @apply fixed inset-0 -z-30 overflow-hidden pointer-events-none;
+  }
+
+  .floating-square {
+    @apply absolute bg-white/5 backdrop-blur-sm rounded-lg;
+    animation: float 20s linear infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes twinkle {
+    0%, 100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate(100px, 100px) rotate(180deg);
+    }
+    100% {
+      transform: translate(0, 0) rotate(360deg);
+    }
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Custom Scrollbar Styles */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.neon.blue') theme('colors.dark.lighter');
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: theme('colors.dark.lighter');
+    border-radius: 4px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      45deg,
+      theme('colors.neon.blue'),
+      theme('colors.neon.pink')
+    );
+    border-radius: 4px;
+    border: 2px solid theme('colors.dark.lighter');
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      45deg,
+      theme('colors.neon.pink'),
+      theme('colors.neon.blue')
+    );
+  }
 }

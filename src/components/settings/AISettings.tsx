@@ -4,6 +4,7 @@ import { AIPersonalitySettings } from "./ai/AIPersonalitySettings";
 import { AITrainingSettings } from "./ai/AITrainingSettings";
 import { AIFeatureSettings } from "./ai/AIFeatureSettings";
 import { AIProviderSelector } from "../ai-elements/AIProviderSelector";
+import { AIVisualEffects } from "../ai-elements/AIVisualEffects";
 import { supabase } from "@/integrations/supabase/client";
 import type { AIProvider } from "@/types/ai";
 
@@ -40,7 +41,7 @@ export function AISettings() {
       <div>
         <h2 className="text-2xl font-bold mb-2">AI Configuration</h2>
         <p className="text-muted-foreground">
-          Customize your AI assistant's behavior and capabilities
+          Customize your AI assistant's behavior and appearance
         </p>
       </div>
 
@@ -50,6 +51,7 @@ export function AISettings() {
           <TabsTrigger value="training">Training</TabsTrigger>
           <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="provider">Provider</TabsTrigger>
+          <TabsTrigger value="visual">Visual Effects</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personality">
@@ -70,6 +72,10 @@ export function AISettings() {
             onProviderChange={() => {}}
             availableProviders={availableProviders}
           />
+        </TabsContent>
+
+        <TabsContent value="visual">
+          <AIVisualEffects />
         </TabsContent>
       </Tabs>
     </div>

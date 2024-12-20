@@ -1,4 +1,3 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Bot, Cloud, HardDrive, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import type { AIModelConfig } from '@/types/database/ai';
 
 export function AIModelManagement() {
   const { toast } = useToast();
@@ -19,7 +19,7 @@ export function AIModelManagement() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as AIModelConfig[];
     },
   });
 
@@ -28,7 +28,6 @@ export function AIModelManagement() {
       title: "Starting Download",
       description: `Downloading ${modelName}. This may take a while...`,
     });
-    // Implementation for model download will be added
   };
 
   const handleModelTrain = async (modelId: string) => {
@@ -36,7 +35,6 @@ export function AIModelManagement() {
       title: "Starting Training",
       description: "Initiating model training process...",
     });
-    // Implementation for model training will be added
   };
 
   if (isLoading) {

@@ -1,11 +1,9 @@
 @import './base/reset.css';
-@import './layout/machinery.css';
-@import './themes/admin.css';
-@import './themes/content.css';
-@import './themes/background.css';
-@import './effects/depth.css';
-@import './effects/glow.css';
-@import './effects/data-stream.css';
 @import './components/text.css';
 @import './components/glass.css';
+@import './components/layout.css';
+@import './components/ai-elements.css';
+@import './components/themed.css';
+@import './components/backgrounds.css';
+@import './components/hero.css';
 @import './animations/effects.css';

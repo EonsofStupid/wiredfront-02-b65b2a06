@@ -106,18 +106,23 @@ export const BotAIConfig = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      const settingsData = {
+        key: 'discord_bot_ai_config',
+        user_id: session.user.id,
+        provider: config.primaryProvider,
+        value: {
+          routingStrategy: config.routingStrategy,
+          customFunctions: config.customFunctions
+        },
+        metadata: {
+          fallbackEnabled: config.fallbackEnabled,
+          offlineMode: config.offlineMode
+        }
+      };
+
       const { error } = await supabase
         .from('ai_settings')
-        .upsert({
-          user_id: session.user.id,
-          provider: config.primaryProvider,
-          metadata: {
-            fallbackEnabled: config.fallbackEnabled,
-            offlineMode: config.offlineMode,
-            routingStrategy: config.routingStrategy,
-            customFunctions: config.customFunctions
-          }
-        });
+        .upsert(settingsData);
 
       if (error) throw error;
 

@@ -1,89 +1,59 @@
 @layer components {
-  .machinery-frame {
-    @apply fixed z-20;
-    @apply bg-gradient-to-b from-dark-darker via-dark-lighter to-dark-darker;
-    @apply shadow-lg shadow-dark-darker/50;
-    @apply before:absolute before:inset-0 before:bg-gradient-to-b;
-    @apply before:from-neon-blue/5 before:via-neon-pink/5 before:to-neon-purple/5;
-    @apply after:absolute after:inset-0 after:bg-dark-lighter/30 after:backdrop-blur-md;
+  .app-layout {
+    @apply min-h-screen flex flex-col bg-dark;
   }
 
-  .machinery-bar {
-    @apply relative border-[#32ed83]/10;
-    background: linear-gradient(
-      165deg,
-      rgba(20, 19, 38, 0.8) 0%,
-      rgba(29, 36, 46, 0.9) 100%
-    );
-    backdrop-filter: blur(16px);
+  /* Frame elements */
+  .frame-element {
+    @apply fixed z-20;
   }
 
   .top-bar {
-    @apply machinery-frame machinery-bar;
-    @apply fixed top-0 left-0 right-0 h-16 z-30;
-    @apply border-b border-x rounded-b-lg;
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      calc(100% - 16px) 100%,
-      16px 100%
-    );
-  }
-
-  .status-bar {
-    @apply machinery-frame machinery-bar;
-    @apply fixed bottom-0 left-0 right-0 h-8 z-30;
-    @apply border-t border-x rounded-t-lg;
-    clip-path: polygon(
-      16px 0,
-      calc(100% - 16px) 0,
-      100% 100%,
-      0 100%
-    );
+    @apply fixed top-0 left-0 right-0 h-16 z-30 w-full;
   }
 
   .side-bar {
-    @apply machinery-frame machinery-bar;
     @apply fixed top-16 bottom-8 w-12 z-20;
-    @apply transition-all duration-300 ease-in-out;
   }
 
   .side-bar-left {
-    @apply left-0 border-r;
-    clip-path: polygon(
-      0 0,
-      100% 16px,
-      100% calc(100% - 16px),
-      0 100%
-    );
+    @apply left-0;
   }
 
   .side-bar-right {
-    @apply right-0 border-l;
-    clip-path: polygon(
-      0 16px,
-      100% 0,
-      100% 100%,
-      0 calc(100% - 16px)
-    );
+    @apply right-0;
   }
 
-  .data-stream {
-    @apply absolute inset-0 overflow-hidden pointer-events-none;
-    @apply before:absolute before:inset-0;
-    @apply before:bg-gradient-to-b;
-    @apply before:from-transparent before:via-[#00dcf5]/10 before:to-transparent;
-    @apply before:animate-data-stream;
+  .status-bar {
+    @apply fixed bottom-0 left-0 right-0 h-8 z-30 w-full;
   }
 
+  /* Main content area */
+  .main-content {
+    @apply flex-1 overflow-auto relative mt-16 mb-8;
+    height: calc(100vh - theme('spacing.16') - theme('spacing.8'));
+  }
+
+  /* Button effects - consistent across all bars */
   .nav-button {
-    @apply relative overflow-hidden;
-    @apply hover:bg-[#141326]/30 hover:text-[#00dcf5];
-    @apply active:scale-95 transition-all duration-200;
-    @apply after:absolute after:inset-0 after:rounded-md;
-    @apply after:opacity-0 hover:after:opacity-100;
-    @apply after:bg-gradient-to-r;
-    @apply after:from-[#00dcf5]/10 after:to-[#32ed83]/10;
-    @apply after:transition-opacity after:duration-200;
+    @apply relative transition-all duration-300 
+           hover:scale-110 hover:-translate-y-0.5
+           focus:outline-none focus:ring-2 focus:ring-neon-blue/50;
+  }
+
+  .nav-button::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-t from-neon-blue via-neon-pink to-neon-violet 
+           opacity-0 transition-opacity duration-300 rounded-md;
+  }
+
+  .nav-button:hover::before {
+    @apply opacity-20;
+  }
+
+  .nav-button:hover {
+    @apply shadow-lg;
+    box-shadow: 0 0 20px theme('colors.neon.blue'),
+                0 0 40px theme('colors.neon.pink');
   }
 }

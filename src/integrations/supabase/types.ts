@@ -9,37 +9,69 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      ai_custom_prompts: {
+      ai_memory: {
         Row: {
-          category: string
+          context_key: string
+          context_value: Json
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          personality_id: string
+        }
+        Insert: {
+          context_key: string
+          context_value?: Json
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          personality_id: string
+        }
+        Update: {
+          context_key?: string
+          context_value?: Json
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          personality_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_memory_personality_id_fkey"
+            columns: ["personality_id"]
+            isOneToOne: false
+            referencedRelation: "ai_personalities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_messages: {
+        Row: {
+          content: string
           created_at: string | null
           id: string
-          is_active: boolean | null
           metadata: Json | null
-          name: string
-          prompt: string
+          status: string
+          type: string
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
-          category: string
+          content: string
           created_at?: string | null
           id?: string
-          is_active?: boolean | null
           metadata?: Json | null
-          name: string
-          prompt: string
+          status?: string
+          type?: string
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
-          category?: string
+          content?: string
           created_at?: string | null
           id?: string
-          is_active?: boolean | null
           metadata?: Json | null
-          name?: string
-          prompt?: string
+          status?: string
+          type?: string
           updated_at?: string | null
           user_id?: string | null
         }
@@ -50,9 +82,8 @@ export type Database = {
           created_at: string | null
           id: string
           is_active: boolean | null
-          last_trained_at: string | null
           local_model_path: string | null
-          model_config: Json | null
+          metadata: Json | null
           model_name: string
           model_type: string
           training_status: string | null
@@ -63,9 +94,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
-          last_trained_at?: string | null
           local_model_path?: string | null
-          model_config?: Json | null
+          metadata?: Json | null
           model_name: string
           model_type: string
           training_status?: string | null
@@ -76,9 +106,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
-          last_trained_at?: string | null
           local_model_path?: string | null
-          model_config?: Json | null
+          metadata?: Json | null
           model_name?: string
           model_type?: string
           training_status?: string | null
@@ -87,45 +116,139 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_personalities: {
+        Row: {
+          changed_by: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ai_personality_history: {
+        Row: {
+          changed_at: string | null
+          changed_by: string
+          changes: Json
+          id: string
+          personality_id: string
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by: string
+          changes?: Json
+          id?: string
+          personality_id: string
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string
+          changes?: Json
+          id?: string
+          personality_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_personality_history_personality_id_fkey"
+            columns: ["personality_id"]
+            isOneToOne: false
+            referencedRelation: "ai_personalities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_personality_traits: {
+        Row: {
+          created_at: string | null
+          id: string
+          personality_id: string
+          trait_key: string
+          trait_value: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          personality_id: string
+          trait_key: string
+          trait_value?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          personality_id?: string
+          trait_key?: string
+          trait_value?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_personality_traits_personality_id_fkey"
+            columns: ["personality_id"]
+            isOneToOne: false
+            referencedRelation: "ai_personalities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_settings: {
         Row: {
           api_key: string | null
           created_at: string | null
           id: string
-          is_active: boolean
-          max_tokens: number | null
+          key: string
           metadata: Json | null
-          model_name: string | null
-          provider: Database["public"]["Enums"]["ai_provider"]
-          temperature: number | null
+          provider: string | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
+          value: Json
+          visual_effects: Json | null
         }
         Insert: {
           api_key?: string | null
           created_at?: string | null
           id?: string
-          is_active?: boolean
-          max_tokens?: number | null
+          key: string
           metadata?: Json | null
-          model_name?: string | null
-          provider?: Database["public"]["Enums"]["ai_provider"]
-          temperature?: number | null
+          provider?: string | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
+          value?: Json
+          visual_effects?: Json | null
         }
         Update: {
           api_key?: string | null
           created_at?: string | null
           id?: string
-          is_active?: boolean
-          max_tokens?: number | null
+          key?: string
           metadata?: Json | null
-          model_name?: string | null
-          provider?: Database["public"]["Enums"]["ai_provider"]
-          temperature?: number | null
+          provider?: string | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
+          value?: Json
+          visual_effects?: Json | null
         }
         Relationships: []
       }
@@ -133,54 +256,45 @@ export type Database = {
         Row: {
           completed_at: string | null
           created_at: string | null
-          error_message: string | null
           id: string
           metadata: Json | null
           priority: number | null
           prompt: string
-          provider: Database["public"]["Enums"]["ai_provider"]
+          provider: string
           result: string | null
-          retry_count: number | null
-          scheduled_for: string | null
-          status: string
+          status: string | null
           task_id: string
-          type: Database["public"]["Enums"]["task_type"]
+          type: string
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
           completed_at?: string | null
           created_at?: string | null
-          error_message?: string | null
           id?: string
           metadata?: Json | null
           priority?: number | null
           prompt: string
-          provider: Database["public"]["Enums"]["ai_provider"]
+          provider: string
           result?: string | null
-          retry_count?: number | null
-          scheduled_for?: string | null
-          status: string
+          status?: string | null
           task_id: string
-          type: Database["public"]["Enums"]["task_type"]
+          type: string
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           completed_at?: string | null
           created_at?: string | null
-          error_message?: string | null
           id?: string
           metadata?: Json | null
           priority?: number | null
           prompt?: string
-          provider?: Database["public"]["Enums"]["ai_provider"]
+          provider?: string
           result?: string | null
-          retry_count?: number | null
-          scheduled_for?: string | null
-          status?: string
+          status?: string | null
           task_id?: string
-          type?: Database["public"]["Enums"]["task_type"]
+          type?: string
           updated_at?: string | null
           user_id?: string | null
         }
@@ -192,7 +306,6 @@ export type Database = {
           content: string
           created_at: string | null
           id: string
-          metadata: Json | null
           updated_at: string | null
           user_id: string | null
         }
@@ -201,7 +314,6 @@ export type Database = {
           content: string
           created_at?: string | null
           id?: string
-          metadata?: Json | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -210,52 +322,153 @@ export type Database = {
           content?: string
           created_at?: string | null
           id?: string
-          metadata?: Json | null
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: []
       }
-      ai_training_datasets: {
+      ai_unified_config: {
         Row: {
-          content: string
+          config_data: Json
+          config_type: string
           created_at: string | null
-          dataset_type: string
           id: string
-          metadata: Json | null
-          model_config_id: string | null
-          processed: boolean | null
+          is_active: boolean | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
-          content: string
+          config_data?: Json
+          config_type: string
           created_at?: string | null
-          dataset_type: string
           id?: string
-          metadata?: Json | null
-          model_config_id?: string | null
-          processed?: boolean | null
+          is_active?: boolean | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
-          content?: string
+          config_data?: Json
+          config_type?: string
           created_at?: string | null
-          dataset_type?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_work_items: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          output: string | null
+          priority: number | null
+          status: Database["public"]["Enums"]["chat_status"] | null
+          task: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
           id?: string
           metadata?: Json | null
-          model_config_id?: string | null
-          processed?: boolean | null
+          output?: string | null
+          priority?: number | null
+          status?: Database["public"]["Enums"]["chat_status"] | null
+          task: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          output?: string | null
+          priority?: number | null
+          status?: Database["public"]["Enums"]["chat_status"] | null
+          task?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      component_themes: {
+        Row: {
+          component_type: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          styles: Json
+          theme_name: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          component_type: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          styles?: Json
+          theme_name: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          component_type?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          styles?: Json
+          theme_name?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      custom_sections: {
+        Row: {
+          content: Json
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          position: number | null
+          section_name: string
+          theme_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: Json
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          position?: number | null
+          section_name: string
+          theme_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          position?: number | null
+          section_name?: string
+          theme_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "ai_training_datasets_model_config_id_fkey"
-            columns: ["model_config_id"]
+            foreignKeyName: "custom_sections_theme_id_fkey"
+            columns: ["theme_id"]
             isOneToOne: false
-            referencedRelation: "ai_model_configs"
+            referencedRelation: "component_themes"
             referencedColumns: ["id"]
           },
         ]
@@ -425,6 +638,75 @@ export type Database = {
         }
         Relationships: []
       }
+      file_operations: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          file_path: string
+          id: string
+          metadata: Json | null
+          operation_type: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          file_path: string
+          id?: string
+          metadata?: Json | null
+          operation_type: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          file_path?: string
+          id?: string
+          metadata?: Json | null
+          operation_type?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      github_integration: {
+        Row: {
+          auth_token: string | null
+          auto_sync: boolean | null
+          branch_name: string | null
+          created_at: string | null
+          id: string
+          repository_url: string | null
+          sync_frequency: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          auth_token?: string | null
+          auto_sync?: boolean | null
+          branch_name?: string | null
+          created_at?: string | null
+          id?: string
+          repository_url?: string | null
+          sync_frequency?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          auth_token?: string | null
+          auto_sync?: boolean | null
+          branch_name?: string | null
+          created_at?: string | null
+          id?: string
+          repository_url?: string | null
+          sync_frequency?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       layout_preferences: {
         Row: {
           bottom_bar_visible: boolean | null
@@ -536,6 +818,63 @@ export type Database = {
         }
         Relationships: []
       }
+      testing_environments: {
+        Row: {
+          created_at: string | null
+          docker_config: Json | null
+          environment_name: string
+          framework: string
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          docker_config?: Json | null
+          environment_name: string
+          framework: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          docker_config?: Json | null
+          environment_name?: string
+          framework?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      typing_status: {
+        Row: {
+          chat_id: string
+          id: number
+          is_typing: boolean | null
+          last_updated: string | null
+          user_id: string
+        }
+        Insert: {
+          chat_id: string
+          id?: number
+          is_typing?: boolean | null
+          last_updated?: string | null
+          user_id: string
+        }
+        Update: {
+          chat_id?: string
+          id?: number
+          is_typing?: boolean | null
+          last_updated?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_visual_preferences: {
         Row: {
           created_at: string | null
@@ -545,6 +884,7 @@ export type Database = {
           theme_preference: string | null
           updated_at: string | null
           user_id: string | null
+          visual_effects: Json | null
         }
         Insert: {
           created_at?: string | null
@@ -554,6 +894,7 @@ export type Database = {
           theme_preference?: string | null
           updated_at?: string | null
           user_id?: string | null
+          visual_effects?: Json | null
         }
         Update: {
           created_at?: string | null
@@ -563,6 +904,7 @@ export type Database = {
           theme_preference?: string | null
           updated_at?: string | null
           user_id?: string | null
+          visual_effects?: Json | null
         }
         Relationships: []
       }
@@ -581,7 +923,9 @@ export type Database = {
         | "anthropic"
         | "mistral"
         | "cohere"
+      chat_status: "pending" | "processing" | "completed" | "failed"
       log_level: "info" | "warning" | "error"
+      personality_trait: "friendly" | "professional" | "casual" | "technical"
       quote_type: "idiot" | "dope"
       setup_status: "not_started" | "in_progress" | "completed"
       task_type: "code" | "analysis" | "automation" | "data"

@@ -1,87 +1,62 @@
 import { createClient } from '@redis/client';
-import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const redisClient = createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379',
 });
 
-redisClient.on('error', (err) => {
-  console.error('Redis Client Error:', err);
-  toast.error('Cache service error. Some features may be slower.');
-});
+redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
-export type CacheOptions = {
-  ttl?: number; // Time to live in seconds
-  background?: boolean; // If true, don't wait for cache operations
+export const initializeRedis = async () => {
+  try {
+    await redisClient.connect();
+    console.log('Redis client connected');
+  } catch (error) {
+    console.error('Redis connection error:', error);
+  }
 };
 
-export const cacheGet = async <T>(key: string): Promise<T | null> => {
+export const cacheGet = async (key: string) => {
   try {
     const value = await redisClient.get(key);
     return value ? JSON.parse(value) : null;
   } catch (error) {
-    console.error('Cache get error:', error);
+    console.error('Redis get error:', error);
     return null;
   }
 };
 
-export const cacheSet = async <T>(
-  key: string,
-  value: T,
-  options: CacheOptions = {}
-): Promise<boolean> => {
+export const cacheSet = async (key: string, value: any, ttl?: number) => {
   try {
     const stringValue = JSON.stringify(value);
-    if (options.ttl) {
-      await redisClient.setEx(key, options.ttl, stringValue);
+    if (ttl) {
+      await redisClient.setEx(key, ttl, stringValue);
     } else {
       await redisClient.set(key, stringValue);
     }
     return true;
   } catch (error) {
-    console.error('Cache set error:', error);
+    console.error('Redis set error:', error);
     return false;
   }
 };
 
-export const cacheDelete = async (key: string): Promise<boolean> => {
+export const cacheDelete = async (key: string) => {
   try {
     await redisClient.del(key);
     return true;
   } catch (error) {
-    console.error('Cache delete error:', error);
+    console.error('Redis delete error:', error);
     return false;
   }
 };
 
-export const clearCache = async (): Promise<boolean> => {
+export const clearCache = async () => {
   try {
     await redisClient.flushAll();
     return true;
   } catch (error) {
-    console.error('Cache clear error:', error);
+    console.error('Redis flush error:', error);
     return false;
-  }
-};
-
-export const initializeRedis = async (): Promise<boolean> => {
-  try {
-    if (!redisClient.isOpen) {
-      await redisClient.connect();
-    }
-    return true;
-  } catch (error) {
-    console.error('Redis initialization error:', error);
-    return false;
-  }
-};
-
-export const closeRedis = async (): Promise<void> => {
-  try {
-    if (redisClient.isOpen) {
-      await redisClient.quit();
-    }
-  } catch (error) {
-    console.error('Redis close error:', error);
   }
 };
